@@ -19,11 +19,11 @@ services:
       - key: CSRF_TRUSTED_ORIGINS
         value: https://world-design-backend.onrender.com,https://world-design-frontend.onrender.com,http://localhost:5173
       - key: CLOUDINARY_CLOUD_NAME
-        value: drg5ulwju
+        value: your-cloudinary-cloud-name
       - key: CLOUDINARY_API_KEY
-        value: 481632856281299
+        value: your-cloudinary-api-key
       - key: CLOUDINARY_API_SECRET
-        value: YKAdWXVIA8s_DyRFcv6w2CgstYQ
+        value: your-cloudinary-api-secret
       - key: DB_ENGINE
         value: postgres
       - key: DB_NAME
