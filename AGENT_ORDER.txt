@@ -1,0 +1,633 @@
+================================================================================
+WORLD DESIGN — AGENT ORDER FILE
+Fichier d'instructions à lire AVANT tout démarrage
+================================================================================
+
+Ce fichier est la référence absolue pour tous les agents IA intervenant sur ce
+projet. Chaque agent doit lire l'intégralité de ce fichier avant d'écrire la
+moindre ligne de code. Aucune exception.
+
+================================================================================
+SECTION 1 — IDENTITÉ DU PROJET
+================================================================================
+
+Client      : WORLD DESIGN WD SARL U — Lomé, Togo
+Produits    : Goodies personnalisés (calendriers, boîtes à stylo, supports, etc.)
+Paiement    : Flooz + T-Money + Carte bancaire via CinetPay
+Stack       : Django 4.2 + DRF | React 18 + Vite | PostgreSQL | Cloudinary
+Priorité    : Mobile-first OBLIGATOIRE — concevoir pour 375px en premier
+
+================================================================================
+SECTION 2 — CHARTE GRAPHIQUE EXACTE
+================================================================================
+
+IMPORTANT : Ces valeurs hex sont les seules autorisées. Ne pas inventer
+d'autres couleurs. Ne pas utiliser de palettes génériques. Ne pas s'écarter
+de ces valeurs sous prétexte d'accessibilité ou de préférence personnelle.
+Appliquer exactement ce qui est écrit ici.
+
+------------------------------------------------------------------------
+COULEURS PRINCIPALES
+------------------------------------------------------------------------
+
+Bleu Nuit (couleur primaire — fond navbar, fond sidebar, fond header admin)
+  HEX     : #1A1A2E
+  RGB     : rgb(26, 26, 46)
+  Tailwind: bg-[#1A1A2E]
+  Usage   : navbar, sidebar admin, éléments forts, titres sur fond clair
+
+Rouge Accent (appels à l'action, boutons principaux, badges actifs)
+  HEX     : #E94560
+  RGB     : rgb(233, 69, 96)
+  Tailwind: bg-[#E94560]
+  Usage   : bouton "Commander", bouton "Payer", bouton "Ajouter au panier",
+            boutons primaires partout, liens d'action, accents décoratifs
+
+Gold (highlights, badges produits vedettes, valeur CA total admin)
+  HEX     : #F5A623
+  RGB     : rgb(245, 166, 35)
+  Tailwind: bg-[#F5A623]
+  Usage   : badge "Produits Vedettes", affichage CA Total dashboard,
+            étoiles, tags promotionnels, valeurs financières importantes
+
+Fond Crème (fond général de toutes les pages publiques)
+  HEX     : #F8F5F0
+  RGB     : rgb(248, 245, 240)
+  Tailwind: bg-[#F8F5F0]
+  Usage   : background body, background pages catalogue, background checkout
+
+Noir Texte (tous les textes sur fond clair)
+  HEX     : #1A1A1A
+  RGB     : rgb(26, 26, 26)
+  Tailwind: text-[#1A1A1A]
+  Usage   : titres, paragraphes, labels de formulaires
+
+Gris Texte Secondaire (textes d'accompagnement, placeholders, métadonnées)
+  HEX     : #6B6B6B
+  RGB     : rgb(107, 107, 107)
+  Tailwind: text-[#6B6B6B]
+  Usage   : descriptions courtes, dates, mentions légales, texte d'aide
+
+Blanc (header admin, cartes, fond formulaires)
+  HEX     : #FFFFFF
+  Tailwind: bg-white
+  Usage   : header de l'espace admin, cartes de contenu, fonds de modales
+
+------------------------------------------------------------------------
+COULEURS DE STATUT (commandes et paiements)
+------------------------------------------------------------------------
+
+Ces couleurs sont CRITIQUES pour la lisibilité admin. Les appliquer exactement.
+
+Livré / Succès
+  Fond    : #D1FAE5   Tailwind: bg-[#D1FAE5]
+  Texte   : #065F46   Tailwind: text-[#065F46]
+  Usage   : badge statut "DELIVERED", paiement "SUCCESS", stocks OK
+
+En attente / Pendance
+  Fond    : #FEF3C7   Tailwind: bg-[#FEF3C7]
+  Texte   : #92400E   Tailwind: text-[#92400E]
+  Usage   : badge statut "PENDING", "PROCESSING", en cours de traitement
+
+Annulé / Erreur / Échec
+  Fond    : #FEE2E2   Tailwind: bg-[#FEE2E2]
+  Texte   : #991B1B   Tailwind: text-[#991B1B]
+  Usage   : badge statut "CANCELLED", paiement "FAILED", rupture de stock
+
+Expédié / En transit
+  Fond    : #DBEAFE   Tailwind: bg-[#DBEAFE]
+  Texte   : #1E40AF   Tailwind: text-[#1E40AF]
+  Usage   : badge statut "SHIPPED", "CONFIRMED", en cours d'expédition
+
+------------------------------------------------------------------------
+TYPOGRAPHIE
+------------------------------------------------------------------------
+
+Police Titres / Display : Playfair Display (Google Fonts)
+  Weights : 700 (Bold), 900 (Black)
+  Usage   : H1 hero, noms de section, titres de pages, logo textuel
+  Import  : https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900
+
+Police Corps / UI : Plus Jakarta Sans (Google Fonts)
+  Weights : 300 (Light), 400 (Regular), 500 (Medium), 600 (SemiBold), 700 (Bold)
+  Usage   : tous les textes courants, boutons, labels, navigation, tableaux
+  Import  : https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700
+
+Règle absolue : ne jamais utiliser Inter, Roboto, Arial, ou toute
+police système. Ces polices sont interdites sur ce projet.
+
+------------------------------------------------------------------------
+CONFIG TAILWIND EXACTE À UTILISER
+------------------------------------------------------------------------
+
+Coller ceci dans tailwind.config.js, section theme.extend :
+
+colors: {
+  primary:    '#1A1A2E',
+  accent:     '#E94560',
+  gold:       '#F5A623',
+  cream:      '#F8F5F0',
+  'text-dark': '#1A1A1A',
+  'text-muted': '#6B6B6B',
+  status: {
+    delivered:  { bg: '#D1FAE5', text: '#065F46' },
+    pending:    { bg: '#FEF3C7', text: '#92400E' },
+    cancelled:  { bg: '#FEE2E2', text: '#991B1B' },
+    shipped:    { bg: '#DBEAFE', text: '#1E40AF' },
+  }
+},
+fontFamily: {
+  display: ['"Playfair Display"', 'Georgia', 'serif'],
+  sans:    ['"Plus Jakarta Sans"', 'sans-serif'],
+},
+
+------------------------------------------------------------------------
+BREAKPOINTS RESPONSIVES
+------------------------------------------------------------------------
+
+Mobile   : 375px  — concevoir ICI EN PREMIER, toujours
+Tablette : 768px  — adapter ensuite
+Desktop  : 1280px — finaliser en dernier
+
+Tailwind : sm:768px  |  lg:1280px
+
+================================================================================
+SECTION 3 — RÈGLES MÉTIER CRITIQUES
+================================================================================
+
+1. COMMANDE INVITÉ (GUEST CHECKOUT)
+   - La création de compte N'EST PAS obligatoire pour commander
+   - Un client peut passer commande en fournissant uniquement :
+     nom, email, téléphone, adresse de livraison
+   - Dans ce cas Order.user = NULL en base de données
+   - Les commandes invitées ne sont pas visibles dans /api/orders/mine/
+   - Un invité peut retrouver sa commande via email + téléphone
+   - L'admin voit TOUTES les commandes (invités inclus)
+
+2. GESTION DU STOCK
+   - Vérifier le stock AVANT de créer la commande
+   - Refuser la commande si le stock est insuffisant
+   - NE PAS décrémenter le stock à la création de commande
+   - Décrémenter le stock UNIQUEMENT après confirmation de paiement (webhook SUCCESS)
+   - Si stock = 0 : afficher le label "Rupture de stock" sur le produit
+   - Si stock = 0 : désactiver le bouton d'ajout au panier (disabled)
+   - Interdire toute quantité négative dans les OrderItems
+
+3. SUPPRESSION DE PRODUITS
+   - La suppression physique en base est STRICTEMENT INTERDITE
+   - Utiliser uniquement is_active = True / is_active = False
+   - Produit avec is_active = False : invisible sur le site public
+   - Produit avec is_active = False : visible dans l'interface admin
+
+4. PERSONNALISATION
+   - Si Product.is_customizable = True : afficher le champ texte de personnalisation
+   - Afficher Product.customization_hint comme placeholder du champ
+   - Upload de fichier (logo) optionnel même si is_customizable = True
+   - Formats de fichier acceptés : jpg, jpeg, png, pdf, ai, svg
+   - Taille maximale upload : 10 MB
+   - Stocker le fichier sur Cloudinary et sauvegarder l'URL dans OrderItem.custom_file
+
+================================================================================
+SECTION 4 — ORDRE D'EXÉCUTION DES AGENTS
+================================================================================
+
+Respecter cet ordre. Ne pas sauter d'étape. Ne pas commencer une étape
+si la précédente n'est pas terminée et testée.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PHASE 1 — FONDATIONS BACKEND
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+AGENT 01 — Django Setup
+  Dépend de : rien
+  Faire    :
+    - Créer le projet Django dans backend/
+    - Installer : djangorestframework, djangorestframework-simplejwt,
+      django-cors-headers, cloudinary, django-cloudinary-storage,
+      psycopg2-binary, python-decouple, django-ratelimit, gunicorn
+    - Créer les 4 apps : users, products, orders, payments
+    - Configurer settings.py : PostgreSQL, Cloudinary, CORS, JWT,
+      MEDIA_FILES, STATIC_FILES
+    - Créer requirements.txt et .env.example complets
+    - Configurer config/urls.py avec routing de base
+  Livrable : runserver OK, migrate OK, structure dossiers conforme
+  Fournit à Agent 02 : 4 apps créées, PostgreSQL connecté, Cloudinary OK
+
+AGENT 02 — Modèles & Migrations
+  Dépend de : Agent 01
+  Faire    :
+    - Créer User custom (AbstractUser, login par email, champs : phone, address, is_admin)
+    - Créer Category (name, slug, image)
+    - Créer Product (tous les champs — voir AGENTS_PLAN.pdf)
+      IMPORTANT : inclure is_customizable (bool) et customization_hint (text)
+    - Créer Order avec user NULLABLE (ForeignKey null=True blank=True)
+      IMPORTANT : ajouter les champs email, phone, delivery_address directement
+      sur Order pour les commandes invitées
+    - Créer OrderItem avec custom_text (nullable) et custom_file (Cloudinary, nullable)
+    - Créer Payment
+    - Enregistrer tous les modèles dans admin.py de chaque app
+    - Générer et appliquer les migrations
+    - Créer seed.py : 3 catégories, 6 produits de démo, 1 superuser admin
+  Livrable : migrate OK, seed peuple la base, admin Django affiche tout
+  Fournit à Agent 03 : User custom fonctionnel, toutes les tables en base
+
+AGENT 03 — Auth API (JWT)
+  Dépend de : Agent 02
+  Faire    :
+    - Serializers : RegisterSerializer, LoginSerializer, UserSerializer
+    - Views : register, login, logout, refresh token, profil utilisateur
+    - Rate limiting : 5 tentatives/minute/IP sur login, 3/minute/IP sur register
+    - Permission custom IsAdminUser (importable depuis users/permissions.py)
+    - JWT config : ACCESS_TOKEN_LIFETIME = 15 minutes, REFRESH_TOKEN_LIFETIME = 7 jours
+    - Activer ROTATE_REFRESH_TOKENS = True dans SIMPLE_JWT settings
+    - Monter les URLs dans users/urls.py et config/urls.py
+  Livrable : POST /api/auth/register/ OK, POST /api/auth/login/ OK,
+             route protégée retourne 401 sans token, rate limiting actif
+  Fournit à Agent 04 : JWT fonctionnel, IsAdminUser disponible et importable
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PHASE 2 — BACKEND MÉTIER
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+AGENT 04 — API Produits
+  Dépend de : Agent 03
+  Faire    :
+    - Serializers : CategorySerializer, ProductListSerializer,
+      ProductDetailSerializer, ProductAdminSerializer
+    - Vues publiques (IsAuthenticatedOrReadOnly ou AllowAny) :
+      liste produits, détail par slug, liste catégories
+    - Vues admin (IsAdminUser) : créer, modifier, désactiver produit
+    - Upload image vers Cloudinary à la création/modification
+    - Filtres sur liste : ?category=slug&min_price=X&max_price=Y
+    - Pagination : 12 produits par page (PageNumberPagination)
+    - DELETE = désactivation (is_active=False), jamais suppression physique
+  Livrable : GET /api/products/ OK avec filtres et pagination,
+             POST /api/admin/products/ crée produit avec image Cloudinary
+  Fournit à Agent 05 : endpoints produits fonctionnels, Cloudinary opérationnel
+
+AGENT 05 — API Commandes
+  Dépend de : Agent 04
+  Faire    :
+    - Serializers : OrderItemSerializer, OrderCreateSerializer (supporte user=null),
+      OrderDetailSerializer
+    - View CreateOrder :
+        * Accepter les commandes sans user authentifié (invité)
+        * Champs obligatoires pour invité : nom, email, téléphone, adresse
+        * Vérifier le stock de chaque produit AVANT de créer la commande
+        * Refuser avec erreur 400 si stock insuffisant
+        * Créer la commande en statut PENDING
+        * NE PAS décrémenter le stock ici
+        * Uploader custom_file vers Cloudinary si fourni
+    - View MyOrders : retourner les commandes du user connecté seulement
+    - View OrderDetail : accessible par le propriétaire ou admin
+    - Endpoint de recherche commande invité : ?email=X&phone=Y
+  Livrable : POST /api/orders/ fonctionne avec user connecté ET sans compte,
+             stock vérifié, fichier perso uploadé sur Cloudinary
+  Fournit à Agent 06 : order_id disponible, commandes en PENDING
+
+AGENT 06 — API Paiement CinetPay
+  Dépend de : Agent 05
+  Faire    :
+    - View InitiatePayment :
+        * Recevoir order_id
+        * Appeler l'API CinetPay : https://api-checkout.cinetpay.com/v2/payment
+        * Paramètres : amount, currency=XOF, transaction_id, description, return_url
+        * Sauvegarder cinetpay_payment_token et cinetpay_transaction_id en base
+        * Retourner { payment_url, transaction_id } au frontend
+    - View PaymentWebhook (POST, pas d'auth JWT, accessible publiquement par CinetPay) :
+        * Recevoir la notification CinetPay
+        * Vérifier l'authenticité via l'API CinetPay (appel check status)
+        * Si statut = ACCEPTED : Payment.status = SUCCESS, Order.status = CONFIRMED,
+          décrémenter le stock de chaque OrderItem
+        * Si statut != ACCEPTED : Payment.status = FAILED, Order.status = CANCELLED
+        * Logger chaque événement webhook
+    - Gérer les timeouts et erreurs réseau CinetPay
+  Livrable : POST /api/payments/initiate/ retourne payment_url,
+             webhook traite confirmation et met à jour commande + stock
+  Fournit à Agent 07 : backend complet et opérationnel, .env.example à jour
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PHASE 3 — FRONTEND REACT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+AGENT 07 — Setup React
+  Dépend de : Agent 06
+  Faire    :
+    - Créer le projet avec Vite dans frontend/
+    - Installer : tailwindcss, react-router-dom@6, zustand, axios, lucide-react
+    - Configurer tailwind.config.js avec la config exacte de la SECTION 2
+    - Charger les polices Google Fonts dans index.html (Playfair Display + Plus Jakarta Sans)
+    - Créer src/api/axios.js :
+        * Instance Axios avec baseURL depuis import.meta.env.VITE_API_BASE_URL
+        * Intercepteur request : injecter le JWT depuis le store Zustand dans Authorization
+        * Intercepteur response : si 401, tenter refresh token, relancer la requête,
+          si le refresh échoue, logout et rediriger vers /login
+    - Créer la structure de dossiers complète : api/, components/, pages/,
+      pages/admin/, store/, hooks/, utils/
+    - Configurer React Router avec toutes les routes (pages vides acceptées)
+    - Créer ProtectedRoute (redirige vers /login si non authentifié)
+    - Créer AdminRoute (redirige vers / si authentifié mais pas admin)
+    - Configurer le code splitting avec React.lazy() sur toutes les pages
+  Livrable : npm run dev sans erreur, Tailwind avec palette, Axios prêt,
+             routes définies, composants de protection créés
+  Fournit à Agent 08 : config complète, Axios prêt, Router en place
+
+AGENT 08 — Pages Publiques
+  Dépend de : Agent 07
+  ATTENTION : appliquer scrupuleusement la charte graphique de la SECTION 2
+  Faire    :
+    - Composant Navbar :
+        * Fond : #1A1A2E (bleu nuit)
+        * Logo WORLD DESIGN en Playfair Display, couleur blanche
+        * Liens de navigation en blanc, hover en #F5A623 (gold)
+        * Bouton "Commander" : fond #E94560 (rouge accent), texte blanc,
+          border-radius arrondi, hover légèrement plus sombre
+        * Icône panier avec badge de quantité en #E94560
+        * Sur mobile : menu hamburger, drawer latéral ou menu déroulant
+    - Composant Footer :
+        * Fond : #1A1A2E, texte blanc/gris clair
+        * Coordonnées WORLD DESIGN, liens utiles
+    - Page Home (/) :
+        * Fond général : #F8F5F0 (crème)
+        * Section hero : titre en Playfair Display, CTA "Commander maintenant"
+          avec fond #E94560
+        * Section catégories : cartes avec image, nom en Plus Jakarta Sans
+        * Section "Produits Vedettes" : 6 produits, badge "Vedette" en #F5A623
+    - Page Catalogue (/products) :
+        * Fond : #F8F5F0
+        * Grille 2 colonnes sur mobile 375px, 3 colonnes sur desktop 1280px
+        * Filtres : catégorie + prix min/max
+        * Pagination avec numéros de page
+        * Carte produit : image, nom en noir #1A1A1A, prix visible,
+          hover effect avec légère élévation et border #E94560
+    - Page Produit (/products/:slug) :
+        * Fond : #F8F5F0
+        * Image produit grande
+        * Nom produit en Playfair Display, prix en #E94560 ou #F5A623
+        * Si is_customizable = true :
+            afficher un champ textarea avec customization_hint comme placeholder
+            afficher un input file pour upload logo
+        * Sélecteur quantité
+        * Si stock = 0 : bouton désactivé, label "Rupture de stock" en rouge #991B1B
+        * Bouton "Ajouter au panier" : fond #E94560, texte blanc
+        * SEO : balise <title>, <meta name="description">, Open Graph par produit
+    - Créer le store Zustand panier (src/store/cartStore.js) :
+        addItem, removeItem, updateQuantity, clearCart, getTotal, getCount
+  Livrable : pages avec vraies données API, mobile 375px vérifié,
+             store panier fonctionnel, charte graphique respectée
+  Fournit à Agent 09 : Navbar, Footer, store panier initialisé, pages publiques OK
+
+AGENT 09 — Panier & Checkout
+  Dépend de : Agent 08
+  Faire    :
+    - Compléter le store Zustand panier avec persistance localStorage
+    - Page Panier (/cart) :
+        * Fond : #F8F5F0
+        * Liste des items : image miniature, nom, texte perso si applicable,
+          quantité modifiable (+ / -), prix unitaire, sous-total
+        * Bouton supprimer item : icône rouge #E94560
+        * Récapitulatif total en bas
+        * Bouton "Passer la commande" : fond #E94560, texte blanc
+        * State vide : illustration + message + bouton "Voir les produits"
+    - Page Checkout (/checkout) :
+        * Fond : #F8F5F0
+        * Formulaire en deux colonnes sur desktop, une colonne sur mobile
+        * Champs : Nom complet, Email, Téléphone, Adresse de livraison, Note (optionnel)
+        * Formulaire accessible sans être connecté (invité)
+        * Si connecté : préremplir les champs depuis le profil user
+        * Récapitulatif commande à droite (ou en dessous sur mobile) : readonly
+        * Bouton "Payer avec CinetPay" : fond #E94560, texte blanc, grande taille
+        * Au clic Payer :
+            1. POST /api/orders/ avec les items + infos client
+            2. POST /api/payments/initiate/ avec l'order_id reçu
+            3. Rediriger vers le payment_url retourné par CinetPay
+    - Page Confirmation (/order-success) :
+        * Afficher numéro de commande
+        * Message de confirmation en vert
+        * Vider le panier automatiquement au chargement de cette page
+        * Bouton retour boutique
+  Livrable : flux complet panier → checkout → CinetPay → confirmation,
+             fonctionne sans compte (invité), panier persisté localStorage
+  Fournit à Agent 10 : flux commande complet, pages publiques toutes OK
+
+AGENT 10 — Auth Frontend
+  Dépend de : Agent 09
+  Faire    :
+    - Store Zustand auth (src/store/authStore.js) :
+        state : user, accessToken, refreshToken, isAuthenticated, isAdmin
+        actions : login(email, password), logout(), setTokens(), loadFromStorage()
+        persistance dans localStorage
+    - Page Login (/login) :
+        * Fond : #F8F5F0
+        * Formulaire centré, logo WORLD DESIGN en haut
+        * Champs email + mot de passe
+        * Bouton connexion : fond #E94560
+        * Lien vers /register
+        * Redirection vers / si déjà connecté
+    - Page Register (/register) :
+        * Fond : #F8F5F0
+        * Champs : nom, email, téléphone, mot de passe, confirmation mot de passe
+        * Bouton inscription : fond #E94560
+        * Lien vers /login
+    - Mettre à jour les intercepteurs Axios pour lire le token depuis authStore
+    - Mettre à jour Navbar : afficher "Mon compte" + "Mes commandes" si connecté,
+      afficher "Connexion" si non connecté
+    - Page Mes Commandes (/my-orders) :
+        * Liste des commandes avec numéro, date, montant, badge statut coloré
+        * Badges : DELIVERED vert, PENDING/PROCESSING orange, CANCELLED rouge,
+          SHIPPED bleu — utiliser exactement les couleurs de la SECTION 2
+  Livrable : login/register fonctionnels, routes admin bloquées si non admin,
+             token persisté entre rechargements
+  Fournit à Agent 11 : auth complète, AdminRoute disponible, user dans store global
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PHASE 4 — DASHBOARD ADMIN
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+AGENT 11 — Layout Admin
+  Dépend de : Agent 10
+  ATTENTION : l'espace admin a sa propre charte de couleurs définie ci-dessous.
+  Appliquer scrupuleusement.
+  Faire    :
+    - Layout global admin :
+        * Sidebar fixe à gauche sur desktop (largeur 240px)
+        * Sur mobile : bottom navigation bar fixe en bas
+        * Fond sidebar : #1A1A2E (bleu nuit)
+        * Texte sidebar : blanc, icônes en blanc
+        * Item actif sidebar : fond #E94560 (rouge accent) ou bordure gauche
+          en #E94560 avec fond légèrement plus clair
+        * Hover item sidebar : fond rgba(233,69,96,0.15)
+    - Header admin (barre horizontale en haut du contenu) :
+        * Fond : #FFFFFF (blanc)
+        * Bordure bas : 1px solid #E0DBD5
+        * Nom du user connecté à droite
+        * Bouton déconnexion : texte rouge #E94560
+    - Zone de contenu :
+        * Fond : #F8F5F0 (crème, même que le site public)
+    - Liens sidebar : Dashboard, Produits, Commandes, Clients
+    - Icônes depuis lucide-react
+    - Breadcrumb en haut de chaque page admin
+    - Sous-routes : /admin/dashboard, /admin/products, /admin/orders, /admin/customers
+    - Pages placeholder vides pour chaque section
+  Livrable : layout responsive, navigation fonctionnelle, accès bloqué si non admin
+  Fournit à Agent 12 : layout navigable, routes admin en place
+
+AGENT 12 — Dashboard & Stats Admin
+  Dépend de : Agent 11
+  ATTENTION : les valeurs financières sont en or, les statuts respectent
+  strictement les couleurs de la SECTION 2.
+  Faire    :
+    - Appel GET /api/admin/stats/?period=week (day/week/month/year)
+    - KPI Cards (4 cartes en grille) :
+        * CA Total période : valeur en #F5A623 (gold), fond carte blanc, ombre légère
+        * Nombre de commandes : texte #1A1A1A
+        * Nombre de clients : texte #1A1A1A
+        * Panier moyen : valeur en #F5A623
+        * Commandes en attente : valeur en orange #92400E sur fond #FEF3C7
+    - Graphique CA (Recharts LineChart) :
+        * Ligne en #E94560 (rouge accent)
+        * Fond graphique blanc
+        * Grille en #E0DBD5
+    - Graphique commandes par statut (Recharts PieChart) :
+        * DELIVERED : #065F46
+        * PENDING/PROCESSING : #92400E
+        * CANCELLED : #991B1B
+        * SHIPPED/CONFIRMED : #1E40AF
+    - Tableau des 10 dernières commandes :
+        * Badges statut avec exactement les couleurs fond/texte de la SECTION 2
+    - Sélecteur de période : Aujourd'hui / Semaine / Mois / Année
+    - Actualisation automatique toutes les 5 minutes
+  Livrable : dashboard avec vraies données, graphiques fonctionnels sur mobile,
+             filtre période OK, couleurs conformes
+  Fournit à Agent 13 : dashboard OK, pattern appel API admin réutilisable
+
+AGENT 13 — Gestion Produits Admin
+  Dépend de : Agent 12
+  Faire    :
+    - Tableau produits :
+        * Colonnes : image miniature (40x40px), nom, catégorie, prix, stock,
+          statut (badge vert si actif, badge rouge si inactif)
+        * Boutons action : Modifier (icône crayon, couleur primaire) et
+          Désactiver (icône œil barré, rouge #E94560)
+    - Barre de recherche + filtre catégorie au-dessus du tableau
+    - Formulaire ajout/édition (modale ou page dédiée) :
+        * Champs : Nom, Description (textarea), Prix, Stock, Catégorie (select)
+        * Toggle "Produit personnalisable" : si activé, afficher le champ
+          "Texte d'aide personnalisation" (customization_hint)
+        * Upload image : zone de drop avec prévisualisation avant envoi
+        * Toggle "Produit actif / inactif"
+        * Bouton soumettre : fond #E94560, texte blanc
+    - Modale de confirmation avant désactivation :
+        * Message clair, bouton confirmer rouge #E94560, bouton annuler gris
+    - Toasts de feedback sur chaque action (succès vert, erreur rouge)
+    - Créer les composants réutilisables Toast et Modal dans src/components/
+  Livrable : CRUD complet, image uploadée visible immédiatement sur site public,
+             composants Toast et Modal disponibles pour les agents suivants
+  Fournit à Agent 14 : pattern formulaire admin, Toast/Modal disponibles
+
+AGENT 14 — Gestion Commandes & Clients Admin
+  Dépend de : Agent 13
+  Faire    :
+    - Page Commandes (/admin/orders) :
+        * Tableau : numéro commande, nom client (ou "Invité" si user=null),
+          date, montant, badge statut coloré (couleurs exactes SECTION 2)
+        * Filtres : par statut (select multiple), par période (date range),
+          par montant minimum
+        * Indication visuelle claire pour les commandes invitées (ex: icône user barré)
+    - Page Détail Commande (/admin/orders/:id) :
+        * Bloc infos client : nom, email, téléphone, adresse
+        * Si invité : afficher "Commande Invité" avec badge orange
+        * Liste OrderItems : image, nom produit, quantité, prix unitaire, sous-total
+        * Si custom_text : afficher le texte de personnalisation
+        * Si custom_file : bouton "Voir le fichier" avec lien Cloudinary
+        * Bloc paiement : méthode, statut, référence CinetPay
+        * Timeline statut vertical avec les étapes et dates
+        * Select changement de statut + bouton "Confirmer" : fond #E94560
+    - Page Clients (/admin/customers) :
+        * Tableau : nom, email, téléphone, nombre de commandes, total dépensé
+        * Total dépensé en #F5A623 (gold)
+        * Clients invités regroupés ou identifiés séparément
+  Livrable : liste commandes avec filtres, détail complet, changement statut OK,
+             commandes invitées identifiées et gérables
+  Fournit à Agent 15 : interface admin complète, tous composants finalisés
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PHASE 5 — FINITIONS & DÉPLOIEMENT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+AGENT 15 — Responsive & UI Polish
+  Dépend de : Agent 14
+  Faire    :
+    - Audit responsive complet sur 375px / 768px / 1280px
+    - Ajouter loading skeletons (fond #E0DBD5, animation pulse)
+      sur : liste produits, dashboard stats, liste commandes admin
+    - Empty states :
+        * Panier vide : illustration + "Votre panier est vide" + bouton voir produits
+        * Aucun produit : "Aucun produit pour le moment"
+        * Aucune commande : "Vous n'avez pas encore de commandes"
+    - Error states : message d'erreur en rouge #991B1B + bouton "Réessayer"
+    - Micro-animations CSS :
+        * Boutons : transform scale(0.98) au clic, transition 150ms
+        * Cartes produits : translateY(-4px) + ombre plus forte au hover
+        * Transitions de pages : fade-in 200ms
+    - Lazy loading images avec l'attribut loading="lazy"
+    - Vérifier la cohérence des couleurs sur TOUTES les pages
+    - Test complet du flux mobile : home → produit → panier → checkout → paiement
+    - npm run build sans erreur ni warning bloquant
+  Livrable : aucun bug affichage mobile, tous états gérés, build propre,
+             aucune console error en mode production
+  Fournit à Agent 16 : app complète, visuellement cohérente, prête à déployer
+
+AGENT 16 — Déploiement
+  Dépend de : Agent 15
+  Faire    :
+    Backend Railway :
+      - Créer Procfile : web: gunicorn config.wsgi --workers 2
+      - Configurer toutes les variables d'environnement dans Railway
+      - Modifier settings.py pour lire ALLOWED_HOSTS et CORS depuis les env vars
+      - Lancer les migrations en production : python manage.py migrate
+      - Créer le superuser admin initial
+      - Tester chaque endpoint de l'API en production
+    Frontend Vercel :
+      - Configurer VITE_API_BASE_URL avec l'URL Railway du backend
+      - Vérifier : npm run build passe sans erreur
+      - Créer vercel.json pour les redirects React Router :
+          { "rewrites": [{ "source": "/(.*)", "destination": "/" }] }
+      - Configurer toutes les variables d'environnement Vercel
+    Webhook CinetPay :
+      - Enregistrer l'URL du webhook en production dans le dashboard CinetPay
+      - Format : https://api.domain.com/api/payments/webhook/
+    Sécurité serveur :
+      - HTTPS activé (Let's Encrypt)
+      - UFW : ouvrir uniquement les ports 80, 443, 22
+      - Fail2Ban configuré
+      - Backup PostgreSQL quotidien avec conservation 30 jours
+    Test final :
+      - Passer une vraie commande invité de bout en bout en production
+      - Vérifier la réception du webhook CinetPay
+      - Vérifier la mise à jour du stock après paiement
+      - Vérifier que l'admin reçoit la commande correctement
+  Livrable : site public en ligne, admin en ligne, paiement fonctionnel en prod,
+             URLs finales documentées et transmises au client
+
+================================================================================
+SECTION 5 — RAPPEL RÈGLES ABSOLUES
+================================================================================
+
+1.  Lire ce fichier EN ENTIER avant d'écrire la première ligne de code.
+2.  Lire le code existant dans le projet avant toute modification.
+3.  Respecter EXACTEMENT les modèles de données (pas de champ inventé).
+4.  Respecter EXACTEMENT les endpoints API (pas d'URL inventée).
+5.  Respecter STRICTEMENT la structure de dossiers définie.
+6.  Ne JAMAIS casser une fonctionnalité produite par un agent précédent.
+7.  Ne JAMAIS hardcoder une URL, clé API, mot de passe ou valeur sensible.
+8.  Ne JAMAIS laisser de TODO, de print() de debug, ou de données mockées en prod.
+9.  Fournir les tests unitaires et tests API pour chaque fonctionnalité.
+10. Fournir à la fin de chaque étape la liste des fichiers créés ou modifiés.
+11. Respecter les couleurs EXACTEMENT comme définies en SECTION 2.
+    Ne pas substituer, ne pas approximer, ne pas "améliorer" la palette.
+12. Mobile-first sur TOUT composant React sans exception.
+
+================================================================================
+FIN DU FICHIER — WORLD DESIGN AGENT ORDER v2.0
+================================================================================

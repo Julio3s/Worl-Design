@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply text-text-dark font-sans antialiased;
+  background-color: #f7f2ea;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+#root {
+  min-height: 100vh;
+  background-color: #f7f2ea;
+}
+
+@layer components {
+  .page-fade-in {
+    animation: page-fade-in 200ms ease-out;
+  }
+
+  .section-shell {
+    @apply px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20;
+    background-color: #f7f2ea;
+  }
+
+  .section-shell-tight {
+    @apply px-4 py-10 sm:px-6 sm:py-14 lg:px-8 lg:py-16;
+  }
+
+  .section-stack-2 {
+    @apply grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3;
+  }
+
+  .section-stack-4 {
+    @apply grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4;
+  }
+
+  .interactive-press {
+    transition: transform 150ms ease, opacity 150ms ease;
+  }
+
+  .interactive-press:active:not(:disabled) {
+    transform: scale(0.98);
+  }
+
+  .product-card-hover {
+    transition: transform 150ms ease, box-shadow 150ms ease, border-color 150ms ease;
+  }
+
+  .product-card-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 34px rgba(26, 26, 46, 0.12);
+  }
+}
+
+@keyframes page-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
