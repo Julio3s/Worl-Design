@@ -1,3 +1,9 @@
+databases:
+  - name: world-design-db
+    databaseName: world_design
+    user: world_design
+    plan: free
+
 services:
   - type: web
     name: world-design-backend
@@ -27,15 +33,25 @@ services:
       - key: DB_ENGINE
         value: postgres
       - key: DB_NAME
-        value: world_design
+        fromDatabase:
+          name: world-design-db
+          property: database
       - key: DB_USER
-        value: world_design
+        fromDatabase:
+          name: world-design-db
+          property: user
       - key: DB_PASSWORD
-        generateValue: true
+        fromDatabase:
+          name: world-design-db
+          property: password
       - key: DB_HOST
-        value: localhost
+        fromDatabase:
+          name: world-design-db
+          property: host
       - key: DB_PORT
-        value: 5432
+        fromDatabase:
+          name: world-design-db
+          property: port
       - key: SITE_URL
         value: https://world-design-backend.onrender.com
       - key: CINETPAY_RETURN_URL
@@ -50,3 +66,5 @@ services:
     envVars:
       - key: VITE_API_BASE_URL
         value: https://world-design-backend.onrender.com/api
+      - key: VITE_GOOGLE_MAPS_API_KEY
+        value: your-google-maps-api-key
