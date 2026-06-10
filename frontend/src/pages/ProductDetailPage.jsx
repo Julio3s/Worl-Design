@@ -104,6 +104,7 @@ export default function ProductDetailPage() {
         productName: product.name,
         productSlug: product.slug,
         price: Number(product.price || 0),
+        isCustomizable: Boolean(product.is_customizable),
         imageUrl: image,
         categorySlug: product.category?.slug || '',
         customText: customText.trim(),

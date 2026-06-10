@@ -65,6 +65,7 @@ export const useCartStore = create((set, get) => ({
       quantity: Number(item.quantity || 0),
       price: Number(item.price || 0),
       customFileName: item.customFileName || normalizeCustomFile(item.customFile),
+      isCustomizable: Boolean(item.isCustomizable || item.is_customizable),
     }));
 
     set({ items: normalizedItems });
@@ -80,6 +81,7 @@ export const useCartStore = create((set, get) => ({
       customFileName,
       customFileType: item.customFileType || incomingFile?.type || null,
       customFileSize: item.customFileSize || incomingFile?.size || null,
+      isCustomizable: Boolean(item.isCustomizable || item.is_customizable),
       key: item.key || makeItemKey({ ...item, customFileName }),
     };
 

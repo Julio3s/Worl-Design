@@ -2,6 +2,8 @@ import { ChevronRight, ShoppingBag, Trash2, Heart, ArrowLeft, Gift, ShieldCheck,
 import { Link } from 'react-router-dom';
 import React from 'react';
 
+import { getProductBySlug } from '../api/catalog';
+import { CartItemCustomization } from '../components/CartItemCustomization';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { useCartStore } from '../store/cartStore';
 import { formatCurrency } from '../utils/formatCurrency';
@@ -98,6 +100,38 @@ export default function CartPage() {
   const itemCount = items.reduce((sum, i) => sum + i.quantity, 0);
 
   const [showClearConfirm, setShowClearConfirm] = React.useState(false);
+  const [products, setProducts] = React.useState({});
+
+  React.useEffect(() => {
+    let isMounted = true;
+    const slugsToLoad = [...new Set(items.map((item) => item.productSlug).filter(Boolean))];
+
+    if (slugsToLoad.length === 0) {
+      setProducts({});
+      return () => {
+        isMounted = false;
+      };
+    }
+
+    Promise.all(slugsToLoad.map((slug) => getProductBySlug(slug).catch(() => null)))
+      .then((results) => {
+        if (!isMounted) {
+          return;
+        }
+
+        const nextProducts = {};
+        results.forEach((product, index) => {
+          if (product) {
+            nextProducts[slugsToLoad[index]] = product;
+          }
+        });
+        setProducts(nextProducts);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [items]);
 
   // ─── Panier vide ──────────────────────────────────────────────
   if (items.length === 0) {
@@ -269,7 +303,10 @@ export default function CartPage() {
                       )}
                     </div>
 
-                    {/* Détails personnalisation */}
+                    {products[item.productSlug]?.is_customizable ? (
+                      <CartItemCustomization item={item} product={products[item.productSlug]} />
+                    ) : null}
+
                     <p className="mt-3 text-sm text-primary/45">
                       Prix unitaire : <span className="font-semibold text-price">{formatCurrency(item.price)}</span>
                     </p>

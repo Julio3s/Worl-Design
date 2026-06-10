@@ -166,8 +166,14 @@ class OrderCreateSerializer(serializers.Serializer):
 
         for item in data['items']:
             product = products[item['product_id']]
+            custom_text = (item.get('custom_text') or '').strip()
 
-            if (item.get('custom_text') or item.get('custom_file')) and not product.is_customizable:
+            if product.is_customizable and not custom_text:
+                raise serializers.ValidationError(
+                    {'items': f'Customization text is required for {product.name}'}
+                )
+
+            if (custom_text or item.get('custom_file')) and not product.is_customizable:
                 raise serializers.ValidationError(
                     {'items': f'{product.name} is not customizable'}
                 )

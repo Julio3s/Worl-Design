@@ -202,6 +202,7 @@ def main():
         'note': 'Deliver to the office',
         'items[0][product_id]': str(product.id),
         'items[0][quantity]': '1',
+        'items[0][custom_text]': 'Office badge engraving',
     }
     response = client.post('/api/orders/', auth_payload, format='multipart')
     auth_order_data = response.json() if response.status_code in (200, 201) else {}
