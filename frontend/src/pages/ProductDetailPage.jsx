@@ -203,19 +203,9 @@ export default function ProductDetailPage() {
             </div>
 
             <div className="flex flex-wrap items-center gap-3">
-              <p className="text-3xl font-bold text-accent">
+              <p className="text-3xl font-bold text-price">
                 {formatCurrency(product.price)}
               </p>
-              <span
-                className={[
-                  'inline-flex rounded-full px-3 py-1 text-xs font-semibold',
-                  outOfStock
-                    ? 'bg-[#FEE2E2] text-[#991B1B]'
-                    : 'bg-[#D1FAE5] text-[#065F46]',
-                ].join(' ')}
-              >
-                {outOfStock ? 'Rupture de stock' : `${product.stock} en stock`}
-              </span>
               {product.is_customizable ? (
                 <span className="inline-flex rounded-full bg-[#FEF3C7] px-3 py-1 text-xs font-semibold text-[#92400E]">
                   Personnalisable
@@ -223,8 +213,7 @@ export default function ProductDetailPage() {
               ) : null}
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-3">
-              <DetailStat label="Disponibilité" value={outOfStock ? 'Rupture' : 'Disponible'} />
+            <div className="grid gap-3 sm:grid-cols-2">
               <DetailStat label="Catégorie" value={product.category?.name || 'Sans catégorie'} />
               <DetailStat label="Mis à jour" value={new Date(product.updated_at || product.created_at).toLocaleDateString('fr-FR')} />
             </div>
@@ -304,7 +293,7 @@ export default function ProductDetailPage() {
                     className="inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-accent px-5 py-3 text-sm font-semibold text-white transition hover:opacity-95 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <ShoppingCart className="h-4 w-4" aria-hidden="true" />
-                    Ajouter au panier
+                    {outOfStock ? 'Indisponible' : 'Ajouter au panier'}
                   </button>
                   <Link
                     to="/cart"

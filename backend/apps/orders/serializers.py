@@ -95,6 +95,21 @@ class OrderItemSerializer(serializers.ModelSerializer):
         return obj.unit_price * obj.quantity
 
 
+def _order_custom_text_summary(order):
+    texts = [
+        (item.custom_text or '').strip()
+        for item in order.items.all()
+        if (item.custom_text or '').strip()
+    ]
+    if not texts:
+        return None
+
+    summary = ' / '.join(texts[:2])
+    if len(texts) > 2:
+        summary += ' ...'
+    return summary
+
+
 class OrderCreateSerializer(serializers.Serializer):
     """Serializer for creating orders (with guest support)."""
     name = serializers.CharField(required=False, allow_blank=True, allow_null=True)
@@ -227,6 +242,7 @@ def _order_customer_name(order):
 class OrderAdminListSerializer(serializers.ModelSerializer):
     customer_name = serializers.SerializerMethodField()
     is_guest = serializers.SerializerMethodField()
+    custom_text_summary = serializers.SerializerMethodField()
 
     class Meta:
         model = Order
@@ -234,6 +250,10 @@ class OrderAdminListSerializer(serializers.ModelSerializer):
             'id',
             'customer_name',
             'is_guest',
+            'email',
+            'phone',
+            'delivery_address',
+            'custom_text_summary',
             'status',
             'total_amount',
             'created_at',
@@ -244,6 +264,9 @@ class OrderAdminListSerializer(serializers.ModelSerializer):
 
     def get_is_guest(self, obj):
         return obj.user_id is None
+
+    def get_custom_text_summary(self, obj):
+        return _order_custom_text_summary(obj)
 
 
 class OrderStatusUpdateSerializer(serializers.ModelSerializer):

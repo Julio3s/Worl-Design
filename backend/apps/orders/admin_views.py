@@ -95,13 +95,14 @@ def admin_orders(request):
     if error_response is not None:
         return error_response
 
+    orders = orders.prefetch_related('items')
     paginator = AdminOrderPagination()
     paginated_orders = paginator.paginate_queryset(orders, request)
     serializer = OrderAdminListSerializer(paginated_orders, many=True)
     return paginator.get_paginated_response(serializer.data)
 
 
-@api_view(['GET', 'PATCH'])
+@api_view(['GET', 'PATCH', 'DELETE'])
 @permission_classes([IsAdminUser])
 def admin_order_detail(request, order_id):
     order = get_object_or_404(
@@ -112,6 +113,10 @@ def admin_order_detail(request, order_id):
     if request.method == 'GET':
         serializer = OrderAdminDetailSerializer(order)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    if request.method == 'DELETE':
+        order.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     serializer = OrderStatusUpdateSerializer(order, data=request.data, partial=True)
     if serializer.is_valid():

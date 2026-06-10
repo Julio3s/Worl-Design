@@ -84,7 +84,7 @@ export default function CustomersPage() {
                   <td className="px-4 py-3 text-text-muted">{customer.email || '—'}</td>
                   <td className="px-4 py-3 text-text-muted">{customer.phone || '—'}</td>
                   <td className="px-4 py-3 text-text-dark">{customer.orders_count}</td>
-                  <td className="px-4 py-3 font-semibold text-gold">{formatCurrency(customer.total_spent)}</td>
+                  <td className="px-4 py-3 font-semibold text-price">{formatCurrency(customer.total_spent)}</td>
                   <td className="px-4 py-3">
                     {customer.type === 'guest' ? (
                       <span className="inline-flex items-center gap-1 rounded-full bg-[#FEF3C7] px-3 py-1 text-xs font-semibold text-[#92400E]">

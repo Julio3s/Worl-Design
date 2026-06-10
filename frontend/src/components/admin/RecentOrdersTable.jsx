@@ -33,6 +33,9 @@ export function RecentOrdersTable({ orders }) {
           <tr>
             <th className="px-4 py-3 font-semibold">N°</th>
             <th className="px-4 py-3 font-semibold">Client</th>
+            <th className="px-4 py-3 font-semibold">Contact</th>
+            <th className="px-4 py-3 font-semibold">Livraison</th>
+            <th className="px-4 py-3 font-semibold">Personnalisation</th>
             <th className="px-4 py-3 font-semibold">Date</th>
             <th className="px-4 py-3 font-semibold">Montant</th>
             <th className="px-4 py-3 font-semibold">Statut</th>
@@ -47,11 +50,24 @@ export function RecentOrdersTable({ orders }) {
                   {order.is_guest ? (
                     <UserX className="h-4 w-4 text-[#92400E]" aria-hidden="true" title="Commande invité" />
                   ) : null}
-                  <span className="text-text-dark">{order.customer_name}</span>
+                  <div className="min-w-0">
+                    <p className="font-medium text-text-dark">{order.customer_name}</p>
+                    <p className="text-xs text-text-muted">{order.is_guest ? 'Commande invitée' : 'Compte client'}</p>
+                  </div>
                 </div>
               </td>
+              <td className="px-4 py-3 text-xs leading-5 text-text-muted">
+                <p>{order.email || '—'}</p>
+                <p>{order.phone || '—'}</p>
+              </td>
+              <td className="px-4 py-3 text-xs leading-5 text-text-muted">
+                {order.delivery_address || '—'}
+              </td>
+              <td className="px-4 py-3 text-xs leading-5 text-text-muted">
+                {order.custom_text_summary || '—'}
+              </td>
               <td className="px-4 py-3 text-text-muted">{formatOrderDate(order.created_at)}</td>
-              <td className="px-4 py-3 font-semibold text-gold">{formatCurrency(order.total_amount)}</td>
+              <td className="px-4 py-3 font-semibold text-price">{formatCurrency(order.total_amount)}</td>
               <td className="px-4 py-3">
                 <OrderStatusBadge status={order.status} />
               </td>

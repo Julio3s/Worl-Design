@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
-import { ArrowLeft, ExternalLink } from 'lucide-react';
-import { Link, useParams } from 'react-router-dom';
+import { ArrowLeft, ExternalLink, Trash2 } from 'lucide-react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 
 import {
+  deleteAdminOrder,
   formatAdminOrderError,
   getAdminOrder,
   updateAdminOrderStatus,
@@ -37,6 +38,7 @@ function InfoRow({ label, value }) {
 
 export default function OrderDetailPage() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const showToast = useToastStore((state) => state.showToast);
 
   const [order, setOrder] = useState(null);
@@ -44,6 +46,7 @@ export default function OrderDetailPage() {
   const [error, setError] = useState('');
   const [nextStatus, setNextStatus] = useState('');
   const [updating, setUpdating] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   usePageTitle(order ? `Commande #${order.id}` : 'Détail commande');
 
@@ -88,6 +91,28 @@ export default function OrderDetailPage() {
       showToast(formatAdminOrderError(caughtError), 'error');
     } finally {
       setUpdating(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!order) {
+      return;
+    }
+
+    const confirmed = window.confirm(`Supprimer définitivement la commande #${order.id} ?`);
+    if (!confirmed) {
+      return;
+    }
+
+    setDeleting(true);
+    try {
+      await deleteAdminOrder(order.id);
+      showToast(`Commande #${order.id} supprimée.`);
+      navigate('/admin/orders');
+    } catch (caughtError) {
+      showToast(formatAdminOrderError(caughtError), 'error');
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -156,7 +181,7 @@ export default function OrderDetailPage() {
                   <div className="min-w-0 flex-1">
                     <p className="font-semibold text-text-dark">{item.product_name}</p>
                     <p className="mt-1 text-sm text-text-muted">
-                      {item.quantity} x {formatCurrency(item.unit_price)}
+                      {item.quantity} x <span className="text-price">{formatCurrency(item.unit_price)}</span>
                     </p>
                     {item.custom_text ? (
                       <p className="mt-2 text-sm text-text-muted">
@@ -175,13 +200,13 @@ export default function OrderDetailPage() {
                       </a>
                     ) : null}
                   </div>
-                  <p className="font-semibold text-text-dark">{formatCurrency(item.subtotal)}</p>
+                  <p className="font-semibold text-price">{formatCurrency(item.subtotal)}</p>
                 </li>
               ))}
             </ul>
             <div className="mt-4 flex items-center justify-between border-t border-[#E0DBD5] pt-4">
               <span className="text-sm font-medium text-text-muted">Total commande</span>
-              <span className="text-xl font-bold text-gold">{formatCurrency(order.total_amount)}</span>
+              <span className="text-xl font-bold text-price">{formatCurrency(order.total_amount)}</span>
             </div>
           </section>
         </div>
@@ -198,7 +223,7 @@ export default function OrderDetailPage() {
                 <InfoRow label="Méthode" value={order.payment.method || 'FedaPay'} />
                 <InfoRow label="Statut" value={order.payment.status} />
                 <InfoRow label="Référence FedaPay" value={order.payment.fedapay_transaction_id} />
-                <InfoRow label="Montant" value={formatCurrency(order.payment.amount)} />
+                <InfoRow label="Montant" value={<span className="text-price">{formatCurrency(order.payment.amount)}</span>} />
               </div>
             ) : (
               <p className="mt-4 text-sm text-text-muted">Aucun paiement enregistré pour cette commande.</p>
@@ -235,6 +260,16 @@ export default function OrderDetailPage() {
                 {updating ? 'Mise à jour...' : 'Confirmer'}
               </button>
             </form>
+
+            <button
+              type="button"
+              onClick={handleDelete}
+              disabled={deleting}
+              className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#FEE2E2] bg-white px-5 py-3 text-sm font-semibold text-[#991B1B] transition hover:bg-[#FEE2E2] disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <Trash2 className="h-4 w-4" aria-hidden="true" />
+              {deleting ? 'Suppression...' : 'Supprimer la commande'}
+            </button>
           </section>
 
           <section className="rounded-[8px] border border-[#E0DBD5] bg-white p-4 sm:p-5">

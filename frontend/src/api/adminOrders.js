@@ -15,6 +15,10 @@ export async function updateAdminOrderStatus(id, statusValue) {
   return data;
 }
 
+export async function deleteAdminOrder(id) {
+  await api.delete(`/admin/orders/${id}/`);
+}
+
 export function formatAdminOrderError(error) {
   const responseData = error?.response?.data;
 

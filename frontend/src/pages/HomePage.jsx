@@ -575,7 +575,7 @@ export default function HomePage() {
                   </div>
                 </div>
                 <StarRating count={t.note} />
-                <p className="mt-3 text-sm leading-relaxed text-[#1A1A2E]/60">{t.text}</p>
+                <p className="mt-3 text-xs leading-6 text-[#1A1A2E]/60 sm:text-sm">{t.text}</p>
               </div>
             ))}
           </div>

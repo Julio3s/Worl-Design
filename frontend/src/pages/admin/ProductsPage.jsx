@@ -232,7 +232,7 @@ export default function ProductsPage() {
                   </td>
                   <td className="px-4 py-3 font-medium text-text-dark">{product.name}</td>
                   <td className="px-4 py-3 text-text-muted">{product.category_name || '—'}</td>
-                  <td className="px-4 py-3 font-semibold text-gold">{formatCurrency(product.price)}</td>
+                  <td className="px-4 py-3 font-semibold text-price">{formatCurrency(product.price)}</td>
                   <td className="px-4 py-3 text-text-dark">{product.stock}</td>
                   <td className="px-4 py-3">
                     <StatusBadge active={product.is_active} />

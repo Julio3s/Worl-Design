@@ -108,7 +108,7 @@ export default function MyOrdersPage() {
                       Commande #{order.id}
                     </p>
                     <p className="text-sm text-text-muted">{formatOrderDate(order.created_at)}</p>
-                    <p className="text-lg font-bold text-gold">{formatCurrency(order.total_amount)}</p>
+                    <p className="text-lg font-bold text-price">{formatCurrency(order.total_amount)}</p>
                   </div>
 
                   <div className="flex flex-col items-start gap-3 sm:items-end">
@@ -129,7 +129,9 @@ export default function MyOrdersPage() {
                         <span className="text-text-dark">
                           {item.product_name} x {item.quantity}
                         </span>
-                        <span>{formatCurrency(item.subtotal ?? Number(item.unit_price) * Number(item.quantity))}</span>
+                        <span className="text-price">
+                          {formatCurrency(item.subtotal ?? Number(item.unit_price) * Number(item.quantity))}
+                        </span>
                       </li>
                     ))}
                   </ul>

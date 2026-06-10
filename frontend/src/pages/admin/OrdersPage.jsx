@@ -1,13 +1,14 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Filter, UserX } from 'lucide-react';
+import { Filter, Trash2, UserX } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-import { getAdminOrders } from '../../api/adminOrders';
+import { deleteAdminOrder, getAdminOrders } from '../../api/adminOrders';
 import { AdminPage } from '../../components/admin/AdminPage';
 import { ErrorState } from '../../components/ErrorState';
 import { TableSkeleton } from '../../components/skeletons/TableSkeleton';
 import { OrderStatusBadge } from '../../components/OrderStatusBadge';
 import { usePageTitle } from '../../hooks/usePageTitle';
+import { useToastStore } from '../../store/toastStore';
 import { formatCurrency } from '../../utils/formatCurrency';
 
 const STATUS_OPTIONS = [
@@ -38,12 +39,14 @@ export default function OrdersPage() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [deletingOrderId, setDeletingOrderId] = useState(null);
   const [filters, setFilters] = useState({
     statuses: [],
     dateFrom: '',
     dateTo: '',
     minAmount: '',
   });
+  const showToast = useToastStore((state) => state.showToast);
 
   const loadOrders = useCallback(async () => {
     setLoading(true);
@@ -94,6 +97,27 @@ export default function OrdersPage() {
   const handleFilterSubmit = (event) => {
     event.preventDefault();
     loadOrders();
+  };
+
+  const handleDeleteOrder = async (order) => {
+    const confirmed = window.confirm(`Supprimer la commande #${order.id} ?`);
+    if (!confirmed) {
+      return;
+    }
+
+    setDeletingOrderId(order.id);
+    try {
+      await deleteAdminOrder(order.id);
+      showToast(`Commande #${order.id} supprimée.`);
+      await loadOrders();
+    } catch (caughtError) {
+      showToast(
+        caughtError?.response?.data?.detail || 'Impossible de supprimer la commande.',
+        'error',
+      );
+    } finally {
+      setDeletingOrderId(null);
+    }
   };
 
   const resetFilters = () => {
@@ -189,7 +213,7 @@ export default function OrdersPage() {
 
       {loading ? (
         <div className="mt-6">
-          <TableSkeleton rows={8} columns={5} />
+          <TableSkeleton rows={8} columns={9} />
         </div>
       ) : error ? (
         <div className="mt-6">
@@ -206,9 +230,13 @@ export default function OrdersPage() {
               <tr>
                 <th className="px-4 py-3 font-semibold">N°</th>
                 <th className="px-4 py-3 font-semibold">Client</th>
+                <th className="px-4 py-3 font-semibold">Contact</th>
+                <th className="px-4 py-3 font-semibold">Livraison</th>
+                <th className="px-4 py-3 font-semibold">Personnalisation</th>
                 <th className="px-4 py-3 font-semibold">Date</th>
                 <th className="px-4 py-3 font-semibold">Montant</th>
                 <th className="px-4 py-3 font-semibold">Statut</th>
+                <th className="px-4 py-3 font-semibold">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -224,18 +252,38 @@ export default function OrdersPage() {
                       {order.is_guest ? (
                         <UserX className="h-4 w-4 text-[#92400E]" aria-hidden="true" title="Commande invité" />
                       ) : null}
-                      <span className="text-text-dark">{order.customer_name}</span>
-                      {order.is_guest ? (
-                        <span className="rounded-full bg-[#FEF3C7] px-2 py-0.5 text-[10px] font-semibold uppercase text-[#92400E]">
-                          Invité
-                        </span>
-                      ) : null}
+                      <div className="min-w-0">
+                        <p className="text-text-dark">{order.customer_name}</p>
+                        <p className="text-xs text-text-muted">{order.is_guest ? 'Commande invitée' : 'Compte client'}</p>
+                      </div>
                     </div>
                   </td>
+                  <td className="px-4 py-3 text-xs leading-5 text-text-muted">
+                    <p>{order.email || '—'}</p>
+                    <p>{order.phone || '—'}</p>
+                  </td>
+                  <td className="px-4 py-3 text-xs leading-5 text-text-muted">
+                    {order.delivery_address || '—'}
+                  </td>
+                  <td className="px-4 py-3 text-xs leading-5 text-text-muted">
+                    {order.custom_text_summary || '—'}
+                  </td>
                   <td className="px-4 py-3 text-text-muted">{formatOrderDate(order.created_at)}</td>
-                  <td className="px-4 py-3 font-semibold text-gold">{formatCurrency(order.total_amount)}</td>
+                  <td className="px-4 py-3 font-semibold text-price">{formatCurrency(order.total_amount)}</td>
                   <td className="px-4 py-3">
                     <OrderStatusBadge status={order.status} />
+                  </td>
+                  <td className="px-4 py-3">
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteOrder(order)}
+                      disabled={deletingOrderId === order.id}
+                      className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[#FEE2E2] text-[#991B1B] transition hover:bg-[#FEE2E2] disabled:cursor-not-allowed disabled:opacity-50"
+                      aria-label={`Supprimer la commande ${order.id}`}
+                      title="Supprimer la commande"
+                    >
+                      <Trash2 className="h-4 w-4" aria-hidden="true" />
+                    </button>
                   </td>
                 </tr>
               ))}

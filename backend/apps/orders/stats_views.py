@@ -12,6 +12,7 @@ from rest_framework.response import Response
 from apps.users.permissions import IsAdminUser
 
 from .models import Order
+from .serializers import _order_custom_text_summary
 
 
 User = get_user_model()
@@ -114,7 +115,7 @@ def admin_stats(request):
     )
 
     recent_orders_qs = (
-        Order.objects.select_related('user')
+        Order.objects.select_related('user').prefetch_related('items')
         .order_by('-created_at')[:10]
     )
     recent_orders = []
@@ -126,6 +127,10 @@ def admin_stats(request):
             'id': order.id,
             'customer_name': customer_name,
             'is_guest': order.user_id is None,
+            'email': order.email,
+            'phone': order.phone,
+            'delivery_address': order.delivery_address,
+            'custom_text_summary': _order_custom_text_summary(order),
             'total_amount': str(_decimal(order.total_amount)),
             'status': order.status,
             'created_at': order.created_at.isoformat(),

@@ -10,7 +10,7 @@ export function KpiCard({ title, value, highlight = false, pending = false }) {
       <p
         className={[
           'mt-2 text-2xl font-bold',
-          pending ? 'text-[#92400E]' : highlight ? 'text-gold' : 'text-text-dark',
+          pending ? 'text-[#92400E]' : highlight ? 'text-price' : 'text-text-dark',
         ].join(' ')}
       >
         {value}

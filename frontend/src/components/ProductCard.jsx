@@ -48,11 +48,6 @@ export function ProductCard({ product, showAddButton = true, badgeLabel, classNa
               {badgeLabel}
             </span>
           ) : null}
-          {outOfStock ? (
-            <span className="absolute bottom-3 left-3 inline-flex rounded-full bg-[#FEE2E2] px-3 py-1 text-xs font-semibold text-[#991B1B]">
-              Rupture de stock
-            </span>
-          ) : null}
         </div>
       </Link>
 
@@ -71,13 +66,10 @@ export function ProductCard({ product, showAddButton = true, badgeLabel, classNa
         <div className="flex items-end justify-between gap-3">
           <div className="min-w-0">
             <p className="text-sm text-text-muted">Prix</p>
-            <p className="text-lg font-semibold text-accent">
+            <p className="text-lg font-semibold text-price">
               {formatCurrency(product.price)}
             </p>
           </div>
-          <p className="text-sm text-text-muted">
-            Stock {Number(product.stock || 0)}
-          </p>
         </div>
 
         {showAddButton ? (
@@ -97,7 +89,7 @@ export function ProductCard({ product, showAddButton = true, badgeLabel, classNa
                 className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-accent px-4 py-3 text-sm font-semibold text-white transition hover:opacity-95 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {outOfStock ? (
-                  'Rupture de stock'
+                  'Indisponible'
                 ) : (
                   <>
                     <Plus className="h-4 w-4" aria-hidden="true" />

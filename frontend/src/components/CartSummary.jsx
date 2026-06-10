@@ -38,10 +38,10 @@ export function CartSummary({
                 <p className="mt-1 text-xs text-text-muted">Fichier: {item.customFileName}</p>
               ) : null}
               <p className="mt-1 text-xs text-text-muted">
-                {item.quantity} x {formatCurrency(item.price)}
+                {item.quantity} x <span className="text-price">{formatCurrency(item.price)}</span>
               </p>
             </div>
-            <p className="text-sm font-semibold text-text-dark">
+            <p className="text-sm font-semibold text-price">
               {formatCurrency(Number(item.price || 0) * Number(item.quantity || 0))}
             </p>
           </li>
@@ -50,7 +50,7 @@ export function CartSummary({
 
       <div className="mt-4 flex items-center justify-between border-t border-[#E0DBD5] pt-4">
         <span className="text-sm font-medium text-text-muted">Total</span>
-        <span className="text-2xl font-bold text-gold">{formatCurrency(total)}</span>
+        <span className="text-2xl font-bold text-price">{formatCurrency(total)}</span>
       </div>
 
       {!readonly && actionLabel && actionTo ? (

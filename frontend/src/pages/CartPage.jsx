@@ -2,12 +2,10 @@ import { ChevronRight, ShoppingBag, Trash2, Heart, ArrowLeft, Gift, ShieldCheck,
 import { Link } from 'react-router-dom';
 import React from 'react';
 
-import { CartItemCustomization } from '../components/CartItemCustomization';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { useCartStore } from '../store/cartStore';
 import { formatCurrency } from '../utils/formatCurrency';
 import { getProductImage } from '../utils/media';
-import { getProductBySlug } from '../api/catalog';
 
 // ─── Données ──────────────────────────────────────────────────────
 const REASSURANCE = [
@@ -99,33 +97,7 @@ export default function CartPage() {
   const total = getTotal();
   const itemCount = items.reduce((sum, i) => sum + i.quantity, 0);
 
-  const [products, setProducts] = React.useState({});
-  const [loadingProductIds, setLoadingProductIds] = React.useState(new Set());
   const [showClearConfirm, setShowClearConfirm] = React.useState(false);
-
-  // Charger les produits
-  React.useEffect(() => {
-    const slugsToLoad = items
-      .filter((item) => !products[item.productSlug] && !loadingProductIds.has(item.productSlug))
-      .map((item) => item.productSlug);
-
-    if (slugsToLoad.length === 0) return;
-
-    setLoadingProductIds(new Set(slugsToLoad));
-
-    Promise.all(slugsToLoad.map((slug) => getProductBySlug(slug).catch(() => null)))
-      .then((results) => {
-        const newProducts = { ...products };
-        results.forEach((product, index) => {
-          if (product) newProducts[slugsToLoad[index]] = product;
-        });
-        setProducts(newProducts);
-        setLoadingProductIds(new Set());
-      })
-      .catch(() => {
-        setLoadingProductIds(new Set());
-      });
-  }, [items]);
 
   // ─── Panier vide ──────────────────────────────────────────────
   if (items.length === 0) {
@@ -260,8 +232,6 @@ export default function CartPage() {
             {items.map((item) => {
               const lineTotal = Number(item.price || 0) * Number(item.quantity || 0);
               const image = item.imageUrl || getProductImage(item);
-              const product = products[item.productSlug];
-              const hasCustomization = item.customText || item.customFileName;
 
               return (
                 <article
@@ -291,7 +261,7 @@ export default function CartPage() {
                       >
                         {item.productName}
                       </Link>
-                      {hasCustomization && (
+                      {(item.customText || item.customFileName) && (
                         <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-gold/10 px-2.5 py-1 text-xs font-medium text-gold">
                           <Sparkles className="h-3 w-3" />
                           Personnalisé
@@ -300,28 +270,9 @@ export default function CartPage() {
                     </div>
 
                     {/* Détails personnalisation */}
-                    {item.customText && (
-                      <div className="mt-2 inline-flex items-center gap-2 rounded-lg bg-[#F1ECE6] px-3 py-1.5 text-xs">
-                        <span className="font-semibold text-primary/50">Texte :</span>
-                        <span className="text-primary/80">{item.customText}</span>
-                      </div>
-                    )}
-                    {item.customFileName && (
-                      <div className="mt-2 inline-flex items-center gap-2 rounded-lg bg-[#F1ECE6] px-3 py-1.5 text-xs">
-                        <span className="font-semibold text-primary/50">Fichier :</span>
-                        <span className="text-primary/80 truncate max-w-[200px]">{item.customFileName}</span>
-                      </div>
-                    )}
-
                     <p className="mt-3 text-sm text-primary/45">
-                      Prix unitaire : <span className="font-semibold text-primary/70">{formatCurrency(item.price)}</span>
+                      Prix unitaire : <span className="font-semibold text-price">{formatCurrency(item.price)}</span>
                     </p>
-
-                    {product && (
-                      <div className="mt-3">
-                        <CartItemCustomization item={item} product={product} />
-                      </div>
-                    )}
                   </div>
 
                   {/* Actions */}
@@ -334,7 +285,7 @@ export default function CartPage() {
                     />
                     <div className="flex items-center gap-5">
                       <p className="text-lg font-extrabold text-primary">
-                        {formatCurrency(lineTotal)}
+                        <span className="text-price">{formatCurrency(lineTotal)}</span>
                       </p>
                       <button
                         type="button"
@@ -365,7 +316,7 @@ export default function CartPage() {
                       </span>
                       <span className="truncate text-primary/70">{item.productName}</span>
                     </div>
-                    <span className="shrink-0 font-semibold text-primary/80">
+                    <span className="shrink-0 font-semibold text-price">
                       {formatCurrency(Number(item.price || 0) * Number(item.quantity || 0))}
                     </span>
                   </div>
@@ -375,7 +326,7 @@ export default function CartPage() {
               <div className="mt-5 border-t border-[#E0DBD5] pt-4">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-semibold text-primary/60">Sous-total</span>
-                  <span className="text-sm font-semibold text-primary/80">{formatCurrency(total)}</span>
+                  <span className="text-sm font-semibold text-price">{formatCurrency(total)}</span>
                 </div>
                 <div className="mt-1 flex items-center justify-between">
                   <span className="text-sm font-semibold text-primary/60">Livraison</span>
@@ -386,7 +337,7 @@ export default function CartPage() {
               <div className="mt-4 border-t border-[#E0DBD5] pt-4">
                 <div className="flex items-center justify-between">
                   <span className="text-lg font-extrabold text-primary">Total</span>
-                  <span className="text-2xl font-extrabold text-accent">{formatCurrency(total)}</span>
+                  <span className="text-2xl font-extrabold text-price">{formatCurrency(total)}</span>
                 </div>
               </div>
 
