@@ -434,7 +434,7 @@ export default function HomePage() {
             </h2>
           </div>
 
-          <div className="relative mt-14 grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="relative mt-14 grid gap-6 grid-cols-2 lg:grid-cols-4">
             {/* Ligne de connexion */}
             <div
               className="absolute top-10 left-[12.5%] right-[12.5%] hidden h-px sm:block"
@@ -484,7 +484,7 @@ export default function HomePage() {
             {loading ? (
               <ProductGridSkeleton count={6} />
             ) : featuredProducts.length > 0 ? (
-              <div className="section-stack-2">
+              <div className="grid grid-cols-2 gap-4 sm:gap-5 lg:grid-cols-3">
                 {featuredProducts.slice(0, 6).map((product, index) => (
                   <div
                     key={product.id}
