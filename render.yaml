@@ -54,7 +54,9 @@ services:
           property: port
       - key: SITE_URL
         value: https://world-design-backend.onrender.com
-      - key: CINETPAY_RETURN_URL
+      - key: FEDAPAY_API_BASE_URL
+        value: https://api.fedapay.com/v1
+      - key: FEDAPAY_RETURN_URL
         value: https://world-design-frontend.onrender.com/order-success
 
   - type: static

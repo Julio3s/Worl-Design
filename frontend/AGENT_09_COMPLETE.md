@@ -12,7 +12,7 @@
 - Formulaire invité : nom, email, téléphone, adresse, note
 - Préremplissage automatique si utilisateur connecté
 - Récapitulatif readonly à droite (sous le formulaire sur mobile)
-- Bouton « Payer avec CinetPay »
+- Bouton « Payer par carte ou mobile money »
 - Flux :
   1. `POST /api/orders/` (multipart avec fichiers perso)
   2. `POST /api/payments/initiate/`
@@ -26,7 +26,7 @@
 ## API frontend
 
 - `src/api/orders.js` — création commande FormData
-- `src/api/payments.js` — initiation CinetPay
+- `src/api/payments.js` — initiation FedaPay
 
 ## Store panier
 

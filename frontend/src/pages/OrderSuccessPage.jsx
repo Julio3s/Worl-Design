@@ -41,7 +41,7 @@ export default function OrderSuccessPage() {
             align="center"
             eyebrow="Confirmation"
             title="Commande enregistrée"
-            description="Votre commande a bien été créée. Le paiement CinetPay confirmera définitivement votre achat."
+            description="Votre commande a bien été créée. Le paiement par carte ou mobile money confirmera définitivement votre achat."
           />
 
           {orderId ? (

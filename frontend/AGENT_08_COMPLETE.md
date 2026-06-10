@@ -66,4 +66,4 @@
 
 ## Prochaine étape
 
-AGENT 09 — Panier & Checkout (pages `/cart`, `/checkout`, `/order-success`, flux CinetPay)
+AGENT 09 — Panier & Checkout (pages `/cart`, `/checkout`, `/order-success`, flux FedaPay)

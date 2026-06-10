@@ -63,8 +63,8 @@ Résultat :
 
 ## Prochaine étape
 
-AGENT 06 — API Paiement CinetPay
+AGENT 06 — API Paiement FedaPay
 - initiation du paiement
 - webhook public
-- validation de la transaction CinetPay
+- validation de la transaction FedaPay
 - confirmation commande + décrémentation stock

@@ -9,12 +9,12 @@ export function formatPaymentError(error) {
   const data = error?.response?.data;
 
   if (!data) {
-    return error?.message || 'Impossible d’initier le paiement.';
+    return error?.message || "Impossible d'initier le paiement.";
   }
 
   if (typeof data.detail === 'string') {
     return data.detail;
   }
 
-  return 'Impossible d’initier le paiement.';
+  return "Impossible d'initier le paiement.";
 }

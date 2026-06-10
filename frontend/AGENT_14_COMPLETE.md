@@ -7,7 +7,7 @@
 - Pagination 20/page
 
 ### `GET/PATCH /api/admin/orders/:id/`
-- Détail complet avec paiement CinetPay
+- Détail complet avec paiement FedaPay
 - Mise à jour du statut commande
 
 ### `GET /api/admin/customers/`
@@ -23,7 +23,7 @@
 ### `/admin/orders/:id`
 - Infos client + badge invité
 - Articles, personnalisation, fichier Cloudinary
-- Bloc paiement CinetPay
+- Bloc paiement FedaPay
 - Timeline statut
 - Changement de statut + toast
 

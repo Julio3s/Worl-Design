@@ -195,9 +195,9 @@ export default function OrderDetailPage() {
 
             {order.payment ? (
               <div className="mt-4 space-y-3">
-                <InfoRow label="Méthode" value={order.payment.method || 'CinetPay'} />
+                <InfoRow label="Méthode" value={order.payment.method || 'FedaPay'} />
                 <InfoRow label="Statut" value={order.payment.status} />
-                <InfoRow label="Référence CinetPay" value={order.payment.cinetpay_transaction_id} />
+                <InfoRow label="Référence FedaPay" value={order.payment.fedapay_transaction_id} />
                 <InfoRow label="Montant" value={formatCurrency(order.payment.amount)} />
               </div>
             ) : (

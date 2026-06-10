@@ -5,6 +5,6 @@ from .models import Payment
 @admin.register(Payment)
 class PaymentAdmin(admin.ModelAdmin):
     list_display = ['id', 'order', 'status', 'amount', 'created_at']
-    search_fields = ['cinetpay_transaction_id']
+    search_fields = ['fedapay_transaction_id']
     list_filter = ['status', 'created_at']
-    readonly_fields = ['cinetpay_transaction_id', 'created_at', 'updated_at']
+    readonly_fields = ['fedapay_transaction_id', 'created_at', 'updated_at']

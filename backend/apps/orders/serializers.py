@@ -297,10 +297,10 @@ class OrderAdminDetailSerializer(serializers.ModelSerializer):
 
         return {
             'status': payment.status,
-            'cinetpay_transaction_id': payment.cinetpay_transaction_id,
+            'fedapay_transaction_id': payment.fedapay_transaction_id,
             'amount': payment.amount,
             'currency': payment.currency,
-            'method': 'CinetPay',
+            'method': 'FedaPay',
             'created_at': payment.created_at,
             'updated_at': payment.updated_at,
         }

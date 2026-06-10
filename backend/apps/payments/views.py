@@ -1,4 +1,3 @@
-import json
 import logging
 import uuid
 from collections import defaultdict
@@ -21,35 +20,37 @@ from .models import Payment
 
 logger = logging.getLogger(__name__)
 
-CINETPAY_INIT_SUCCESS_CODE = '201'
-CINETPAY_CHECK_SUCCESS_CODE = '00'
-CINETPAY_ACCEPTED_STATUSES = {'ACCEPTED'}
+FEDAPAY_APPROVED_STATUSES = {'approved', 'success', 'succeeded', 'paid'}
+FEDAPAY_PENDING_STATUSES = {'pending', 'created', 'processing'}
+FEDAPAY_FAILED_STATUSES = {'declined', 'canceled', 'cancelled', 'expired', 'failed'}
 
 
-def _cinetpay_headers():
+def _fedapay_headers():
     return {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
-        'User-Agent': settings.CINETPAY_USER_AGENT,
+        'Authorization': f'Bearer {settings.FEDAPAY_SECRET_KEY}',
+        'User-Agent': settings.FEDAPAY_USER_AGENT,
     }
 
 
-def _post_cinetpay(url, payload):
+def _request_fedapay(method, url, payload=None):
     try:
-        response = requests.post(
-            url,
+        response = requests.request(
+            method=method,
+            url=url,
             json=payload,
-            headers=_cinetpay_headers(),
-            timeout=settings.CINETPAY_TIMEOUT_SECONDS,
+            headers=_fedapay_headers(),
+            timeout=settings.FEDAPAY_TIMEOUT_SECONDS,
         )
     except requests.Timeout:
-        logger.exception('CinetPay timeout for url=%s', url)
+        logger.exception('FedaPay timeout for url=%s method=%s', url, method)
         return None, None, Response(
-            {'detail': 'CinetPay request timed out'},
+            {'detail': 'Payment provider request timed out'},
             status=status.HTTP_504_GATEWAY_TIMEOUT,
         )
     except requests.RequestException:
-        logger.exception('CinetPay network error for url=%s', url)
+        logger.exception('FedaPay network error for url=%s method=%s', url, method)
         return None, None, Response(
             {'detail': 'Payment service unavailable'},
             status=status.HTTP_503_SERVICE_UNAVAILABLE,
@@ -59,8 +60,9 @@ def _post_cinetpay(url, payload):
         data = response.json()
     except ValueError:
         logger.error(
-            'CinetPay returned invalid JSON for url=%s http_status=%s',
+            'FedaPay returned invalid JSON for url=%s method=%s http_status=%s',
             url,
+            method,
             response.status_code,
         )
         return response, None, Response(
@@ -71,23 +73,119 @@ def _post_cinetpay(url, payload):
     return response, data, None
 
 
-def _extract_transaction_id(payload):
-    if payload is None or not hasattr(payload, 'get'):
+def _walk_values(payload):
+    if isinstance(payload, dict):
+        for value in payload.values():
+            yield value
+            yield from _walk_values(value)
+    elif isinstance(payload, list):
+        for item in payload:
+            yield item
+            yield from _walk_values(item)
+
+
+def _extract_first_value(payload, keys):
+    if not isinstance(payload, (dict, list)):
         return None
 
-    for key in ('transaction_id', 'cpm_trans_id', 'trans_id', 'transactionId'):
-        value = payload.get(key)
-        if value:
-            return str(value)
+    if isinstance(payload, dict):
+        for key in keys:
+            value = payload.get(key)
+            if value not in (None, ''):
+                return value
 
-    nested_data = payload.get('data')
-    if hasattr(nested_data, 'get'):
-        for key in ('transaction_id', 'cpm_trans_id', 'trans_id', 'transactionId'):
-            value = nested_data.get(key)
-            if value:
-                return str(value)
+    for item in _walk_values(payload):
+        if isinstance(item, dict):
+            for key in keys:
+                value = item.get(key)
+                if value not in (None, ''):
+                    return value
 
     return None
+
+
+def _extract_reference(payload):
+    value = _extract_first_value(
+        payload,
+        (
+            'merchant_reference',
+            'merchantReference',
+            'reference',
+            'transaction_reference',
+            'transactionReference',
+            'transaction_id',
+            'transactionId',
+            'id',
+        ),
+    )
+    return str(value) if value not in (None, '') else None
+
+
+def _extract_transaction_id(payload):
+    value = _extract_first_value(
+        payload,
+        (
+            'transaction_id',
+            'transactionId',
+            'id',
+        ),
+    )
+    return str(value) if value not in (None, '') else None
+
+
+def _extract_status(payload):
+    value = _extract_first_value(
+        payload,
+        (
+            'status',
+            'state',
+            'transaction_status',
+            'transactionStatus',
+        ),
+    )
+    return str(value).lower() if value not in (None, '') else None
+
+
+def _extract_event_name(payload):
+    value = _extract_first_value(
+        payload,
+        (
+            'name',
+            'event',
+            'event_name',
+            'type',
+        ),
+    )
+    return str(value).lower() if value not in (None, '') else None
+
+
+def _extract_payment_url(payload):
+    value = _extract_first_value(
+        payload,
+        (
+            'payment_url',
+            'paymentUrl',
+            'payment_link',
+            'paymentLink',
+            'checkout_url',
+            'checkoutUrl',
+            'url',
+            'link',
+        ),
+    )
+    return str(value) if value not in (None, '') else None
+
+
+def _extract_payment_token(payload):
+    value = _extract_first_value(
+        payload,
+        (
+            'token',
+            'payment_token',
+            'paymentToken',
+        ),
+    )
+    return str(value) if value not in (None, '') else None
 
 
 def _split_customer_name(order):
@@ -107,51 +205,77 @@ def _split_customer_name(order):
     return parts[0], parts[1]
 
 
-def _customer_payload(order):
-    customer_name, customer_surname = _split_customer_name(order)
-    customer_email = order.email or (order.user.email if order.user else '')
-    customer_phone = order.phone or (order.user.phone if order.user else '')
-    customer_address = order.delivery_address or (order.user.address if order.user else '')
-
-    return {
-        'customer_id': str(order.user_id or order.id),
-        'customer_name': customer_name,
-        'customer_surname': customer_surname,
-        'customer_email': customer_email,
-        'customer_phone_number': customer_phone,
-        'customer_address': customer_address,
+def _infer_phone_country(phone_number):
+    normalized = (phone_number or '').strip().replace(' ', '')
+    prefix_map = {
+        '+228': 'tg',
+        '228': 'tg',
+        '+229': 'bj',
+        '229': 'bj',
+        '+223': 'ml',
+        '223': 'ml',
+        '+225': 'ci',
+        '225': 'ci',
+        '+226': 'bf',
+        '226': 'bf',
+        '+221': 'sn',
+        '221': 'sn',
+        '+237': 'cm',
+        '237': 'cm',
     }
 
+    for prefix, country in prefix_map.items():
+        if normalized.startswith(prefix):
+            return country
+    return 'tg'
 
-def _build_payment_payload(order, transaction_id):
+
+def _customer_payload(order):
+    firstname, lastname = _split_customer_name(order)
+    customer_email = order.email or (order.user.email if order.user else '')
+    customer_phone = order.phone or (order.user.phone if order.user else '')
+
     payload = {
-        'apikey': settings.CINETPAY_API_KEY,
-        'site_id': settings.CINETPAY_SITE_ID,
-        'transaction_id': transaction_id,
-        'amount': str(Decimal(order.total_amount)),
-        'currency': 'XOF',
+        'customer': {
+            'firstname': firstname,
+            'lastname': lastname,
+            'email': customer_email,
+        }
+    }
+
+    if customer_phone:
+        payload['customer']['phone_number'] = {
+            'number': customer_phone,
+            'country': _infer_phone_country(customer_phone),
+        }
+
+    return payload
+
+
+def _build_payment_payload(order, merchant_reference):
+    payload = {
         'description': f'WORLD DESIGN order #{order.id}',
-        'return_url': settings.CINETPAY_RETURN_URL,
-        'notify_url': settings.CINETPAY_NOTIFY_URL,
-        'metadata': json.dumps(
-            {
-                'order_id': order.id,
-                'user_id': order.user_id,
-                'source': 'world-design',
-            }
-        ),
+        'amount': str(Decimal(order.total_amount)),
+        'currency': {'iso': 'XOF'},
+        'callback_url': settings.FEDAPAY_RETURN_URL,
+        'merchant_reference': merchant_reference,
+        'custom_metadata': {
+            'order_id': order.id,
+            'user_id': order.user_id,
+            'source': 'world-design',
+        },
     }
     payload.update(_customer_payload(order))
     return payload
 
 
-def _store_initiated_payment(order, transaction_id, payment_token):
+def _store_initiated_payment(order, transaction_reference, payment_token):
     payment, _ = Payment.objects.update_or_create(
         order=order,
         defaults={
             'status': 'PENDING',
-            'cinetpay_transaction_id': transaction_id,
-            'cinetpay_payment_token': payment_token,
+            'fedapay_transaction_id': transaction_reference,
+            'fedapay_payment_token': payment_token,
             'amount': order.total_amount,
             'currency': 'XOF',
         },
@@ -167,6 +291,84 @@ def _group_order_items(order):
     return quantities
 
 
+def _extract_provider_response_details(data):
+    transaction_id = _extract_transaction_id(data)
+    payment_url = _extract_payment_url(data)
+    payment_token = _extract_payment_token(data)
+    status_value = _extract_status(data)
+    event_name = _extract_event_name(data)
+    reference = _extract_reference(data)
+
+    return {
+        'transaction_id': transaction_id,
+        'payment_url': payment_url,
+        'payment_token': payment_token,
+        'status': status_value,
+        'event_name': event_name,
+        'reference': reference,
+    }
+
+
+def _request_transaction_details(reference):
+    candidates = [
+        f'{settings.FEDAPAY_API_BASE_URL}/transactions/{reference}',
+        f'{settings.FEDAPAY_API_BASE_URL}/transactions/merchant/{reference}',
+    ]
+
+    last_error_response = None
+    for candidate in candidates:
+        response, data, error_response = _request_fedapay('GET', candidate)
+        if error_response is not None:
+            last_error_response = error_response
+            continue
+
+        if response is not None and 200 <= response.status_code < 300:
+            return response, data, None
+
+        logger.warning(
+            'FedaPay transaction lookup failed reference=%s http_status=%s response=%s',
+            reference,
+            response.status_code if response else None,
+            data,
+        )
+
+    return None, None, last_error_response or Response(
+        {'detail': 'Payment provider transaction not found'},
+        status=status.HTTP_404_NOT_FOUND,
+    )
+
+
+def _request_payment_link(reference):
+    candidates = [
+        f'{settings.FEDAPAY_API_BASE_URL}/transactions/{reference}/token',
+        f'{settings.FEDAPAY_API_BASE_URL}/transactions/{reference}/payment-link',
+    ]
+
+    for candidate in candidates:
+        for method in ('GET', 'POST'):
+            response, data, error_response = _request_fedapay(method, candidate)
+            if error_response is not None:
+                continue
+
+            if response is not None and 200 <= response.status_code < 300:
+                payment_url = _extract_payment_url(data)
+                if payment_url:
+                    payment_token = _extract_first_value(
+                        data,
+                        (
+                            'token',
+                            'payment_token',
+                            'paymentToken',
+                        ),
+                    )
+                    return payment_url, (str(payment_token) if payment_token not in (None, '') else None), None
+
+    return None, None, Response(
+        {'detail': 'Payment provider did not return a checkout link'},
+        status=status.HTTP_502_BAD_GATEWAY,
+    )
+
+
 def _finalize_successful_payment(payment, verification_payload):
     with transaction.atomic():
         locked_payment = Payment.objects.select_for_update().select_related('order').get(pk=payment.pk)
@@ -177,8 +379,8 @@ def _finalize_successful_payment(payment, verification_payload):
                 order.status = 'CONFIRMED'
                 order.save(update_fields=['status', 'updated_at'])
             logger.info(
-                'CinetPay webhook already processed transaction_id=%s order_id=%s',
-                locked_payment.cinetpay_transaction_id,
+                'FedaPay webhook already processed transaction_reference=%s order_id=%s',
+                locked_payment.fedapay_transaction_id,
                 order.id,
             )
             return Response({'detail': 'Payment already confirmed'}, status=status.HTTP_200_OK)
@@ -186,8 +388,8 @@ def _finalize_successful_payment(payment, verification_payload):
         item_quantities = _group_order_items(order)
         if not item_quantities:
             logger.error(
-                'Order has no items during payment confirmation transaction_id=%s order_id=%s',
-                locked_payment.cinetpay_transaction_id,
+                'Order has no items during payment confirmation transaction_reference=%s order_id=%s',
+                locked_payment.fedapay_transaction_id,
                 order.id,
             )
             locked_payment.status = 'FAILED'
@@ -206,8 +408,8 @@ def _finalize_successful_payment(payment, verification_payload):
         ]
         if missing_product_ids:
             logger.error(
-                'Missing products during payment confirmation transaction_id=%s order_id=%s missing=%s',
-                locked_payment.cinetpay_transaction_id,
+                'Missing products during payment confirmation transaction_reference=%s order_id=%s missing=%s',
+                locked_payment.fedapay_transaction_id,
                 order.id,
                 missing_product_ids,
             )
@@ -227,8 +429,8 @@ def _finalize_successful_payment(payment, verification_payload):
         ]
         if insufficient_stock:
             logger.warning(
-                'Insufficient stock during payment confirmation transaction_id=%s order_id=%s product_ids=%s',
-                locked_payment.cinetpay_transaction_id,
+                'Insufficient stock during payment confirmation transaction_reference=%s order_id=%s product_ids=%s',
+                locked_payment.fedapay_transaction_id,
                 order.id,
                 insufficient_stock,
             )
@@ -250,11 +452,11 @@ def _finalize_successful_payment(payment, verification_payload):
         order.save(update_fields=['status', 'updated_at'])
 
         logger.info(
-            'Payment confirmed transaction_id=%s order_id=%s verification_code=%s verification_status=%s',
-            locked_payment.cinetpay_transaction_id,
+            'Payment confirmed transaction_reference=%s order_id=%s status=%s event=%s',
+            locked_payment.fedapay_transaction_id,
             order.id,
-            verification_payload.get('code'),
-            (verification_payload.get('data') or {}).get('status'),
+            verification_payload.get('status'),
+            verification_payload.get('event_name'),
         )
 
         return Response({'detail': 'Payment confirmed'}, status=status.HTTP_200_OK)
@@ -267,8 +469,8 @@ def _finalize_failed_payment(payment, verification_payload):
 
         if locked_payment.status == 'SUCCESS' and order.status == 'CONFIRMED':
             logger.info(
-                'Ignoring failed webhook for already confirmed transaction_id=%s order_id=%s',
-                locked_payment.cinetpay_transaction_id,
+                'Ignoring failed webhook for already confirmed transaction_reference=%s order_id=%s',
+                locked_payment.fedapay_transaction_id,
                 order.id,
             )
             return Response({'detail': 'Payment already confirmed'}, status=status.HTTP_200_OK)
@@ -279,14 +481,31 @@ def _finalize_failed_payment(payment, verification_payload):
         order.save(update_fields=['status', 'updated_at'])
 
         logger.warning(
-            'Payment failed transaction_id=%s order_id=%s verification_code=%s verification_status=%s',
-            locked_payment.cinetpay_transaction_id,
+            'Payment failed transaction_reference=%s order_id=%s status=%s event=%s',
+            locked_payment.fedapay_transaction_id,
             order.id,
-            verification_payload.get('code'),
-            (verification_payload.get('data') or {}).get('status'),
+            verification_payload.get('status'),
+            verification_payload.get('event_name'),
         )
 
         return Response({'detail': 'Payment failed'}, status=status.HTTP_200_OK)
+
+
+def _resolve_payment_state(payload):
+    details = _extract_provider_response_details(payload)
+    status_value = details['status']
+    event_name = details['event_name']
+
+    if status_value in FEDAPAY_APPROVED_STATUSES or event_name == 'transaction.approved':
+        return 'success', details
+
+    if status_value in FEDAPAY_FAILED_STATUSES or event_name in {'transaction.canceled', 'transaction.declined'}:
+        return 'failed', details
+
+    if status_value in FEDAPAY_PENDING_STATUSES or event_name in {'transaction.created', 'transaction.pending'}:
+        return 'pending', details
+
+    return 'unknown', details
 
 
 @api_view(['POST'])
@@ -308,44 +527,56 @@ def initiate_payment(request):
             status=status.HTTP_409_CONFLICT,
         )
 
-    transaction_id = f'WD-{order.id}-{uuid.uuid4().hex[:18]}'
-    payment_payload = _build_payment_payload(order, transaction_id)
+    merchant_reference = f'WD-{order.id}-{uuid.uuid4().hex[:18]}'
+    payment_payload = _build_payment_payload(order, merchant_reference)
 
     logger.info(
-        'CinetPay initiation requested order_id=%s transaction_id=%s amount=%s',
+        'FedaPay initiation requested order_id=%s merchant_reference=%s amount=%s',
         order.id,
-        transaction_id,
+        merchant_reference,
         payment_payload['amount'],
     )
 
-    response, data, error_response = _post_cinetpay(settings.CINETPAY_PAYMENT_URL, payment_payload)
+    response, data, error_response = _request_fedapay(
+        'POST',
+        f'{settings.FEDAPAY_API_BASE_URL}/transactions',
+        payment_payload,
+    )
     if error_response is not None:
         return error_response
 
-    if str(data.get('code')) != CINETPAY_INIT_SUCCESS_CODE:
+    if response is None or not (200 <= response.status_code < 300):
         logger.error(
-            'CinetPay initiation rejected order_id=%s transaction_id=%s response=%s',
+            'FedaPay initiation rejected order_id=%s merchant_reference=%s response=%s',
             order.id,
-            transaction_id,
+            merchant_reference,
             data,
         )
         return Response(
             {
-                'detail': data.get('message') or 'Payment initiation failed',
+                'detail': (data or {}).get('message') or 'Payment initiation failed',
                 'provider_response': data,
             },
             status=status.HTTP_400_BAD_REQUEST,
         )
 
-    payment_data = data.get('data') or {}
-    payment_token = payment_data.get('payment_token') or payment_data.get('token')
-    payment_url = payment_data.get('payment_url') or payment_data.get('paymentUrl')
+    provider_details = _extract_provider_response_details(data)
+    provider_transaction_id = provider_details['transaction_id']
+    payment_url = provider_details['payment_url']
+    payment_token = provider_details['payment_token'] or provider_details['reference']
 
-    if not payment_token or not payment_url:
+    if not payment_url:
+        lookup_reference = provider_transaction_id or merchant_reference
+        payment_url, payment_token_from_lookup, lookup_error = _request_payment_link(lookup_reference)
+        if lookup_error is not None:
+            return lookup_error
+        payment_token = payment_token_from_lookup or payment_token
+
+    if not payment_url:
         logger.error(
-            'CinetPay initiation missing payment data order_id=%s transaction_id=%s response=%s',
+            'FedaPay initiation missing payment URL order_id=%s merchant_reference=%s response=%s',
             order.id,
-            transaction_id,
+            merchant_reference,
             data,
         )
         return Response(
@@ -355,22 +586,23 @@ def initiate_payment(request):
 
     with transaction.atomic():
         order_for_update = Order.objects.select_for_update().get(pk=order.pk)
-        payment = _store_initiated_payment(order_for_update, transaction_id, payment_token)
+        payment = _store_initiated_payment(order_for_update, merchant_reference, payment_token)
         if order_for_update.status != 'PENDING':
             order_for_update.status = 'PENDING'
             order_for_update.save(update_fields=['status', 'updated_at'])
 
     logger.info(
-        'CinetPay initiation stored payment_id=%s order_id=%s transaction_id=%s',
+        'FedaPay initiation stored payment_id=%s order_id=%s merchant_reference=%s provider_transaction_id=%s',
         payment.id,
         order.id,
-        transaction_id,
+        merchant_reference,
+        provider_transaction_id,
     )
 
     return Response(
         {
             'payment_url': payment_url,
-            'transaction_id': transaction_id,
+            'transaction_id': merchant_reference,
         },
         status=status.HTTP_201_CREATED,
     )
@@ -380,49 +612,54 @@ def initiate_payment(request):
 @permission_classes([AllowAny])
 def payment_webhook(request):
     payload = request.data or {}
-    transaction_id = _extract_transaction_id(payload)
+    reference = _extract_reference(payload)
 
     logger.info(
-        'CinetPay webhook received transaction_id=%s payload_keys=%s',
-        transaction_id,
+        'FedaPay webhook received reference=%s payload_keys=%s',
+        reference,
         sorted(payload.keys()) if hasattr(payload, 'keys') else [],
     )
 
-    if not transaction_id:
+    if not reference:
         return Response(
-            {'detail': 'transaction_id is required'},
+            {'detail': 'transaction reference is required'},
             status=status.HTTP_400_BAD_REQUEST,
         )
 
-    payment = (
-        Payment.objects.select_related('order')
-        .filter(cinetpay_transaction_id=transaction_id)
-        .first()
-    )
-    if not payment:
-        logger.warning('Webhook received for unknown transaction_id=%s', transaction_id)
-        return Response({'detail': 'Payment not found'}, status=status.HTTP_404_NOT_FOUND)
-
-    response, data, error_response = _post_cinetpay(settings.CINETPAY_PAYMENT_CHECK_URL, {
-        'apikey': settings.CINETPAY_API_KEY,
-        'site_id': settings.CINETPAY_SITE_ID,
-        'transaction_id': transaction_id,
-    })
+    response, data, error_response = _request_transaction_details(reference)
     if error_response is not None:
         return error_response
 
-    verification_code = str(data.get('code'))
-    verification_status = str((data.get('data') or {}).get('status') or '').upper()
+    state, verification_details = _resolve_payment_state(data or payload)
+    resolved_reference = verification_details.get('reference') or reference
+
+    payment = (
+        Payment.objects.select_related('order')
+        .filter(fedapay_transaction_id=resolved_reference)
+        .first()
+    )
+    if not payment and resolved_reference != reference:
+        payment = (
+            Payment.objects.select_related('order')
+            .filter(fedapay_transaction_id=reference)
+            .first()
+        )
+    if not payment:
+        logger.warning('Webhook received for unknown reference=%s', reference)
+        return Response({'detail': 'Payment not found'}, status=status.HTTP_404_NOT_FOUND)
 
     logger.info(
-        'CinetPay webhook verified transaction_id=%s code=%s status=%s http_status=%s',
-        transaction_id,
-        verification_code,
-        verification_status,
+        'FedaPay webhook verified reference=%s status=%s event=%s http_status=%s',
+        resolved_reference,
+        verification_details.get('status'),
+        verification_details.get('event_name'),
         response.status_code if response else None,
     )
 
-    if verification_code == CINETPAY_CHECK_SUCCESS_CODE and verification_status in CINETPAY_ACCEPTED_STATUSES:
-        return _finalize_successful_payment(payment, data)
+    if state == 'success':
+        return _finalize_successful_payment(payment, verification_details)
 
-    return _finalize_failed_payment(payment, data)
+    if state == 'failed':
+        return _finalize_failed_payment(payment, verification_details)
+
+    return Response({'detail': 'Payment pending'}, status=status.HTTP_200_OK)

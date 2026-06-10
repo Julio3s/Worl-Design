@@ -16,7 +16,7 @@ backend/
 │   ├── users/           # Gestion des utilisateurs
 │   ├── products/        # Gestion des produits
 │   ├── orders/          # Gestion des commandes
-│   └── payments/        # Intégration paiements CinetPay
+│   └── payments/        # Intégration paiements FedaPay
 ├── venv/                # Environnement virtuel
 ├── manage.py
 ├── requirements.txt     # Dépendances
@@ -91,7 +91,7 @@ Voir `.env.example` pour toutes les variables disponibles :
 - `DEBUG` - Mode debug (True/False)
 - `DB_NAME`, `DB_USER`, `DB_PASSWORD` - Connexion PostgreSQL
 - `CLOUDINARY_*` - Credentials Cloudinary
-- `CINETPAY_*` - Credentials CinetPay
+- `FEDAPAY_*` - Credentials FedaPay
 
 ## API Endpoints
 
@@ -114,8 +114,8 @@ Voir `.env.example` pour toutes les variables disponibles :
 - `GET /api/orders/search/` - Chercher commande invité
 
 ### Paiements
-- `POST /api/payments/initiate/` - Initier paiement CinetPay
-- `POST /api/payments/webhook/` - Webhook CinetPay (public)
+- `POST /api/payments/initiate/` - Initier paiement FedaPay
+- `POST /api/payments/webhook/` - Webhook FedaPay (public)
 
 ## Technologies
 
@@ -124,7 +124,7 @@ Voir `.env.example` pour toutes les variables disponibles :
 - SimpleJWT (Authentication)
 - PostgreSQL
 - Cloudinary (Stockage fichiers)
-- CinetPay (Paiement)
+- FedaPay (Paiement)
 
 ## Notes Importantes
 

@@ -213,16 +213,14 @@ CACHES = {
 # Disable strict checks in development
 SILENCED_SYSTEM_CHECKS = ['django_ratelimit.E003', 'django_ratelimit.W001']
 
-# CinetPay Configuration
-CINETPAY_API_KEY = config('CINETPAY_API_KEY', default='demo-cinetpay-api-key')
-CINETPAY_SITE_ID = config('CINETPAY_SITE_ID', default='demo-cinetpay-site-id')
+# FedaPay Configuration
 SITE_URL = config('SITE_URL', default='http://localhost:8000')
-CINETPAY_PAYMENT_URL = config('CINETPAY_PAYMENT_URL', default='https://api-checkout.cinetpay.com/v2/payment')
-CINETPAY_PAYMENT_CHECK_URL = config('CINETPAY_PAYMENT_CHECK_URL', default='https://api-checkout.cinetpay.com/v2/payment/check')
-CINETPAY_RETURN_URL = config('CINETPAY_RETURN_URL', default='http://localhost:5173/order-success')
-CINETPAY_NOTIFY_URL = config('CINETPAY_NOTIFY_URL', default=f'{SITE_URL}/api/payments/webhook/')
-CINETPAY_USER_AGENT = config('CINETPAY_USER_AGENT', default='WorldDesign/1.0')
-CINETPAY_TIMEOUT_SECONDS = config('CINETPAY_TIMEOUT_SECONDS', default=15, cast=int)
+FEDAPAY_SECRET_KEY = config('FEDAPAY_SECRET_KEY', default='demo-fedapay-secret-key')
+FEDAPAY_API_BASE_URL = config('FEDAPAY_API_BASE_URL', default='https://sandbox-api.fedapay.com/v1').rstrip('/')
+FEDAPAY_RETURN_URL = config('FEDAPAY_RETURN_URL', default='http://localhost:5173/order-success')
+FEDAPAY_WEBHOOK_URL = config('FEDAPAY_WEBHOOK_URL', default=f'{SITE_URL}/api/payments/webhook/')
+FEDAPAY_USER_AGENT = config('FEDAPAY_USER_AGENT', default='WorldDesign/1.0')
+FEDAPAY_TIMEOUT_SECONDS = config('FEDAPAY_TIMEOUT_SECONDS', default=15, cast=int)
 
 # Logging Configuration
 LOGGING = {

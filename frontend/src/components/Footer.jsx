@@ -28,7 +28,7 @@ export function Footer() {
             <Logo to="/" size="md" className="h-10" />
             <p className="mt-4 text-sm leading-relaxed text-white/70 max-w-xs">
               Goodies personnalisés de qualité pour vos projets de marque.
-              Paiement CinetPay et livraison partout au Togo.
+              Paiement par carte ou mobile money et livraison partout au Togo.
             </p>
             <div className="mt-4 flex gap-3">
               {[Heart, Share2, Send].map((Icon, i) => (

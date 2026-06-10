@@ -52,7 +52,7 @@ const WHY_US = [
   {
     icon: ShieldCheck,
     title: 'Paiement sécurisé',
-    desc: 'Flooz, T-Money, Visa et Mastercard.',
+    desc: 'Carte ou mobile money, rapide et sécurisé.',
     image: WHY_IMAGES.payment,
   },
 ];
@@ -126,7 +126,7 @@ const FAQ = [
   },
   {
     q: 'Quels moyens de paiement acceptez-vous ?',
-    a: 'Flooz, T-Money, Visa et Mastercard via CinetPay. Rapide et sécurisé.',
+    a: 'Paiement par carte ou mobile money. Rapide et sécurisé.',
   },
   {
     q: 'Proposez-vous des échantillons ?',

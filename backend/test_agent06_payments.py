@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Validation script for AGENT 06 - CinetPay payments."""
+"""Validation script for AGENT 06 - FedaPay payments."""
 import os
 import uuid
 from decimal import Decimal
@@ -67,33 +67,34 @@ def create_order(product, quantity, label):
     return order
 
 
-def payment_init_payload(transaction_id):
+def create_payment_payload(reference):
     return {
-        'code': '201',
-        'message': 'CREATED',
         'data': {
-            'payment_token': f'token-{transaction_id[-6:]}',
-            'payment_url': f'https://checkout.example/{transaction_id}',
+            'id': f'tx-{reference[-6:]}',
+            'merchant_reference': reference,
+            'payment_url': f'https://checkout.example/{reference}',
+            'token': f'token-{reference[-6:]}',
+            'status': 'pending',
         },
     }
 
 
-def accepted_check_payload():
+def approved_transaction_payload(reference):
     return {
-        'code': '00',
-        'message': 'SUCCES',
         'data': {
-            'status': 'ACCEPTED',
+            'id': f'tx-{reference[-6:]}',
+            'merchant_reference': reference,
+            'status': 'approved',
         },
     }
 
 
-def refused_check_payload():
+def declined_transaction_payload(reference):
     return {
-        'code': '00',
-        'message': 'SUCCES',
         'data': {
-            'status': 'REFUSED',
+            'id': f'tx-{reference[-6:]}',
+            'merchant_reference': reference,
+            'status': 'declined',
         },
     }
 
@@ -112,18 +113,17 @@ def main():
     passed = 0
     total = 5
 
-    # 1. Initiate payment with mocked CinetPay response
+    # 1. Initiate payment with mocked FedaPay response
     init_order = create_order(product, quantity=3, label='init')
-    captured_transaction = {'value': None}
+    captured_reference = {'value': None}
 
-    def fake_init_post(url, json=None, headers=None, timeout=None):
-        if url.endswith('/v2/payment'):
-            transaction_id = json.get('transaction_id')
-            captured_transaction['value'] = transaction_id
-            return FakeResponse(payment_init_payload(transaction_id))
-        raise AssertionError(f'Unexpected URL for init test: {url}')
+    def fake_request(method, url, json=None, headers=None, timeout=None):
+        if method == 'POST' and url.endswith('/transactions'):
+            captured_reference['value'] = json.get('merchant_reference')
+            return FakeResponse(create_payment_payload(captured_reference['value']))
+        raise AssertionError(f'Unexpected request for init test: {method} {url}')
 
-    with patch('apps.payments.views.requests.post', side_effect=fake_init_post):
+    with patch('apps.payments.views.requests.request', side_effect=fake_request):
         response = client.post('/api/payments/initiate/', {'order_id': init_order.id}, format='json')
 
     init_data = response.json() if response.status_code in (200, 201) else {}
@@ -131,11 +131,11 @@ def main():
     ok = (
         response.status_code == 201
         and bool(init_data.get('payment_url'))
-        and init_data.get('transaction_id') == captured_transaction['value']
+        and init_data.get('transaction_id') == captured_reference['value']
         and payment is not None
         and payment.status == 'PENDING'
-        and payment.cinetpay_transaction_id == init_data.get('transaction_id')
-        and payment.cinetpay_payment_token == f"token-{init_data.get('transaction_id')[-6:]}"
+        and payment.fedapay_transaction_id == init_data.get('transaction_id')
+        and payment.fedapay_payment_token == f"token-{init_data.get('transaction_id')[-6:]}"
     )
     passed += print_result('1) POST /api/payments/initiate/', ok, f'status={response.status_code}')
 
@@ -144,16 +144,19 @@ def main():
         print(f'RESULT: {passed}/{total} tests passed')
         return
 
-    transaction_id = payment.cinetpay_transaction_id
+    reference = payment.fedapay_transaction_id
 
-    # 2. Accepted webhook confirms the order and decrements stock
-    def fake_check_post(url, json=None, headers=None, timeout=None):
-        if url.endswith('/v2/payment/check'):
-            return FakeResponse(accepted_check_payload())
-        raise AssertionError(f'Unexpected URL for webhook success test: {url}')
+    # 2. Approved webhook confirms the order and decrements stock
+    def fake_request_approved(method, url, json=None, headers=None, timeout=None):
+        if method == 'GET' and (
+            url.endswith(f'/transactions/{reference}')
+            or url.endswith(f'/transactions/merchant/{reference}')
+        ):
+            return FakeResponse(approved_transaction_payload(reference))
+        raise AssertionError(f'Unexpected request for webhook success test: {method} {url}')
 
-    with patch('apps.payments.views.requests.post', side_effect=fake_check_post):
-        response = client.post('/api/payments/webhook/', {'transaction_id': transaction_id}, format='json')
+    with patch('apps.payments.views.requests.request', side_effect=fake_request_approved):
+        response = client.post('/api/payments/webhook/', {'merchant_reference': reference}, format='json')
 
     payment.refresh_from_db()
     init_order.refresh_from_db()
@@ -164,11 +167,11 @@ def main():
         and init_order.status == 'CONFIRMED'
         and product.stock == original_stock - 3
     )
-    passed += print_result('2) POST /api/payments/webhook/ (accepted)', ok, f'status={response.status_code}')
+    passed += print_result('2) POST /api/payments/webhook/ (approved)', ok, f'status={response.status_code}')
 
-    # 3. Duplicate accepted webhook must stay idempotent
-    with patch('apps.payments.views.requests.post', side_effect=fake_check_post):
-        response = client.post('/api/payments/webhook/', {'cpm_trans_id': transaction_id}, format='json')
+    # 3. Duplicate approved webhook must stay idempotent
+    with patch('apps.payments.views.requests.request', side_effect=fake_request_approved):
+        response = client.post('/api/payments/webhook/', {'merchant_reference': reference}, format='json')
 
     payment.refresh_from_db()
     init_order.refresh_from_db()
@@ -181,25 +184,26 @@ def main():
     )
     passed += print_result('3) POST /api/payments/webhook/ (duplicate)', ok, f'status={response.status_code}')
 
-    # 4. Refused webhook cancels the order without touching stock
+    # 4. Declined webhook cancels the order without touching stock
     refused_order = create_order(product, quantity=2, label='refused')
 
-    def fake_refused_init_post(url, json=None, headers=None, timeout=None):
-        if url.endswith('/v2/payment'):
-            transaction_id_local = json.get('transaction_id')
-            return FakeResponse(payment_init_payload(transaction_id_local))
-        if url.endswith('/v2/payment/check'):
-            return FakeResponse(refused_check_payload())
-        raise AssertionError(f'Unexpected URL for refused test: {url}')
+    def fake_request_declined(method, url, json=None, headers=None, timeout=None):
+        if method == 'POST' and url.endswith('/transactions'):
+            refused_reference = json.get('merchant_reference')
+            return FakeResponse(create_payment_payload(refused_reference))
+        if method == 'GET' and '/transactions/' in url:
+            refused_reference = url.rsplit('/', 1)[-1]
+            return FakeResponse(declined_transaction_payload(refused_reference))
+        raise AssertionError(f'Unexpected request for refused test: {method} {url}')
 
-    with patch('apps.payments.views.requests.post', side_effect=fake_refused_init_post):
+    with patch('apps.payments.views.requests.request', side_effect=fake_request_declined):
         response = client.post('/api/payments/initiate/', {'order_id': refused_order.id}, format='json')
 
     refused_payment = Payment.objects.filter(order=refused_order).first()
-    with patch('apps.payments.views.requests.post', side_effect=fake_refused_init_post):
+    with patch('apps.payments.views.requests.request', side_effect=fake_request_declined):
         response = client.post(
             '/api/payments/webhook/',
-            {'transaction_id': refused_payment.cinetpay_transaction_id},
+            {'merchant_reference': refused_payment.fedapay_transaction_id},
             format='json',
         )
 
@@ -212,17 +216,17 @@ def main():
         and refused_order.status == 'CANCELLED'
         and product.stock == original_stock - 3
     )
-    passed += print_result('4) POST /api/payments/webhook/ (refused)', ok, f'status={response.status_code}')
+    passed += print_result('4) POST /api/payments/webhook/ (declined)', ok, f'status={response.status_code}')
 
     # 5. Payment timeout is handled cleanly
     timeout_order = create_order(product, quantity=1, label='timeout')
 
-    def fake_timeout_post(url, json=None, headers=None, timeout=None):
-        if url.endswith('/v2/payment'):
+    def fake_timeout_request(method, url, json=None, headers=None, timeout=None):
+        if method == 'POST' and url.endswith('/transactions'):
             raise requests.Timeout('Gateway timeout')
-        raise AssertionError(f'Unexpected URL for timeout test: {url}')
+        raise AssertionError(f'Unexpected request for timeout test: {method} {url}')
 
-    with patch('apps.payments.views.requests.post', side_effect=fake_timeout_post):
+    with patch('apps.payments.views.requests.request', side_effect=fake_timeout_request):
         response = client.post('/api/payments/initiate/', {'order_id': timeout_order.id}, format='json')
 
     timeout_payment = Payment.objects.filter(order=timeout_order).first()
