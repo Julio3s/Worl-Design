@@ -252,10 +252,17 @@ def _customer_payload(order):
     return payload
 
 
+def _fedapay_amount(order):
+    amount = Decimal(order.total_amount)
+    if amount != amount.to_integral_value():
+        raise ValueError('FedaPay requires a whole-number amount')
+    return int(amount)
+
+
 def _build_payment_payload(order, merchant_reference):
     payload = {
         'description': f'WORLD DESIGN order #{order.id}',
-        'amount': str(Decimal(order.total_amount)),
+        'amount': _fedapay_amount(order),
         'currency': {'iso': 'XOF'},
         'callback_url': settings.FEDAPAY_RETURN_URL,
         'merchant_reference': merchant_reference,
@@ -528,7 +535,14 @@ def initiate_payment(request):
         )
 
     merchant_reference = f'WD-{order.id}-{uuid.uuid4().hex[:18]}'
-    payment_payload = _build_payment_payload(order, merchant_reference)
+    try:
+        payment_payload = _build_payment_payload(order, merchant_reference)
+    except ValueError as exc:
+        logger.warning('FedaPay amount validation failed order_id=%s error=%s', order.id, exc)
+        return Response(
+            {'detail': str(exc)},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
 
     logger.info(
         'FedaPay initiation requested order_id=%s merchant_reference=%s amount=%s',

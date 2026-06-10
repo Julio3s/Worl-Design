@@ -120,6 +120,7 @@ def main():
     def fake_request(method, url, json=None, headers=None, timeout=None):
         if method == 'POST' and url.endswith('/transactions'):
             captured_reference['value'] = json.get('merchant_reference')
+            assert isinstance(json.get('amount'), int), f"Expected integer amount, got {json.get('amount')!r}"
             return FakeResponse(create_payment_payload(captured_reference['value']))
         raise AssertionError(f'Unexpected request for init test: {method} {url}')
 
