@@ -149,9 +149,9 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 # Cloudinary Configuration
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': config('CLOUDINARY_CLOUD_NAME', default=''),
-    'API_KEY': config('CLOUDINARY_API_KEY', default=''),
-    'API_SECRET': config('CLOUDINARY_API_SECRET', default=''),
+    'CLOUD_NAME': config('CLOUDINARY_CLOUD_NAME', default='demo-cloudinary-cloud-name'),
+    'API_KEY': config('CLOUDINARY_API_KEY', default='demo-cloudinary-api-key'),
+    'API_SECRET': config('CLOUDINARY_API_SECRET', default='demo-cloudinary-api-secret'),
 }
 
 if CLOUDINARY_STORAGE['CLOUD_NAME']:
@@ -214,8 +214,8 @@ CACHES = {
 SILENCED_SYSTEM_CHECKS = ['django_ratelimit.E003', 'django_ratelimit.W001']
 
 # CinetPay Configuration
-CINETPAY_API_KEY = config('CINETPAY_API_KEY', default='')
-CINETPAY_SITE_ID = config('CINETPAY_SITE_ID', default='')
+CINETPAY_API_KEY = config('CINETPAY_API_KEY', default='demo-cinetpay-api-key')
+CINETPAY_SITE_ID = config('CINETPAY_SITE_ID', default='demo-cinetpay-site-id')
 SITE_URL = config('SITE_URL', default='http://localhost:8000')
 CINETPAY_PAYMENT_URL = config('CINETPAY_PAYMENT_URL', default='https://api-checkout.cinetpay.com/v2/payment')
 CINETPAY_PAYMENT_CHECK_URL = config('CINETPAY_PAYMENT_CHECK_URL', default='https://api-checkout.cinetpay.com/v2/payment/check')
