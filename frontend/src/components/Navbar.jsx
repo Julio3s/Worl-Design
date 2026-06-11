@@ -107,14 +107,6 @@ export function Navbar() {
           {/* Actions */}
           <div className="flex shrink-0 items-center gap-2 sm:gap-3">
             <Link
-              to={profileHref}
-              className="flex h-11 w-11 items-center justify-center rounded-full bg-[#F3F4F6] transition hover:bg-[#E5E7EB]"
-              aria-label={isAuthenticated ? 'Mon compte' : 'Se connecter'}
-            >
-              <UserRound className="h-5 w-5 text-[#374151]" strokeWidth={2} />
-            </Link>
-
-            <Link
               to="/cart"
               className="relative flex h-11 w-11 items-center justify-center rounded-full bg-[#F3F4F6] transition hover:bg-[#E5E7EB]"
               aria-label="Panier"
