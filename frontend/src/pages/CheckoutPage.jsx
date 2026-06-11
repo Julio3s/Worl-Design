@@ -105,10 +105,6 @@ export default function CheckoutPage() {
   }, [isAuthenticated, user]);
 
   const missingFiles = items.filter((item) => item.customFileName && !getCustomFile(item.key));
-  const missingCustomTexts = items.filter((item) => {
-    const product = products[item.productSlug];
-    return Boolean(product?.is_customizable) && !String(item.customText || '').trim();
-  });
 
   if (items.length === 0) {
     return <Navigate to="/cart" replace />;
@@ -140,11 +136,6 @@ export default function CheckoutPage() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError('');
-
-    if (missingCustomTexts.length > 0) {
-      setError('Merci de renseigner le texte de personnalisation pour chaque produit personnalisable.');
-      return;
-    }
 
     if (missingFiles.length > 0) {
       setError('Merci de recharger les fichiers personnalises avant le paiement.');
@@ -255,20 +246,6 @@ export default function CheckoutPage() {
               <div className="rounded-[8px] border border-[#E0DBD5] bg-[#F8F5F0] px-4 py-4 text-sm text-text-muted">
                 Vérification des produits personnalisables...
               </div>
-            ) : missingCustomTexts.length > 0 ? (
-              <div className="space-y-3 rounded-[8px] border border-[#FEF3C7] bg-[#FEF3C7]/40 px-4 py-4">
-                <p className="text-sm font-semibold text-[#92400E]">
-                  Texte de personnalisation requis
-                </p>
-                <p className="text-sm text-text-muted">
-                  Le texte est obligatoire pour les produits personnalisables. Retournez au panier pour le compléter.
-                </p>
-                <ul className="space-y-1 text-sm text-[#92400E]">
-                  {missingCustomTexts.map((item) => (
-                    <li key={item.key}>• {item.productName}</li>
-                  ))}
-                </ul>
-              </div>
             ) : missingFiles.length > 0 ? (
               <div className="space-y-3 rounded-[8px] border border-[#FEF3C7] bg-[#FEF3C7]/40 px-4 py-4">
                 <p className="text-sm font-semibold text-[#92400E]">
@@ -300,7 +277,7 @@ export default function CheckoutPage() {
             <div className="flex flex-wrap gap-3">
               <button
                 type="submit"
-                disabled={submitting || loadingProducts || missingCustomTexts.length > 0 || missingFiles.length > 0}
+                disabled={submitting || loadingProducts || missingFiles.length > 0}
                 className="inline-flex flex-1 items-center justify-center rounded-full bg-accent px-5 py-3 text-base font-semibold text-white transition hover:opacity-95 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {submitting ? 'Redirection vers le paiement...' : 'Payer par carte ou mobile money'}

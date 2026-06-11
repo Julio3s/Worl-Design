@@ -102,6 +102,16 @@ export default function CartPage() {
   const [showClearConfirm, setShowClearConfirm] = React.useState(false);
   const [products, setProducts] = React.useState({});
   const [expandedItemKeys, setExpandedItemKeys] = React.useState({});
+  const [missingCustomTexts, setMissingCustomTexts] = React.useState([]);
+
+  // Détection des produits personnalisables sans texte
+  React.useEffect(() => {
+    const missing = items.filter((item) => {
+      const product = products[item.productSlug];
+      return Boolean(product?.is_customizable) && !String(item.customText || '').trim();
+    });
+    setMissingCustomTexts(missing);
+  }, [items, products]);
 
   const toggleItemDetails = (itemKey) => {
     setExpandedItemKeys((current) => ({
@@ -216,6 +226,48 @@ export default function CartPage() {
           </div>
         </div>
       </div>
+
+      {/* Alerte personnalisation manquante */}
+      {missingCustomTexts.length > 0 && (
+        <div className="mx-auto mt-4 max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="rounded-2xl border border-[#FEF3C7] bg-[#FEF3C7]/60 p-4 shadow-sm">
+            <div className="flex items-start gap-3">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#FEF3C7]">
+                <AlertCircle className="h-5 w-5 text-[#92400E]" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-bold text-[#92400E]">
+                  Texte de personnalisation requis
+                </p>
+                <p className="mt-1 text-sm text-[#92400E]/80">
+                  Cliquez sur chaque produit ci-dessous pour ouvrir sa description et ajouter votre texte de personnalisation avant de passer commande.
+                </p>
+                <ul className="mt-2 space-y-1">
+                  {missingCustomTexts.map((item) => (
+                    <li key={item.key} className="flex items-center gap-2 text-sm font-medium text-[#92400E]">
+                      <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#92400E]" />
+                      {item.productName}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  const keys = {};
+                  missingCustomTexts.forEach((item) => {
+                    keys[item.key] = true;
+                  });
+                  setExpandedItemKeys((current) => ({ ...current, ...keys }));
+                }}
+                className="shrink-0 rounded-full bg-[#FEF3C7] px-4 py-2 text-xs font-bold text-[#92400E] transition hover:bg-[#FDE68A"
+              >
+                Tout ouvrir
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Modal confirmation vider panier */}
       {showClearConfirm && (
@@ -418,14 +470,27 @@ export default function CartPage() {
                 </div>
               </div>
 
-              <Link
-                to="/checkout"
-                className="mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-accent px-6 py-4 text-sm font-bold text-white shadow-lg shadow-accent/25 transition-all hover:bg-accent/90 hover:shadow-xl hover:shadow-accent/30 active:scale-[0.98]"
-              >
-                <ShoppingBag className="h-4 w-4" />
-                Passer la commande
-                <ChevronRight className="h-4 w-4" />
-              </Link>
+              {missingCustomTexts.length > 0 ? (
+                <button
+                  type="button"
+                  disabled
+                  className="mt-6 flex w-full cursor-not-allowed items-center justify-center gap-2 rounded-full bg-accent/50 px-6 py-4 text-sm font-bold text-white/70 shadow-none"
+                  title="Ajoutez le texte personnalisé pour chaque produit avant de commander"
+                >
+                  <ShoppingBag className="h-4 w-4" />
+                  Passer la commande
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              ) : (
+                <Link
+                  to="/checkout"
+                  className="mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-accent px-6 py-4 text-sm font-bold text-white shadow-lg shadow-accent/25 transition-all hover:bg-accent/90 hover:shadow-xl hover:shadow-accent/30 active:scale-[0.98]"
+                >
+                  <ShoppingBag className="h-4 w-4" />
+                  Passer la commande
+                  <ChevronRight className="h-4 w-4" />
+                </Link>
+              )}
 
               <Link
                 to="/products"
