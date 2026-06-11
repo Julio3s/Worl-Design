@@ -54,48 +54,48 @@ export function Navbar() {
   return (
     <>
       <header className="sticky top-0 z-50 w-full bg-white shadow-[0_2px_12px_rgba(0,0,0,0.09)]">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-2.5 sm:px-6 lg:px-8">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
           {/* Logo */}
           <Link
             to="/"
             className="flex shrink-0 items-center justify-center rounded-[14px] border border-[#EFEFEF]"
-            style={{ width: 60, height: 60 }}
+            style={{ width: 70, height: 70 }}
             aria-label="Accueil World Design"
           >
-            <img src="/logo.png" alt="World Design" style={{ width: 60, height: "auto" }} />
+            <img src="/logo.png" alt="World Design" style={{ width: 70, height: "auto" }} />
           </Link>
 
           {/* Bandeau livraison */}
-          <div className="wd-delivery flex flex-1 items-center gap-1.5 rounded-[14px] bg-[#F3F4F6] px-2 py-2 min-w-0 mx-1 sm:gap-3 sm:px-4 sm:py-2.5 sm:mx-2 lg:mx-4">
-            <Truck className="h-5 w-5 shrink-0 text-[#374151] sm:h-7 sm:w-7" strokeWidth={1.7} />
+          <div className="wd-delivery flex flex-1 items-center gap-2 rounded-[14px] bg-[#F3F4F6] px-3 py-3 min-w-0 mx-1 sm:gap-3 sm:px-4 sm:py-3 sm:mx-2 lg:mx-4">
+            <Truck className="h-6 w-6 shrink-0 text-[#374151] sm:h-7 sm:w-7" strokeWidth={1.7} />
             <div className="min-w-0 overflow-hidden">
-              <p className="text-[10px] font-semibold text-[#111827] truncate sm:text-sm">
+              <p className="text-xs font-semibold text-[#111827] truncate sm:text-sm">
                 Livraison rapide partout
               </p>
-              <p className="text-[9px] font-normal text-[#6B7280] truncate sm:text-xs">
+              <p className="text-[10px] font-normal text-[#6B7280] truncate sm:text-xs">
                 2 à 5 jours ouvrés
               </p>
             </div>
           </div>
 
           {/* Actions */}
-          <div className="flex shrink-0 items-center gap-1 sm:gap-2">
+          <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
             <Link
               to={profileHref}
-              className="flex h-11 w-11 items-center justify-center rounded-full bg-[#F3F4F6] transition hover:bg-[#E5E7EB]"
+              className="flex h-12 w-12 items-center justify-center rounded-full bg-[#F3F4F6] transition hover:bg-[#E5E7EB]"
               aria-label={isAuthenticated ? 'Mon compte' : 'Se connecter'}
             >
-              <UserRound className="h-5 w-5 text-[#374151]" strokeWidth={1.8} />
+              <UserRound className="h-6 w-6 text-[#374151]" strokeWidth={1.8} />
             </Link>
 
             <Link
               to="/cart"
-              className="relative flex h-11 w-11 items-center justify-center rounded-full bg-[#F3F4F6] transition hover:bg-[#E5E7EB]"
+              className="relative flex h-12 w-12 items-center justify-center rounded-full bg-[#F3F4F6] transition hover:bg-[#E5E7EB]"
               aria-label="Panier"
             >
-              <ShoppingBag className="h-5 w-5 text-[#374151]" strokeWidth={1.8} />
+              <ShoppingBag className="h-6 w-6 text-[#374151]" strokeWidth={1.8} />
               {cartCount > 0 ? (
-                <span className="absolute -right-0.5 -top-0.5 grid h-4 w-4 place-items-center rounded-full border-2 border-white bg-[#EF4444] text-[8px] font-bold text-white">
+                <span className="absolute -right-0.5 -top-0.5 grid h-5 w-5 place-items-center rounded-full border-2 border-white bg-[#EF4444] text-[9px] font-bold text-white">
                   {cartCount}
                 </span>
               ) : null}
@@ -104,10 +104,10 @@ export function Navbar() {
             <button
               type="button"
               onClick={() => setMobileOpen(true)}
-              className="flex h-11 w-11 items-center justify-center rounded-full bg-[#F3F4F6] transition hover:bg-[#E5E7EB] lg:hidden"
+              className="flex h-12 w-12 items-center justify-center rounded-full bg-[#F3F4F6] transition hover:bg-[#E5E7EB] lg:hidden"
               aria-label="Ouvrir le menu"
             >
-              <Menu className="h-5 w-5 text-[#374151]" strokeWidth={1.8} />
+              <Menu className="h-6 w-6 text-[#374151]" strokeWidth={1.8} />
             </button>
           </div>
         </div>
