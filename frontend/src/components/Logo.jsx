@@ -8,17 +8,17 @@ const SIZE_CLASSES = {
 };
 
 const TEXT_SIZE_CLASSES = {
-  sm: 'text-sm',
-  md: 'text-lg',
-  lg: 'text-xl',
-  xl: 'text-2xl',
+  sm: 'text-base',
+  md: 'text-xl',
+  lg: 'text-2xl',
+  xl: 'text-3xl',
 };
 
 const ICON_SIZE_CLASSES = {
-  sm: 'h-9 w-9',
-  md: 'h-12 w-12',
-  lg: 'h-14 w-14',
-  xl: 'h-16 w-16',
+  sm: 'h-8 w-8',
+  md: 'h-10 w-10',
+  lg: 'h-12 w-12',
+  xl: 'h-14 w-14',
 };
 
 export function Logo({ to = '/', size = 'md', className = '', showLink = true }) {
@@ -31,7 +31,7 @@ export function Logo({ to = '/', size = 'md', className = '', showLink = true })
 
   const framedImage = (
     <span
-      className={`inline-flex items-center justify-center gap-2 overflow-hidden rounded-lg bg-white px-3 py-1.5 shadow-sm ring-1 ring-black/5 ${frameClassName}`}
+      className={`inline-flex items-center justify-center gap-1.5 overflow-hidden rounded-lg bg-white px-2.5 py-1 shadow-sm ring-1 ring-black/5 ${frameClassName}`}
     >
       <img
         src="/logo-icon.png"
