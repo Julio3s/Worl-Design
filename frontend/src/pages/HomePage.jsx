@@ -1,21 +1,14 @@
 import { useEffect, useState, useCallback } from 'react';
 import {
   ArrowRight,
-  ShieldCheck,
   Truck,
   Star,
   Eye,
-  PenTool,
-  Zap,
-  Heart,
-  MessageCircle,
   ChevronRight,
   ArrowUpRight,
   Quote,
   Pencil,
   CheckCircle2,
-  Camera,
-  Palette,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -29,33 +22,6 @@ import { getCategoryImage } from '../utils/media';
 
 // ─── Images ───────────────────────────────────────────────────────
 const HERO_IMAGE = '/images/hero-products-personalized.jpg';
-const WHY_IMAGES = {
-  customization: '/images/why-customization.jpg',
-  quality: '/images/why-quality.png',
-  payment: '/images/why-payment.jpg',
-};
-
-// ─── Données statiques ────────────────────────────────────────────
-const WHY_US = [
-  {
-    icon: Palette,
-    title: 'Personnalisation complète',
-    desc: 'Ajoutez votre texte, logo ou design sur nos produits.',
-    image: WHY_IMAGES.customization,
-  },
-  {
-    icon: Star,
-    title: 'Qualité professionnelle',
-    desc: 'Des finitions soignées pour particuliers et entreprises.',
-    image: WHY_IMAGES.quality,
-  },
-  {
-    icon: ShieldCheck,
-    title: 'Paiement sécurisé',
-    desc: 'Carte ou mobile money, rapide et sécurisé.',
-    image: WHY_IMAGES.payment,
-  },
-];
 
 const STEPS = [
   {
@@ -262,43 +228,79 @@ export default function HomePage() {
       </header>
 
       {/* ================================================================ */}
-      {/* SECTION 2 — POURQUOI WORLD DESIGN                                */}
+{/* ================================================================ */}
+      {/* SECTION 2 - PRODUITS VEDETTES                                    */}
       {/* ================================================================ */}
-      <section className="section-shell">
+      <section className="section-shell" style={{ backgroundColor: '#F8F5F0' }}>
         <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h2 className="text-3xl font-extrabold text-[#1A1A2E] sm:text-4xl lg:text-5xl">
-              Pourquoi choisir WORLD DESIGN ?
-            </h2>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <h2 className="text-3xl font-extrabold text-[#1A1A2E] sm:text-4xl lg:text-5xl">
+                Produits vedettes
+              </h2>
+              <p className="mt-3 max-w-2xl text-sm leading-7 text-[#1A1A2E]/60 sm:text-base">
+                Faites defiler horizontalement pour voir les produits, avec une mise en page adaptee a tous les ecrans.
+              </p>
+            </div>
+            <Link
+              to="/products"
+              className="group inline-flex items-center gap-2 text-sm font-bold text-[#E94560] transition hover:text-[#E94560]/70"
+            >
+              Tout voir
+              <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            </Link>
           </div>
 
-          <div className="mt-12 grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-            {WHY_US.map(({ icon: Icon, title, desc, image }) => (
-              <div
-                key={title}
-                className="group relative overflow-hidden rounded-2xl bg-white transition-all duration-300"
-              >
-                <div className="h-40 overflow-hidden">
-                  <img
-                    src={image}
-                    alt={title}
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                </div>
-                <div className="p-6">
-                  <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-[#E94560]/10">
-                    <Icon className="h-6 w-6 text-[#E94560]" />
-                  </div>
-                  <h3 className="text-lg font-bold text-[#1A1A2E]">{title}</h3>
-                  <p className="mt-2 text-sm text-[#1A1A2E]/60">{desc}</p>
+          <div className="mt-10">
+            {loading ? (
+              <div className="-mx-4 overflow-x-auto px-4 pb-2 sm:-mx-6 sm:px-6 lg:-mx-0 lg:px-0">
+                <div className="flex gap-4" style={{ minWidth: 'min-content' }}>
+                  {Array.from({ length: 4 }).map((_, i) => (
+                    <div
+                      key={i}
+                      className="h-[420px] w-[82vw] max-w-[340px] flex-shrink-0 animate-pulse rounded-3xl bg-[#EFE7DC] sm:w-[360px] md:w-[380px] lg:w-[400px]"
+                    />
+                  ))}
                 </div>
               </div>
-            ))}
+            ) : error ? (
+              <ErrorState description={error} onRetry={loadData} />
+            ) : featuredProducts.length > 0 ? (
+              <div className="-mx-4 overflow-x-auto px-4 pb-3 sm:-mx-6 sm:px-6 lg:-mx-0 lg:px-0">
+                <div className="flex snap-x snap-mandatory gap-4 pb-2" style={{ minWidth: 'min-content' }}>
+                  {featuredProducts.map((product, index) => (
+                    <div
+                      key={product.id}
+                      className="w-[82vw] max-w-[340px] flex-shrink-0 snap-start sm:w-[360px] md:w-[380px] lg:w-[400px] animate-fadeInUp"
+                      style={{ animationDelay: `${index * 80}ms` }}
+                    >
+                      <ProductCard product={product} badgeLabel="BEST SELLER" showAddButton />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <EmptyState
+                title="Pas encore de produits vedettes"
+                description="Revenez bientot ou explorez tout le catalogue."
+                action={
+                  <Link
+                    to="/products"
+                    className="inline-flex items-center gap-2 rounded-full text-white px-6 py-3 text-sm font-bold transition hover:opacity-90"
+                    style={{ backgroundColor: '#E94560' }}
+                  >
+                    Voir le catalogue
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                }
+              />
+            )}
           </div>
         </div>
       </section>
 
       {/* ================================================================ */}
+      {/* SECTION 3 - CATEGORIES                                           */}
       {/* SECTION 3 — CATÉGORIES                                            */}
       {/* ================================================================ */}
       <section className="section-shell bg-white">
@@ -358,100 +360,6 @@ export default function HomePage() {
               <EmptyState
                 title="Aucune catégorie pour le moment"
                 description="Notre catalogue se remplit. Revenez bientôt !"
-              />
-            )}
-          </div>
-        </div>
-      </section>
-
-      {/* ================================================================ */}
-      {/* SECTION 4 — PRODUITS VEDETTES                                    */}
-      {/* ================================================================ */}
-      <section 
-        id="vedettes" 
-        className="section-shell relative overflow-hidden"
-        style={{
-          backgroundColor: '#F8F5F0',
-          backgroundImage: "url('/images/steps-background.png')",
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-          backgroundAttachment: 'fixed'
-        }}
-      >
-        {/* Overlay couleur semi-transparent */}
-        <div className="absolute inset-0 bg-[#F8F5F0]/90" aria-hidden="true" />
-        
-        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <h2 className="text-3xl font-extrabold text-[#1A1A2E] sm:text-4xl lg:text-5xl">
-                Nos meilleures ventes
-              </h2>
-              <p className="mt-2 text-[#1A1A2E]/50 text-sm">
-                Les produits les plus commandés par nos clients.
-              </p>
-            </div>
-            <Link
-              to="/products"
-              className="group inline-flex items-center gap-2 text-sm font-bold text-[#E94560] transition hover:text-[#E94560]/70"
-            >
-              Catalogue complet
-              <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-            </Link>
-          </div>
-
-          <div className="mt-10">
-            {loading ? (
-              <ProductGridSkeleton count={6} />
-            ) : featuredProducts.length > 0 ? (
-              <>
-                {/* Desktop - Grid normal */}
-                <div className="hidden md:block">
-                  <div className="section-stack-2">
-                    {featuredProducts.map((product, index) => (
-                      <div
-                        key={product.id}
-                        className="animate-fadeInUp"
-                        style={{ animationDelay: `${index * 80}ms` }}
-                      >
-                        <ProductCard product={product} badgeLabel="BEST SELLER" showAddButton />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Mobile - Horizontal scroll */}
-                <div className="md:hidden">
-                  <div className="overflow-x-auto scroll-smooth" style={{ scrollBehavior: 'smooth', WebkitOverflowScrolling: 'touch' }}>
-                    <div className="flex gap-4 pb-2" style={{ minWidth: 'min-content' }}>
-                      {featuredProducts.map((product, index) => (
-                        <div
-                          key={product.id}
-                          className="flex-shrink-0 w-80 animate-fadeInUp"
-                          style={{ animationDelay: `${index * 80}ms` }}
-                        >
-                          <ProductCard product={product} badgeLabel="BEST SELLER" showAddButton />
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </>
-            ) : (
-              <EmptyState
-                title="Pas encore de produits vedettes"
-                description="Revenez bientôt ou explorez tout le catalogue."
-                action={
-                  <Link
-                    to="/products"
-                    className="inline-flex items-center gap-2 rounded-full text-white px-6 py-3 text-sm font-bold transition hover:opacity-90"
-                    style={{ backgroundColor: '#E94560' }}
-                  >
-                    Voir le catalogue
-                    <ArrowRight className="h-4 w-4" />
-                  </Link>
-                }
               />
             )}
           </div>
@@ -730,3 +638,5 @@ export default function HomePage() {
     </div>
   );
 }
+
+

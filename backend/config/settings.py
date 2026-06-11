@@ -222,6 +222,14 @@ FEDAPAY_WEBHOOK_URL = config('FEDAPAY_WEBHOOK_URL', default=f'{SITE_URL}/api/pay
 FEDAPAY_USER_AGENT = config('FEDAPAY_USER_AGENT', default='WorldDesign/1.0')
 FEDAPAY_TIMEOUT_SECONDS = config('FEDAPAY_TIMEOUT_SECONDS', default=15, cast=int)
 
+# Google Analytics 4 Data API Configuration
+GA4_PROPERTY_ID = config('GA4_PROPERTY_ID', default='541299693')
+GA4_SERVICE_ACCOUNT_FILE = config(
+    'GA4_SERVICE_ACCOUNT_FILE',
+    default=str(Path.home() / 'Downloads' / 'fabled-cocoa-499118-k4-6110949f3788.json'),
+)
+GA4_CACHE_TTL_SECONDS = config('GA4_CACHE_TTL_SECONDS', default=300, cast=int)
+
 # Logging Configuration
 LOGGING = {
     'version': 1,

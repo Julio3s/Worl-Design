@@ -9,6 +9,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 
+from apps.analytics.ga4 import GA4ConfigurationError, GA4ReportError, get_ga4_dashboard_stats
 from apps.users.permissions import IsAdminUser
 
 from .models import Order
@@ -136,6 +137,29 @@ def admin_stats(request):
             'created_at': order.created_at.isoformat(),
         })
 
+    ga4 = {
+        'configured': False,
+        'error': None,
+        'metrics': {
+            'total_users': 0,
+            'sessions': 0,
+            'page_views': 0,
+            'engaged_sessions': 0,
+            'active_users': 0,
+        },
+        'top_channels': [],
+        'top_pages': [],
+    }
+
+    try:
+        ga4 = get_ga4_dashboard_stats(period)
+    except GA4ConfigurationError as error:
+        ga4['error'] = str(error)
+    except GA4ReportError as error:
+        ga4['error'] = str(error)
+    except Exception as error:  # pragma: no cover - defensive fallback for API/runtime issues
+        ga4['error'] = f'GA4 integration error: {error}'
+
     return Response(
         {
             'period': period,
@@ -149,6 +173,7 @@ def admin_stats(request):
             'revenue_chart': revenue_chart,
             'orders_by_status': orders_by_status,
             'recent_orders': recent_orders,
+            'ga4': ga4,
         },
         status=status.HTTP_200_OK,
     )

@@ -59,11 +59,15 @@ export default function DashboardPage() {
   }, [loadStats, period]);
 
   const kpis = stats?.kpis;
+  const ga4 = stats?.ga4;
+  const gaMetrics = ga4?.metrics ?? {};
+  const topChannel = ga4?.top_channels?.[0];
+  const topPage = ga4?.top_pages?.[0];
 
   return (
     <AdminPage
       title="Tableau de bord"
-      description="Vue d'ensemble du chiffre d'affaires, des commandes et des clients."
+      description="Vue d'ensemble du chiffre d'affaires, des commandes, des clients et de Google Analytics 4."
     >
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <PeriodSelector value={period} onChange={setPeriod} />
@@ -89,7 +93,7 @@ export default function DashboardPage() {
       ) : (
         <div className="mt-6 space-y-6">
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
-            <KpiCard title="CA total période" value={formatCurrency(kpis?.total_revenue)} highlight />
+            <KpiCard title="CA total periode" value={formatCurrency(kpis?.total_revenue)} highlight />
             <KpiCard title="Nombre de commandes" value={kpis?.orders_count ?? 0} />
             <KpiCard title="Nombre de clients" value={kpis?.customers_count ?? 0} />
             <KpiCard title="Panier moyen" value={formatCurrency(kpis?.average_basket)} highlight />
@@ -103,34 +107,32 @@ export default function DashboardPage() {
             </section>
 
             <section className="space-y-3">
-              <h2 className="font-display text-xl font-bold text-primary">### Trafic visiteurs</h2>
+              <h2 className="font-display text-xl font-bold text-primary">Trafic visiteurs GA4</h2>
               <div className="rounded-lg border border-[#E0DBD5] bg-white p-6">
                 <div className="space-y-4">
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    <div className="rounded-lg bg-[#F8F5F0] p-4">
-                      <p className="text-sm font-medium text-text-muted">Visiteurs</p>
-                      <p className="mt-2 text-2xl font-bold text-primary">—</p>
-                      <p className="mt-1 text-xs text-text-muted">Connecter Google Analytics 4</p>
-                    </div>
-                    <div className="rounded-lg bg-[#F8F5F0] p-4">
-                      <p className="text-sm font-medium text-text-muted">Pages vues</p>
-                      <p className="mt-2 text-2xl font-bold text-primary">—</p>
-                      <p className="mt-1 text-xs text-text-muted">Connecter Google Analytics 4</p>
-                    </div>
-                    <div className="rounded-lg bg-[#F8F5F0] p-4">
-                      <p className="text-sm font-medium text-text-muted">Provenance</p>
-                      <p className="mt-2 text-sm font-semibold text-primary">Facebook • Google • TikTok</p>
-                      <p className="mt-1 text-xs text-text-muted">Connecter Google Analytics 4</p>
-                    </div>
-                    <div className="rounded-lg bg-[#F8F5F0] p-4">
-                      <p className="text-sm font-medium text-text-muted">Taux de conversion</p>
-                      <p className="mt-2 text-2xl font-bold text-primary">—</p>
-                      <p className="mt-1 text-xs text-text-muted">Connecter Google Analytics 4</p>
-                    </div>
+                  <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+                    <KpiCard title="Visiteurs actifs" value={gaMetrics.active_users ?? 0} />
+                    <KpiCard title="Sessions" value={gaMetrics.sessions ?? 0} />
+                    <KpiCard title="Pages vues" value={gaMetrics.page_views ?? 0} />
+                    <KpiCard
+                      title="Canal principal"
+                      value={topChannel ? `${topChannel.name} (${topChannel.sessions})` : '—'}
+                    />
+                    <KpiCard
+                      title="Top page"
+                      value={topPage ? `${topPage.path} (${topPage.page_views})` : '—'}
+                    />
                   </div>
+
                   <div className="rounded-lg border border-[#E94560]/20 bg-[#E94560]/5 p-4">
-                    <p className="text-sm font-semibold text-[#E94560]">📊 Configuration Google Analytics 4</p>
-                    <p className="mt-2 text-xs text-text-muted">Pour activer le suivi du trafic, consultez la documentation <a href="https://analytics.google.com/" target="_blank" rel="noopener noreferrer" className="font-semibold text-accent hover:underline">Google Analytics 4</a></p>
+                    <p className="text-sm font-semibold text-[#E94560]">Configuration Google Analytics 4</p>
+                    <p className="mt-2 text-xs text-text-muted">
+                      {ga4?.error
+                        ? ga4.error
+                        : ga4?.configured
+                          ? `Propriete ${ga4.property_id} active du ${ga4.date_range?.start_date} au ${ga4.date_range?.end_date}.`
+                          : 'Aucune configuration GA4 detectee.'}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -138,7 +140,7 @@ export default function DashboardPage() {
           </div>
 
           <section className="space-y-3">
-            <h2 className="font-display text-xl font-bold text-primary">10 dernières commandes</h2>
+            <h2 className="font-display text-xl font-bold text-primary">10 dernieres commandes</h2>
             <RecentOrdersTable orders={stats?.recent_orders} />
           </section>
         </div>
