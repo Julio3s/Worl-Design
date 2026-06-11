@@ -20,6 +20,7 @@ frontend/.env
 .env
 .env.*
 !.env.example
+key.yaml
 
 # OS
 .DS_Store
