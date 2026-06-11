@@ -58,16 +58,15 @@ export function Navbar() {
           {/* Logo */}
           <Link
             to="/"
-            className="flex shrink-0 items-center justify-center rounded-[14px] border border-[#EFEFEF]"
-            style={{ width: 70, height: 70 }}
+            className="flex shrink-0 items-center justify-center"
             aria-label="Accueil World Design"
           >
-            <img src="/logo.png" alt="World Design" style={{ width: 70, height: "auto" }} />
+            <img src="/logo.png" alt="World Design" style={{ height: 60, width: "auto" }} />
           </Link>
 
           {/* Bandeau livraison */}
           <div className="wd-delivery flex flex-1 items-center gap-2 rounded-[14px] bg-[#F3F4F6] px-3 py-3 min-w-0 mx-1 sm:gap-3 sm:px-4 sm:py-3 sm:mx-2 lg:mx-4">
-            <Truck className="h-6 w-6 shrink-0 text-[#374151] sm:h-7 sm:w-7" strokeWidth={1.7} />
+            <Truck className="h-6 w-6 shrink-0 text-[#1A56DB] sm:h-7 sm:w-7" strokeWidth={1.7} />
             <div className="min-w-0 overflow-hidden">
               <p className="text-xs font-semibold text-[#111827] truncate sm:text-sm">
                 Livraison rapide partout
@@ -230,10 +229,9 @@ export function Navbar() {
               <Link
                 to="/"
                 className="flex items-center justify-center"
-                style={{ width: 60, height: 60 }}
                 onClick={() => setMobileOpen(false)}
               >
-                <img src="/logo.png" alt="World Design" style={{ width: 60, height: "auto" }} />
+                <img src="/logo.png" alt="World Design" style={{ height: 60, width: "auto" }} />
               </Link>
 
               <button
@@ -249,7 +247,7 @@ export function Navbar() {
             <div className="flex flex-1 flex-col gap-3 overflow-y-auto px-4 py-5">
               {/* Bandeau livraison mobile */}
               <div className="flex items-center gap-3 rounded-[14px] bg-[#F3F4F6] px-4 py-3">
-                <Truck className="h-7 w-7 shrink-0 text-[#374151]" strokeWidth={1.7} />
+                <Truck className="h-7 w-7 shrink-0 text-[#1A56DB]" strokeWidth={1.7} />
                 <div>
                   <p className="text-sm font-semibold text-[#111827]">Livraison rapide partout</p>
                   <p className="text-xs text-[#6B7280]">2 à 5 jours ouvrés</p>
