@@ -12,17 +12,25 @@ export function Logo({ to = '/', size = 'md', className = '', showLink = true })
     <img
       src="/logo.png"
       alt="World Design"
-      className={[SIZE_CLASSES[size] || SIZE_CLASSES.md, className].filter(Boolean).join(' ')}
+      className={[SIZE_CLASSES[size] || SIZE_CLASSES.md, 'block object-contain', className]
+        .filter(Boolean)
+        .join(' ')}
     />
   );
 
+  const framedImage = (
+    <span className="inline-flex items-center rounded-[10px] bg-white px-2 py-1 shadow-sm ring-1 ring-black/5">
+      {image}
+    </span>
+  );
+
   if (!showLink) {
-    return image;
+    return framedImage;
   }
 
   return (
-    <Link to={to} className="inline-flex items-center" aria-label="World Design — Accueil">
-      {image}
+    <Link to={to} className="inline-flex items-center" aria-label="World Design - Accueil">
+      {framedImage}
     </Link>
   );
 }
