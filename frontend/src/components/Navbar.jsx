@@ -68,10 +68,10 @@ export function Navbar() {
           {/* Logo */}
           <Link
             to="/"
-            className="flex shrink-0 items-center gap-3 leading-none"
+            className="flex shrink-0 items-center gap-2 sm:gap-3 leading-none"
             aria-label="Accueil World Design"
           >
-            <svg width="56" height="48" viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
+            <svg width="42" height="36" viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0 sm:h-12 sm:w-14">
               {/* W lettre stylisée */}
               <g>
                 {/* Partie gauche du W */}
@@ -86,19 +86,19 @@ export function Navbar() {
               </g>
             </svg>
             <div className="flex flex-col leading-tight">
-              <span className="text-xl font-black text-[#0052CC]">World</span>
-              <span className="text-xl font-black text-[#0052CC]">Design</span>
+              <span className="text-base font-black text-[#0052CC] sm:text-xl">World</span>
+              <span className="text-base font-black text-[#0052CC] sm:text-xl">Design</span>
             </div>
           </Link>
 
           {/* Bandeau livraison */}
-          <div className="hidden flex-1 items-center gap-2 rounded-full bg-[#F3F4F6] px-4 py-2.5 sm:flex sm:gap-3 md:gap-4">
+          <div className="flex flex-1 items-center gap-2 rounded-full bg-[#F3F4F6] px-3 py-2 sm:gap-3 sm:px-4 sm:py-2.5 md:gap-4">
             <Truck className="h-5 w-5 shrink-0 text-[#0052CC] sm:h-6 sm:w-6" strokeWidth={2} />
             <div className="min-w-0">
-              <p className="text-sm font-semibold text-[#111827] truncate sm:text-base">
+              <p className="text-xs font-semibold text-[#111827] truncate sm:text-sm">
                 Livraison rapide partout
               </p>
-              <p className="text-xs text-[#6B7280] truncate sm:text-sm">
+              <p className="text-[10px] text-[#6B7280] truncate sm:text-xs">
                 2 à 5 jours ouvrés
               </p>
             </div>
