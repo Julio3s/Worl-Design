@@ -93,7 +93,7 @@ export function Navbar() {
 
           {/* Bandeau livraison */}
           <div className="flex flex-1 items-center gap-2 rounded-full bg-[#F3F4F6] px-3 py-2 sm:gap-3 sm:px-4 sm:py-2.5 md:gap-4">
-            <Truck className="h-5 w-5 shrink-0 text-[#0052CC] sm:h-6 sm:w-6" strokeWidth={2} />
+            <Truck className="hidden sm:block h-5 w-5 shrink-0 text-[#0052CC] sm:h-6 sm:w-6" strokeWidth={2} />
             <div className="min-w-0">
               <p className="text-xs font-semibold text-[#111827] truncate sm:text-sm">
                 Livraison rapide partout
@@ -180,7 +180,7 @@ export function Navbar() {
             <div className="flex flex-1 flex-col gap-3 overflow-y-auto px-4 py-5">
               {/* Bandeau livraison mobile */}
               <div className="flex items-center gap-3 rounded-full bg-[#F3F4F6] px-4 py-3">
-                <Truck className="h-6 w-6 shrink-0 text-[#0052CC]" strokeWidth={2} />
+                <Truck className="hidden sm:block h-6 w-6 shrink-0 text-[#0052CC]" strokeWidth={2} />
                 <div>
                   <p className="text-sm font-semibold text-[#111827]">Livraison rapide partout</p>
                   <p className="text-xs text-[#6B7280]">2 à 5 jours ouvrés</p>
