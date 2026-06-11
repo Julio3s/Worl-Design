@@ -66,20 +66,20 @@ export function Navbar() {
           </Link>
 
           {/* Bandeau livraison */}
-          <div className="wd-delivery flex flex-1 items-center gap-3 rounded-[14px] bg-[#F3F4F6] px-4 py-2.5 min-w-0 mx-2 sm:mx-4">
-            <Truck className="h-7 w-7 shrink-0 text-[#374151]" strokeWidth={1.7} />
-            <div className="min-w-0">
-              <p className="text-sm font-semibold text-[#111827] whitespace-nowrap">
+          <div className="wd-delivery flex flex-1 items-center gap-1.5 rounded-[14px] bg-[#F3F4F6] px-2 py-2 min-w-0 mx-1 sm:gap-3 sm:px-4 sm:py-2.5 sm:mx-2 lg:mx-4">
+            <Truck className="h-5 w-5 shrink-0 text-[#374151] sm:h-7 sm:w-7" strokeWidth={1.7} />
+            <div className="min-w-0 overflow-hidden">
+              <p className="text-[10px] font-semibold text-[#111827] truncate sm:text-sm">
                 Livraison rapide partout
               </p>
-              <p className="text-xs font-normal text-[#6B7280]">
+              <p className="text-[9px] font-normal text-[#6B7280] truncate sm:text-xs">
                 2 à 5 jours ouvrés
               </p>
             </div>
           </div>
 
           {/* Actions */}
-          <div className="flex shrink-0 items-center gap-2">
+          <div className="flex shrink-0 items-center gap-1 sm:gap-2">
             <Link
               to={profileHref}
               className="flex h-11 w-11 items-center justify-center rounded-full bg-[#F3F4F6] transition hover:bg-[#E5E7EB]"
