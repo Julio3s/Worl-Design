@@ -14,7 +14,6 @@ export function PublicLayout() {
         maxWidth: "100vw",
         overflowX: "hidden",
         boxSizing: "border-box",
-        padding: "0 16px",
       }}
     >
       <ScrollToTop />
