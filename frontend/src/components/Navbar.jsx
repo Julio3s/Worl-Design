@@ -58,10 +58,16 @@ export function Navbar() {
           {/* Logo */}
           <Link
             to="/"
-            className="flex shrink-0 items-center justify-center"
+            className="flex shrink-0 flex-col items-center leading-none"
             aria-label="Accueil World Design"
           >
-            <img src="/logo.png" alt="World Design" style={{ height: 60, width: "auto" }} />
+            <span className="font-display text-[28px] font-black tracking-tight text-primary">
+              <span className="text-[#1A1A2E]">W</span>
+              <span className="text-[#E94560]">D</span>
+            </span>
+            <span className="text-[7px] font-bold uppercase tracking-[0.3em] text-[#6B6B6B] mt-[-2px]">
+              World Design
+            </span>
           </Link>
 
           {/* Bandeau livraison */}
@@ -231,7 +237,13 @@ export function Navbar() {
                 className="flex items-center justify-center"
                 onClick={() => setMobileOpen(false)}
               >
-                <img src="/logo.png" alt="World Design" style={{ height: 60, width: "auto" }} />
+                <span className="font-display text-[28px] font-black tracking-tight text-primary leading-none">
+                  <span className="text-[#1A1A2E]">W</span>
+                  <span className="text-[#E94560]">D</span>
+                </span>
+                <span className="text-[7px] font-bold uppercase tracking-[0.3em] text-[#6B6B6B] ml-1 mt-0.5">
+                  WORLD DESIGN
+                </span>
               </Link>
 
               <button
