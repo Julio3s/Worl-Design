@@ -51,7 +51,7 @@ export function Navbar() {
     <>
       <header className="sticky top-0 z-50 border-b border-white/10 bg-primary text-white shadow-[0_8px_30px_rgba(0,0,0,0.18)]">
         <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8">
-          <Logo to="/" size="md" className="sm:h-12" />
+          <Logo to="/" size="md" className="sm:h-16" />
 
           <nav className="hidden items-center gap-6 lg:flex" aria-label="Navigation principale">
             {NAV_LINKS.map((link) => (
