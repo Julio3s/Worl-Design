@@ -367,8 +367,22 @@ export default function HomePage() {
       {/* ================================================================ */}
       {/* SECTION 4 — PRODUITS VEDETTES                                    */}
       {/* ================================================================ */}
-      <section id="vedettes" className="section-shell" style={{ backgroundColor: '#F8F5F0' }}>
-        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+      <section 
+        id="vedettes" 
+        className="section-shell relative overflow-hidden"
+        style={{
+          backgroundColor: '#F8F5F0',
+          backgroundImage: "url('/images/steps-background.png')",
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          backgroundAttachment: 'fixed'
+        }}
+      >
+        {/* Overlay couleur semi-transparent */}
+        <div className="absolute inset-0 bg-[#F8F5F0]/90" aria-hidden="true" />
+        
+        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <h2 className="text-3xl font-extrabold text-[#1A1A2E] sm:text-4xl lg:text-5xl">
@@ -391,17 +405,39 @@ export default function HomePage() {
             {loading ? (
               <ProductGridSkeleton count={6} />
             ) : featuredProducts.length > 0 ? (
-              <div className="section-stack-2">
-                {featuredProducts.map((product, index) => (
-                  <div
-                    key={product.id}
-                    className="animate-fadeInUp"
-                    style={{ animationDelay: `${index * 80}ms` }}
-                  >
-                    <ProductCard product={product} badgeLabel="BEST SELLER" showAddButton />
+              <>
+                {/* Desktop - Grid normal */}
+                <div className="hidden md:block">
+                  <div className="section-stack-2">
+                    {featuredProducts.map((product, index) => (
+                      <div
+                        key={product.id}
+                        className="animate-fadeInUp"
+                        style={{ animationDelay: `${index * 80}ms` }}
+                      >
+                        <ProductCard product={product} badgeLabel="BEST SELLER" showAddButton />
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
+                </div>
+
+                {/* Mobile - Horizontal scroll */}
+                <div className="md:hidden">
+                  <div className="overflow-x-auto scroll-smooth" style={{ scrollBehavior: 'smooth', WebkitOverflowScrolling: 'touch' }}>
+                    <div className="flex gap-4 pb-2" style={{ minWidth: 'min-content' }}>
+                      {featuredProducts.map((product, index) => (
+                        <div
+                          key={product.id}
+                          className="flex-shrink-0 w-80 animate-fadeInUp"
+                          style={{ animationDelay: `${index * 80}ms` }}
+                        >
+                          <ProductCard product={product} badgeLabel="BEST SELLER" showAddButton />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </>
             ) : (
               <EmptyState
                 title="Pas encore de produits vedettes"
