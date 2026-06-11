@@ -61,7 +61,7 @@ export function Navbar() {
             className="flex shrink-0 items-center gap-2.5 rounded-[14px] border border-[#EFEFEF] px-3.5 py-2"
             aria-label="Accueil World Design"
           >
-            <img src="/logo.png" alt="World Design" style={{ height: 42, width: "auto" }} />
+            <img src="/logo.png" alt="World Design" style={{ width: 100, height: "auto" }} />
           </Link>
 
           {/* Bandeau livraison */}
@@ -227,7 +227,7 @@ export function Navbar() {
           <aside className="absolute right-0 top-0 flex h-full w-[92vw] max-w-sm flex-col bg-white shadow-[0_20px_60px_rgba(0,0,0,0.2)]">
             <div className="flex items-center justify-between border-b border-[#EFEFEF] px-4 py-4">
               <Link to="/" className="flex items-center gap-2.5" onClick={() => setMobileOpen(false)}>
-                <img src="/logo.png" alt="World Design" style={{ height: 42, width: "auto" }} />
+                <img src="/logo.png" alt="World Design" style={{ width: 100, height: "auto" }} />
               </Link>
 
               <button
