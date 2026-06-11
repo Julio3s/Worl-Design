@@ -321,7 +321,7 @@ export default function HomePage() {
 
           <div className="mt-10">
             {loading ? (
-              <div className="section-stack-2">
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {Array.from({ length: 4 }).map((_, i) => (
                   <div key={i} className="h-64 animate-pulse rounded-2xl bg-[#F8F5F0]" />
                 ))}
@@ -329,7 +329,7 @@ export default function HomePage() {
             ) : error ? (
               <ErrorState description={error} onRetry={loadData} />
             ) : categories.length > 0 ? (
-              <div className="section-stack-2">
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {categories.map((cat) => (
                   <Link
                     key={cat.id}
