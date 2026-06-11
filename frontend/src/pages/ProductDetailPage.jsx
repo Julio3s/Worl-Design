@@ -178,13 +178,13 @@ export default function ProductDetailPage() {
           Retour au catalogue
         </Link>
 
-        <div className="mt-5 grid gap-8 lg:grid-cols-[1.05fr_0.95fr]">
-          <div className="overflow-hidden rounded-[8px] border border-[#E0DBD5] bg-white">
-            <div className="aspect-[4/5] bg-[#F1ECE6]">
+        <div className="mt-5 grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
+          <div className="mx-auto w-full max-w-[520px] overflow-hidden rounded-[8px] border border-[#E0DBD5] bg-white">
+            <div className="aspect-square bg-[#F1ECE6] p-4">
               <img
                 src={image}
                 alt={product.name}
-                className="h-full w-full object-cover"
+                className="h-full w-full object-contain"
                 loading="eager"
               />
             </div>

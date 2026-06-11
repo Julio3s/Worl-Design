@@ -101,6 +101,14 @@ export default function CartPage() {
 
   const [showClearConfirm, setShowClearConfirm] = React.useState(false);
   const [products, setProducts] = React.useState({});
+  const [expandedItemKeys, setExpandedItemKeys] = React.useState({});
+
+  const toggleItemDetails = (itemKey) => {
+    setExpandedItemKeys((current) => ({
+      ...current,
+      [itemKey]: !current[itemKey],
+    }));
+  };
 
   React.useEffect(() => {
     let isMounted = true;
@@ -266,6 +274,8 @@ export default function CartPage() {
             {items.map((item) => {
               const lineTotal = Number(item.price || 0) * Number(item.quantity || 0);
               const image = item.imageUrl || getProductImage(item);
+              const product = products[item.productSlug];
+              const isExpanded = Boolean(expandedItemKeys[item.key]);
 
               return (
                 <article
@@ -273,9 +283,12 @@ export default function CartPage() {
                   className="group relative flex flex-col gap-5 rounded-2xl border border-[#E0DBD5] bg-white p-5 shadow-sm transition-all duration-300 hover:border-accent/20 hover:shadow-md sm:flex-row sm:items-start"
                 >
                   {/* Image produit */}
-                  <Link
-                    to={`/products/${item.productSlug}`}
+                  <button
+                    type="button"
+                    onClick={() => toggleItemDetails(item.key)}
                     className="relative block h-28 w-28 flex-none overflow-hidden rounded-xl border border-[#E0DBD5] bg-[#F1ECE6] transition-shadow group-hover:shadow-md"
+                    aria-expanded={isExpanded}
+                    aria-label={`Afficher les détails pour ${item.productName}`}
                   >
                     <img
                       src={image}
@@ -284,17 +297,19 @@ export default function CartPage() {
                       loading="lazy"
                       decoding="async"
                     />
-                  </Link>
+                  </button>
 
                   {/* Infos produit */}
                   <div className="min-w-0 flex-1">
                     <div className="flex items-start justify-between gap-2">
-                      <Link
-                        to={`/products/${item.productSlug}`}
-                        className="text-lg font-bold text-primary transition hover:text-accent"
+                      <button
+                        type="button"
+                        onClick={() => toggleItemDetails(item.key)}
+                        className="text-left text-lg font-bold text-primary transition hover:text-accent"
+                        aria-expanded={isExpanded}
                       >
                         {item.productName}
-                      </Link>
+                      </button>
                       {(item.customText || item.customFileName) && (
                         <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-gold/10 px-2.5 py-1 text-xs font-medium text-gold">
                           <Sparkles className="h-3 w-3" />
@@ -303,8 +318,33 @@ export default function CartPage() {
                       )}
                     </div>
 
-                    {products[item.productSlug]?.is_customizable ? (
-                      <CartItemCustomization item={item} product={products[item.productSlug]} />
+                    {product ? (
+                      <div className="mt-2 space-y-3">
+                        <button
+                          type="button"
+                          onClick={() => toggleItemDetails(item.key)}
+                          className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-accent/70 transition hover:text-accent"
+                          aria-expanded={isExpanded}
+                        >
+                          {isExpanded ? 'Masquer les détails' : 'Voir la description'}
+                          <span className="text-[10px]">▾</span>
+                        </button>
+
+                        {isExpanded ? (
+                          <div className="rounded-[8px] border border-[#E0DBD5] bg-[#FAF8F4] px-4 py-4">
+                            <p className="text-sm font-semibold text-primary">Description</p>
+                            <p className="mt-2 text-sm leading-6 text-primary/60">
+                              {product.description}
+                            </p>
+
+                            {product.is_customizable ? (
+                              <div className="mt-4">
+                                <CartItemCustomization item={item} product={product} />
+                              </div>
+                            ) : null}
+                          </div>
+                        ) : null}
+                      </div>
                     ) : null}
 
                     <p className="mt-3 text-sm text-primary/45">
