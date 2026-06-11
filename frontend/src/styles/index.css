@@ -40,6 +40,15 @@ select {
     animation: page-fade-in 200ms ease-out;
   }
 
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
   .section-shell {
     @apply px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20;
     background-color: #f7f2ea;

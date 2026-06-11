@@ -5,6 +5,7 @@ import { AdminLayout } from './components/admin/AdminLayout';
 import { AdminRoute } from './components/AdminRoute';
 import { LoadingScreen } from './components/LoadingScreen';
 import { ToastContainer } from './components/Toast';
+import { GoogleAnalytics } from './components/GoogleAnalytics';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { PublicLayout } from './components/PublicLayout';
 
@@ -29,6 +30,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <ToastContainer />
+      <GoogleAnalytics />
       <Suspense fallback={<LoadingScreen />}>
         <Routes>
           <Route element={<PublicLayout />}>
