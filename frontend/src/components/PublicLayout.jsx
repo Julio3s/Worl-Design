@@ -7,7 +7,16 @@ import { ScrollToTop } from './ScrollToTop';
 
 export function PublicLayout() {
   return (
-    <div className="flex min-h-screen flex-col bg-cream text-text-dark">
+    <div 
+      className="flex min-h-screen flex-col bg-cream text-text-dark"
+      style={{
+        width: "100%",
+        maxWidth: "100vw",
+        overflowX: "hidden",
+        boxSizing: "border-box",
+        padding: "0 16px",
+      }}
+    >
       <ScrollToTop />
       <Navbar />
       <main className="flex-1">

@@ -10,7 +10,6 @@ import {
 import { useEffect, useMemo, useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 
-import { Logo } from './Logo';
 import { useAuthStore } from '../store/authStore';
 import { useCartStore } from '../store/cartStore';
 
@@ -62,19 +61,11 @@ export function Navbar() {
             className="flex shrink-0 items-center gap-2.5 rounded-[14px] border border-[#EFEFEF] px-3.5 py-2"
             aria-label="Accueil World Design"
           >
-            <Logo size="sm" className="shrink-0" />
-            <div className="flex flex-col leading-tight">
-              <span className="font-display text-base font-black text-primary leading-tight">
-                World
-              </span>
-              <span className="font-display text-base font-black text-primary leading-tight">
-                Design
-              </span>
-            </div>
+            <img src="/logo.png" alt="World Design" style={{ height: 34, width: "auto" }} />
           </Link>
 
           {/* Bandeau livraison */}
-          <div className="flex flex-1 items-center gap-3 rounded-[14px] bg-[#F3F4F6] px-4 py-2.5 min-w-0 mx-2 sm:mx-4">
+          <div className="wd-delivery flex flex-1 items-center gap-3 rounded-[14px] bg-[#F3F4F6] px-4 py-2.5 min-w-0 mx-2 sm:mx-4">
             <Truck className="h-7 w-7 shrink-0 text-[#374151]" strokeWidth={1.7} />
             <div className="min-w-0">
               <p className="text-sm font-semibold text-[#111827] whitespace-nowrap">
@@ -121,7 +112,14 @@ export function Navbar() {
         </div>
 
         {/* Navigation desktop (liens visibles) */}
-        <nav className="hidden border-t border-[#EFEFEF] bg-white px-4 lg:flex lg:items-center lg:justify-between lg:px-8 lg:py-2">
+        <nav
+          className="hidden border-t border-[#EFEFEF] bg-white px-4 lg:flex lg:items-center lg:justify-between lg:px-8 lg:py-2"
+          style={{
+            width: "100%",
+            boxSizing: "border-box",
+            overflowX: "hidden",
+          }}
+        >
           <div className="flex items-center gap-1">
             {NAV_LINKS.map((link) => (
               <NavLink
@@ -229,11 +227,7 @@ export function Navbar() {
           <aside className="absolute right-0 top-0 flex h-full w-[92vw] max-w-sm flex-col bg-white shadow-[0_20px_60px_rgba(0,0,0,0.2)]">
             <div className="flex items-center justify-between border-b border-[#EFEFEF] px-4 py-4">
               <Link to="/" className="flex items-center gap-2.5" onClick={() => setMobileOpen(false)}>
-                <Logo size="sm" className="shrink-0" />
-                <div className="flex flex-col leading-tight">
-                  <span className="font-display text-base font-black text-primary leading-tight">World</span>
-                  <span className="font-display text-base font-black text-primary leading-tight">Design</span>
-                </div>
+                <img src="/logo.png" alt="World Design" style={{ height: 34, width: "auto" }} />
               </Link>
 
               <button
