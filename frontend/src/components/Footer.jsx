@@ -1,8 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Mail, Phone, MapPin, Heart, Share2, Send } from 'lucide-react';
 
-import { Logo } from './Logo';
-
 const FOOTER_LINKS = [
   { to: '/products', label: 'Catalogue' },
   { to: '/products#vedettes', label: 'Vedettes' },
@@ -25,7 +23,9 @@ export function Footer() {
           
           {/* Marque */}
           <div>
-            <Logo to="/" size="md" className="h-14" />
+            <Link to="/" aria-label="Accueil World Design">
+              <img src="/logo.png" alt="World Design" style={{ height: 42, width: "auto" }} />
+            </Link>
             <p className="mt-4 text-sm leading-relaxed text-white/70 max-w-xs">
               Goodies personnalisés de qualité pour vos projets de marque.
               Paiement par carte ou mobile money et livraison partout au Togo.
