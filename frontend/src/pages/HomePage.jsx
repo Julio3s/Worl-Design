@@ -214,9 +214,8 @@ export default function HomePage() {
             src={HERO_IMAGE}
             alt=""
             aria-hidden="true"
-            className="h-full w-full object-cover opacity-5"
+            className="h-full w-full object-cover opacity-20"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#F7F2EA]/98 via-[#F7F2EA]/90 to-[#F7F2EA]/70" />
         </div>
 
         <div className="relative z-10 mx-auto grid w-full max-w-7xl items-center gap-10 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-[1fr_480px] lg:px-8">
