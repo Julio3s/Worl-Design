@@ -13,7 +13,6 @@ import { usePageTitle } from '../../hooks/usePageTitle';
 import { formatCurrency } from '../../utils/formatCurrency';
 
 const REFRESH_INTERVAL_MS = 5 * 60 * 1000;
-const gaMeasurementId = import.meta.env.VITE_GA_MEASUREMENT_ID?.trim();
 
 export default function DashboardPage() {
   usePageTitle('Admin dashboard');
@@ -90,7 +89,7 @@ export default function DashboardPage() {
       ) : (
         <div className="mt-6 space-y-6">
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
-            <KpiCard title="CA total periode" value={formatCurrency(kpis?.total_revenue)} highlight />
+            <KpiCard title="CA total période" value={formatCurrency(kpis?.total_revenue)} highlight />
             <KpiCard title="Nombre de commandes" value={kpis?.orders_count ?? 0} />
             <KpiCard title="Nombre de clients" value={kpis?.customers_count ?? 0} />
             <KpiCard title="Panier moyen" value={formatCurrency(kpis?.average_basket)} highlight />
@@ -104,54 +103,34 @@ export default function DashboardPage() {
             </section>
 
             <section className="space-y-3">
-              <h2 className="font-display text-xl font-bold text-primary">Trafic visiteurs</h2>
+              <h2 className="font-display text-xl font-bold text-primary">### Trafic visiteurs</h2>
               <div className="rounded-lg border border-[#E0DBD5] bg-white p-6">
                 <div className="space-y-4">
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div className="rounded-lg bg-[#F8F5F0] p-4">
                       <p className="text-sm font-medium text-text-muted">Visiteurs</p>
-                      <p className="mt-2 text-2xl font-bold text-primary">
-                        {gaMeasurementId ? 'Actif' : 'Non configure'}
-                      </p>
-                      <p className="mt-1 text-xs text-text-muted">
-                        {gaMeasurementId
-                          ? 'Le tracking Google Analytics 4 est branche sur le site.'
-                          : 'Ajoute VITE_GA_MEASUREMENT_ID pour activer le tracking.'}
-                      </p>
+                      <p className="mt-2 text-2xl font-bold text-primary">—</p>
+                      <p className="mt-1 text-xs text-text-muted">Connecter Google Analytics 4</p>
                     </div>
                     <div className="rounded-lg bg-[#F8F5F0] p-4">
                       <p className="text-sm font-medium text-text-muted">Pages vues</p>
-                      <p className="mt-2 text-2xl font-bold text-primary">
-                        {gaMeasurementId ? 'Actif' : 'Non configure'}
-                      </p>
-                      <p className="mt-1 text-xs text-text-muted">
-                        {gaMeasurementId
-                          ? 'Chaque changement de route est envoye a GA4.'
-                          : "Aucune page vue ne part tant que l'ID reel n'est pas fourni."}
-                      </p>
+                      <p className="mt-2 text-2xl font-bold text-primary">—</p>
+                      <p className="mt-1 text-xs text-text-muted">Connecter Google Analytics 4</p>
                     </div>
                     <div className="rounded-lg bg-[#F8F5F0] p-4">
                       <p className="text-sm font-medium text-text-muted">Provenance</p>
-                      <p className="mt-2 text-sm font-semibold text-primary">Google Analytics 4</p>
-                      <p className="mt-1 text-xs text-text-muted">
-                        Le detail des sources demandera l'API Google Analytics Data.
-                      </p>
+                      <p className="mt-2 text-sm font-semibold text-primary">Facebook • Google • TikTok</p>
+                      <p className="mt-1 text-xs text-text-muted">Connecter Google Analytics 4</p>
                     </div>
                     <div className="rounded-lg bg-[#F8F5F0] p-4">
                       <p className="text-sm font-medium text-text-muted">Taux de conversion</p>
-                      <p className="mt-2 text-2xl font-bold text-primary">Non calcule</p>
-                      <p className="mt-1 text-xs text-text-muted">
-                        Necessite un acces au reporting GA4 pour calculer ce KPI.
-                      </p>
+                      <p className="mt-2 text-2xl font-bold text-primary">—</p>
+                      <p className="mt-1 text-xs text-text-muted">Connecter Google Analytics 4</p>
                     </div>
                   </div>
                   <div className="rounded-lg border border-[#E94560]/20 bg-[#E94560]/5 p-4">
-                    <p className="text-sm font-semibold text-[#E94560]">Configuration Google Analytics 4</p>
-                    <p className="mt-2 text-xs text-text-muted">
-                      {gaMeasurementId
-                        ? "Le suivi est actif sur le site. Pour afficher des metrics dans ce tableau, il faut connecter la propriete GA4 a son API de reporting."
-                        : "Ajoute un identifiant de mesure reel dans VITE_GA_MEASUREMENT_ID, puis recharge l'application."}
-                    </p>
+                    <p className="text-sm font-semibold text-[#E94560]">📊 Configuration Google Analytics 4</p>
+                    <p className="mt-2 text-xs text-text-muted">Pour activer le suivi du trafic, consultez la documentation <a href="https://analytics.google.com/" target="_blank" rel="noopener noreferrer" className="font-semibold text-accent hover:underline">Google Analytics 4</a></p>
                   </div>
                 </div>
               </div>
@@ -159,7 +138,7 @@ export default function DashboardPage() {
           </div>
 
           <section className="space-y-3">
-            <h2 className="font-display text-xl font-bold text-primary">10 dernieres commandes</h2>
+            <h2 className="font-display text-xl font-bold text-primary">10 dernières commandes</h2>
             <RecentOrdersTable orders={stats?.recent_orders} />
           </section>
         </div>

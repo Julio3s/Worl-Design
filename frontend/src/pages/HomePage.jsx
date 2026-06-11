@@ -425,87 +425,42 @@ export default function HomePage() {
       {/* ================================================================ */}
       {/* SECTION 5 — COMMENT ÇA MARCHE                                    */}
       {/* ================================================================ */}
-      <section className="section-shell relative bg-white overflow-hidden">
-        {/* Fond décoratif bois */}
-        <div 
-          className="absolute inset-0 opacity-5 md:opacity-0"
-          style={{
-            backgroundImage: "url('/images/steps-wood-background.png')",
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat'
-          }}
-          aria-hidden="true"
-        />
-
-        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
+      <section className="section-shell bg-white">
+        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h2 className="text-3xl font-extrabold text-[#1A1A2E] sm:text-4xl lg:text-5xl">
               Commander en 4 étapes
             </h2>
           </div>
 
-          {/* Desktop layout - grid */}
-          <div className="hidden md:block relative mt-14">
-            <div className="grid gap-6 grid-cols-2 lg:grid-cols-4">
-              {/* Ligne de connexion */}
-              <div
-                className="absolute top-10 left-[12.5%] right-[12.5%] h-px"
-                style={{
-                  background: 'linear-gradient(90deg, #F5A623, #E94560, #F5A623)',
-                }}
-                aria-hidden="true"
-              />
+          <div className="relative mt-14 grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+            {/* Ligne de connexion */}
+            <div
+              className="absolute top-10 left-[12.5%] right-[12.5%] hidden h-px sm:block"
+              style={{
+                background: 'linear-gradient(90deg, #F5A623, #E94560, #F5A623)',
+              }}
+              aria-hidden="true"
+            />
 
-              {STEPS.map(({ num, icon: Icon, title, desc }, i) => (
-                <div key={num} className="relative flex flex-col items-center text-center">
-                  <div
-                    className="relative flex h-20 w-20 items-center justify-center rounded-full border border-[#E94560]/10 bg-white"
-                    style={{ borderColor: '#F5A62340' }}
+            {STEPS.map(({ num, icon: Icon, title, desc }, i) => (
+              <div key={num} className="relative flex flex-col items-center text-center">
+                <div
+                  className="relative flex h-20 w-20 items-center justify-center rounded-full border border-[#E94560]/10 bg-white"
+                  style={{ borderColor: '#F5A62340' }}
+                >
+                  <Icon className="h-7 w-7 text-[#E94560]" aria-hidden="true" />
+                  <span
+                    className="absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full text-[10px] font-black text-white"
+                    style={{ backgroundColor: '#E94560' }}
                   >
-                    <Icon className="h-7 w-7 text-[#E94560]" aria-hidden="true" />
-                    <span
-                      className="absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full text-[10px] font-black text-white"
-                      style={{ backgroundColor: '#E94560' }}
-                    >
-                      {i + 1}
-                    </span>
-                  </div>
-                  <h3 className="mt-5 text-base font-bold text-[#1A1A2E]">{title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-[#1A1A2E]/55 max-w-[200px]">{desc}</p>
+                    {i + 1}
+                  </span>
                 </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Mobile layout - horizontal scroll */}
-          <div className="md:hidden mt-10">
-            <div className="overflow-x-auto scrollbar-hide">
-              <div className="flex gap-4 pb-4">
-                {STEPS.map(({ num, icon: Icon, title, desc }, i) => (
-                  <div
-                    key={num}
-                    className="flex-none w-72 flex flex-col items-center text-center rounded-2xl bg-white/80 backdrop-blur-sm p-6 border border-[#E94560]/10"
-                    style={{ borderColor: '#F5A62340' }}
-                  >
-                    <div
-                      className="relative flex h-16 w-16 items-center justify-center rounded-full border border-[#E94560]/10"
-                      style={{ borderColor: '#F5A62340' }}
-                    >
-                      <Icon className="h-6 w-6 text-[#E94560]" aria-hidden="true" />
-                      <span
-                        className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full text-[9px] font-black text-white"
-                        style={{ backgroundColor: '#E94560' }}
-                      >
-                        {i + 1}
-                      </span>
-                    </div>
-                    <h3 className="mt-4 text-base font-bold text-[#1A1A2E]">{title}</h3>
-                    <p className="mt-2 text-sm leading-relaxed text-[#1A1A2E]/55">{desc}</p>
-                  </div>
-                ))}
+                <h3 className="mt-5 text-base font-bold text-[#1A1A2E]">{title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-[#1A1A2E]/55 max-w-[200px]">{desc}</p>
               </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
