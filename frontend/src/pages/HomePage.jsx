@@ -28,7 +28,7 @@ import { getFeaturedProducts, getCategories } from '../api/catalog';
 import { getCategoryImage } from '../utils/media';
 
 // ─── Images ───────────────────────────────────────────────────────
-const HERO_IMAGE = '/images/hero-products.jpg';
+const HERO_IMAGE = '/images/hero-products-personalized.jpg';
 const WHY_IMAGES = {
   customization: '/images/why-customization.jpg',
   quality: '/images/why-quality.png',
@@ -214,7 +214,7 @@ export default function HomePage() {
             src={HERO_IMAGE}
             alt=""
             aria-hidden="true"
-            className="h-full w-full object-cover opacity-20"
+            className="h-full w-full object-cover opacity-40"
           />
         </div>
 
