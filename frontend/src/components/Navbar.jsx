@@ -72,69 +72,67 @@ export function Navbar() {
 
   return (
     <>
-      <header className="sticky top-3 z-50 mx-auto w-full max-w-7xl px-3 pt-3 sm:px-6 lg:px-8">
+      <header className="sticky top-2 z-50 mx-auto w-full max-w-7xl px-2 pt-2 sm:px-4 lg:px-6">
         <div
-          className={`rounded-[24px] border border-white/70 px-3 py-3 shadow-[0_10px_30px_rgba(0,0,0,0.08)] backdrop-blur-[12px] transition-all duration-300 sm:px-4 lg:px-5 ${
-            scrolled ? 'bg-white/90' : 'bg-white/85'
+          className={`rounded-[28px] border border-white/80 px-2.5 py-2.5 shadow-[0_10px_30px_rgba(0,0,0,0.08)] backdrop-blur-[16px] transition-all duration-300 sm:px-3 lg:px-4 ${
+            scrolled ? 'bg-white/92' : 'bg-white/88'
           }`}
         >
-          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-            <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3">
+          <div className="grid grid-cols-[auto,1fr,auto,auto,auto] items-center gap-2 sm:gap-3">
+            <div className="min-w-0">
               <Logo to="/" size="sm" className="shrink-0" />
-
-              <Link
-                to="/products"
-                className="flex min-w-0 flex-1 items-center gap-2 rounded-[18px] border border-[#F5A623]/30 bg-[#FFF8E6] px-2.5 py-2 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md sm:flex-1"
-                aria-label="Voir le catalogue"
-              >
-                <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#F5A623]/15 text-[#F5A623]">
-                  <Truck className="h-4 w-4" aria-hidden="true" />
-                </span>
-                <span className="min-w-0">
-                  <span className="block text-[11px] font-semibold uppercase tracking-[0.18em] text-[#F5A623]">
-                    Livraison rapide
-                  </span>
-                  <span className="block truncate text-[12px] font-semibold text-[#1A1A1A]">
-                    2 à 5 jours ouvrés
-                  </span>
-                </span>
-              </Link>
             </div>
 
-            <div className="flex items-center gap-2">
-              <Link
-                to={profileHref}
-                className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#1A1A2E]/10 bg-white text-[#1A1A2E] shadow-sm transition hover:-translate-y-0.5 hover:border-[#E94560]/30 hover:text-[#E94560]"
-                aria-label={isAuthenticated ? 'Voir mon profil' : 'Se connecter'}
-              >
-                <UserRound className="h-5 w-5" aria-hidden="true" />
-              </Link>
+            <Link
+              to="/products"
+              className="flex min-w-0 items-center gap-2 overflow-hidden rounded-[18px] border border-[#F5A623]/25 bg-[#FFF8E6] px-2 py-2 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+              aria-label="Voir le catalogue"
+            >
+              <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#F5A623]/15 text-[#F5A623] sm:h-9 sm:w-9">
+                <Truck className="h-4 w-4" aria-hidden="true" />
+              </span>
+              <span className="min-w-0">
+                <span className="block text-[10px] font-semibold uppercase tracking-[0.2em] text-[#F5A623] sm:text-[11px]">
+                  Livraison rapide
+                </span>
+                <span className="block truncate text-[11px] font-semibold text-[#1A1A1A] sm:text-[12px]">
+                  2 à 5 jours ouvrés
+                </span>
+              </span>
+            </Link>
 
-              <Link
-                to="/cart"
-                className="relative inline-flex h-11 w-11 items-center justify-center rounded-full bg-[#E94560] text-white shadow-[0_10px_20px_rgba(233,69,96,0.25)] transition hover:-translate-y-0.5 hover:shadow-[0_12px_24px_rgba(233,69,96,0.32)]"
-                aria-label="Voir le panier"
-              >
-                <ShoppingBag className="h-5 w-5" aria-hidden="true" />
-                {cartCount > 0 ? (
-                  <span className="absolute -right-1 -top-1 grid h-5 min-w-5 place-items-center rounded-full border border-white bg-[#F5A623] px-1 text-[10px] font-bold text-[#1A1A1A]">
-                    {cartCount}
-                  </span>
-                ) : null}
-              </Link>
+            <Link
+              to={profileHref}
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#1A1A2E]/10 bg-white text-[#1A1A2E] shadow-sm transition hover:-translate-y-0.5 hover:border-[#E94560]/30 hover:text-[#E94560] sm:h-11 sm:w-11"
+              aria-label={isAuthenticated ? 'Voir mon profil' : 'Se connecter'}
+            >
+              <UserRound className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" />
+            </Link>
 
-              <button
-                type="button"
-                onClick={() => setMobileOpen(true)}
-                className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#1A1A2E]/10 bg-white text-[#1A1A2E] shadow-sm transition hover:-translate-y-0.5 hover:border-[#E94560]/30 hover:text-[#E94560] lg:hidden"
-                aria-label="Ouvrir le menu"
-              >
-                <Menu className="h-5 w-5" aria-hidden="true" />
-              </button>
-            </div>
+            <Link
+              to="/cart"
+              className="relative inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#E94560] text-white shadow-[0_10px_20px_rgba(233,69,96,0.25)] transition hover:-translate-y-0.5 hover:shadow-[0_12px_24px_rgba(233,69,96,0.32)] sm:h-11 sm:w-11"
+              aria-label="Voir le panier"
+            >
+              <ShoppingBag className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" />
+              {cartCount > 0 ? (
+                <span className="absolute -right-1 -top-1 grid h-5 min-w-5 place-items-center rounded-full border border-white bg-[#F5A623] px-1 text-[10px] font-bold text-[#1A1A1A]">
+                  {cartCount}
+                </span>
+              ) : null}
+            </Link>
+
+            <button
+              type="button"
+              onClick={() => setMobileOpen(true)}
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#1A1A2E]/10 bg-white text-[#1A1A2E] shadow-sm transition hover:-translate-y-0.5 hover:border-[#E94560]/30 hover:text-[#E94560] sm:h-11 sm:w-11 lg:hidden"
+              aria-label="Ouvrir le menu"
+            >
+              <Menu className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" />
+            </button>
           </div>
 
-          <nav className="mt-3 hidden items-center justify-between rounded-[18px] border border-[#1A1A2E]/5 bg-[#F8F5F0]/90 px-3 py-2 lg:flex" aria-label="Navigation principale">
+          <nav className="mt-2 hidden items-center justify-between rounded-[20px] border border-[#1A1A2E]/5 bg-[#F8F5F0]/90 px-3 py-2 lg:flex" aria-label="Navigation principale">
             <div className="flex items-center gap-2">
               {NAV_LINKS.map((link) => (
                 <NavLink key={link.to} to={link.to} end={link.end} className={({ isActive }) => navLinkClass({ isActive }, true)}>
