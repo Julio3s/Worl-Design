@@ -75,12 +75,6 @@ select {
   }
 }
 
-@media (max-width: 480px) {
-  .wd-delivery {
-    display: none;
-  }
-}
-
 @keyframes page-fade-in {
   from {
     opacity: 0;
