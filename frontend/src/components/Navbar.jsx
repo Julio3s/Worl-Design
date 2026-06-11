@@ -59,10 +59,10 @@ export function Navbar() {
           <Link
             to="/"
             className="flex shrink-0 items-center justify-center rounded-[14px] border border-[#EFEFEF]"
-            style={{ width: 75, height: 75 }}
+            style={{ width: 60, height: 60 }}
             aria-label="Accueil World Design"
           >
-            <img src="/logo.png" alt="World Design" style={{ width: 75, height: "auto" }} />
+            <img src="/logo.png" alt="World Design" style={{ width: 60, height: "auto" }} />
           </Link>
 
           {/* Bandeau livraison */}
@@ -230,10 +230,10 @@ export function Navbar() {
               <Link
                 to="/"
                 className="flex items-center justify-center"
-                style={{ width: 75, height: 75 }}
+                style={{ width: 60, height: 60 }}
                 onClick={() => setMobileOpen(false)}
               >
-                <img src="/logo.png" alt="World Design" style={{ width: 75, height: "auto" }} />
+                <img src="/logo.png" alt="World Design" style={{ width: 60, height: "auto" }} />
               </Link>
 
               <button
