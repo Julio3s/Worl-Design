@@ -64,7 +64,7 @@ export function Navbar() {
 
   return (
     <>
-      <header className="sticky top-3 z-50 mx-auto w-[calc(100%-16px)] max-w-7xl rounded-2xl bg-white/90 shadow-[0_4px_20px_rgba(0,0,0,0.08)] backdrop-blur-md border border-white/80 sm:w-[calc(100%-32px)] lg:w-[calc(100%-48px)]">
+      <header className="fixed top-3 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-16px)] max-w-7xl rounded-2xl bg-white/90 shadow-[0_4px_20px_rgba(0,0,0,0.08)] backdrop-blur-md border border-white/80 sm:w-[calc(100%-32px)] lg:w-[calc(100%-48px)]">
         <div className="flex items-center justify-between gap-2 px-4 py-3 sm:px-6 sm:gap-3 lg:px-8 lg:gap-4">
           {/* Logo */}
           <Link
