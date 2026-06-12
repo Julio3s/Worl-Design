@@ -17,6 +17,7 @@ import { EmptyState } from '../components/EmptyState';
 import { ErrorState } from '../components/ErrorState';
 import { ProductCard } from '../components/ProductCard';
 import { ProductGridSkeleton } from '../components/skeletons/ProductGridSkeleton';
+import { useCartStore } from '../store/cartStore';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { getFeaturedProducts, getCategories } from '../api/catalog';
 import { getCategoryImage } from '../utils/media';
@@ -144,6 +145,7 @@ function FaqItem({ item, isOpen, onToggle }) {
 // ─── Composant principal ──────────────────────────────────────────
 export default function HomePage() {
   usePageTitle('WORLD DESIGN — Goodies personnalisés au Togo');
+  const cartCount = useCartStore((state) => state.getCount());
 
   const [categories, setCategories] = useState([]);
   const [featuredProducts, setFeaturedProducts] = useState([]);
@@ -616,9 +618,14 @@ export default function HomePage() {
       <Link
         to="/cart"
         aria-label="Voir le panier"
-        className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-[#E94560] text-white shadow-lg shadow-accent/25 transition-transform hover:scale-105 active:scale-95"
+        className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-white/90 text-[#1A1A2E] shadow-lg shadow-black/10 backdrop-blur-sm border border-[#E0DBD5] transition-transform hover:scale-105 active:scale-95"
       >
         <ShoppingBag className="h-6 w-6" />
+        {cartCount > 0 ? (
+          <span className="absolute -right-1 -top-1 grid h-5 min-w-5 place-items-center rounded-full border-2 border-white bg-[#E94560] px-1 text-[10px] font-bold text-white">
+            {cartCount}
+          </span>
+        ) : null}
       </Link>
 
       {/* Animations */}
