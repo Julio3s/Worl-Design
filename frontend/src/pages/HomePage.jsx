@@ -186,12 +186,12 @@ export default function HomePage() {
 
         <div className="relative z-10 mx-auto grid w-full max-w-7xl items-center gap-10 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-[1fr_480px] lg:px-8">
           <div>
-            <h1 className="mt-6 max-w-2xl text-4xl font-extrabold leading-[1.08] text-[#1A1A2E] sm:text-5xl md:text-6xl lg:text-7xl">
+            <h1 className="mt-6 max-w-2xl text-4xl font-extrabold leading-[1.08] text-white sm:text-5xl md:text-6xl lg:text-7xl">
               Transformez vos idées en{' '}
               <span className="text-[#F5A623]">objets uniques</span>
             </h1>
 
-            <p className="mt-7 max-w-xl text-base leading-relaxed text-[#1A1A2E]/70 sm:text-lg">
+            <p className="mt-7 max-w-xl text-base leading-relaxed text-white/85 sm:text-lg">
               Goodies personnalisés, cadeaux d'entreprise et objets promotionnels conçus sur mesure pour particuliers et professionnels.
             </p>
 
@@ -206,7 +206,7 @@ export default function HomePage() {
               </Link>
               <Link
                 to="/products"
-                className="inline-flex items-center gap-2 rounded-full border border-[#1A1A2E]/20 px-7 py-4 text-sm font-bold text-[#1A1A2E] transition hover:border-[#F5A623]/50 hover:text-[#F5A623]"
+                className="inline-flex items-center gap-2 rounded-full border border-white/30 px-7 py-4 text-sm font-bold text-white transition hover:border-[#F5A623] hover:text-[#F5A623]"
               >
                 Découvrir nos produits
               </Link>
