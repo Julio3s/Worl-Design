@@ -191,7 +191,7 @@ export default function HomePage() {
               <span className="text-[#F5A623]">objets uniques</span>
             </h1>
 
-            <p className="mt-7 max-w-xl text-base leading-relaxed text-white/85 sm:text-lg">
+            <p className="mt-7 max-w-xl text-base leading-relaxed text-white sm:text-lg">
               Goodies personnalisés, cadeaux d'entreprise et objets promotionnels conçus sur mesure pour particuliers et professionnels.
             </p>
 
