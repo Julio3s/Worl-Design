@@ -189,7 +189,7 @@ def admin_products(request):
         return paginator.get_paginated_response(serializer.data)
 
     payload = _normalize_admin_payload(request.data)
-    serializer = ProductAdminSerializer(data=payload)
+    serializer = ProductAdminSerializer(data=payload, context={'request': request})
     if serializer.is_valid():
         try:
             product = serializer.save()
@@ -198,7 +198,7 @@ def admin_products(request):
                 {'detail': 'A product with the same name or slug already exists'},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        return Response(ProductAdminSerializer(product).data, status=status.HTTP_201_CREATED)
+        return Response(ProductAdminSerializer(product, context={'request': request}).data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -215,7 +215,7 @@ def admin_product_detail(request, pk):
 
     if request.method in ['PUT', 'PATCH']:
         payload = _normalize_admin_payload(request.data)
-        serializer = ProductAdminSerializer(product, data=payload, partial=request.method == 'PATCH')
+        serializer = ProductAdminSerializer(product, data=payload, partial=request.method == 'PATCH', context={'request': request})
         if serializer.is_valid():
             try:
                 product = serializer.save()
@@ -224,7 +224,7 @@ def admin_product_detail(request, pk):
                     {'detail': 'A product with the same name or slug already exists'},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-            return Response(ProductAdminSerializer(product).data, status=status.HTTP_200_OK)
+            return Response(ProductAdminSerializer(product, context={'request': request}).data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     product.is_active = False
