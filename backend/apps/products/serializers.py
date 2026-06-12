@@ -136,8 +136,19 @@ class ProductAdminSerializer(serializers.ModelSerializer):
         write_only=True,
         required=False,
     )
+
     category_name = serializers.SerializerMethodField()
     category_slug = serializers.SerializerMethodField()
+
+    def validate_images_data(self, value):
+        # Si images_data arrive comme string JSON (FormData), parser
+        if isinstance(value, str):
+            import json
+            try:
+                value = json.loads(value)
+            except (json.JSONDecodeError, TypeError):
+                raise serializers.ValidationError('images_data doit être un JSON valide')
+        return value
 
     class Meta:
         model = Product
@@ -166,7 +177,7 @@ class ProductAdminSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         images_data = validated_data.pop('images_data', [])
         product = super().create(validated_data)
-        self._set_images(product, images_data)
+        self._set_images(product, images_data, self.context.get('request'))
         return product
 
     def update(self, instance, validated_data):
@@ -174,13 +185,38 @@ class ProductAdminSerializer(serializers.ModelSerializer):
         product = super().update(instance, validated_data)
         if images_data is not None:
             instance.images.all().delete()
-            self._set_images(product, images_data)
+            self._set_images(product, images_data, self.context.get('request'))
         return product
 
-    def _set_images(self, product, images_data):
+    def _set_images(self, product, images_data, request):
         for idx, img in enumerate(images_data):
-            ProductImage.objects.create(
-                product=product,
-                image=img.get('public_id') or img.get('image'),
-                order=img.get('order', idx),
-            )
+            public_id = img.get('public_id')
+            if public_id:
+                # Image existante conservée (Cloudinary public_id)
+                ProductImage.objects.create(
+                    product=product,
+                    image=public_id,
+                    order=img.get('order', idx),
+                )
+                continue
+
+            # Nouvelle image uploadée via FormData
+            image_file = img.get('image') or img.get('file')
+            if image_file and hasattr(image_file, 'read'):
+                # C'est un fichier uploadé
+                ProductImage.objects.create(
+                    product=product,
+                    image=image_file,
+                    order=img.get('order', idx),
+                )
+                continue
+
+            # Fichier envoyé séparément (images_new_*) — chercher dans request.data
+            if request:
+                new_file = request.data.get(f'images_new_{idx}')
+                if new_file and hasattr(new_file, 'read'):
+                    ProductImage.objects.create(
+                        product=product,
+                        image=new_file,
+                        order=img.get('order', idx),
+                    )

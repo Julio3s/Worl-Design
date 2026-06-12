@@ -134,18 +134,14 @@ export function ProductFormModal({
     setError('');
     setSubmitting(true);
 
-    // Construire images_data : union des existantes conservées + nouvelles
-    const existingData = existingImages.map((img, idx) => ({
+    // Métadonnées des images existantes (JSON-safe)
+    const existingMeta = existingImages.map((img, idx) => ({
       public_id: img.image_url || '',
       order: idx,
     }));
 
-    const newData = extraImages.map((item, idx) => ({
-      image: item.file,
-      order: existingData.length + idx,
-    }));
-
-    const imagesData = [...existingData, ...newData];
+    // Fichiers des nouvelles images (pas JSON-safe)
+    const newFiles = extraImages.map((item) => item.file);
 
     try {
       await onSubmit({
@@ -154,7 +150,8 @@ export function ProductFormModal({
         stock: Number(form.stock),
         category: form.category || null,
         imageFile,
-        imagesData,
+        imagesData: existingMeta,
+        newImageFiles: newFiles,
       });
       onClose();
     } catch (caughtError) {

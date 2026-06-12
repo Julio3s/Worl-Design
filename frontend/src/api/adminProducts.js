@@ -30,9 +30,16 @@ function buildProductFormData(payload) {
     formData.append('image', payload.imageFile);
   }
 
-  // Ajouter les images supplémentaires comme images_data (JSON)
+  // Ajouter les métadonnées des images (existantes) en JSON
   if (payload.imagesData && payload.imagesData.length > 0) {
     formData.append('images_data', JSON.stringify(payload.imagesData));
+  }
+
+  // Ajouter les fichiers des nouvelles images séparément
+  if (payload.newImageFiles && payload.newImageFiles.length > 0) {
+    payload.newImageFiles.forEach((file, index) => {
+      formData.append(`images_new_${index}`, file);
+    });
   }
 
   return formData;
