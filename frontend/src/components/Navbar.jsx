@@ -66,31 +66,17 @@ export function Navbar() {
 
   return (
     <>
-      <header className="fixed top-4 left-2 right-2 z-50 max-w-7xl mx-auto rounded-full bg-white/80 shadow-[0_8px_32px_rgba(0,0,0,0.12)] backdrop-blur-xl border border-white/60 sm:left-4 sm:right-4 lg:left-1/2 lg:-translate-x-1/2 lg:w-[calc(100%-48px)]">
-        <div className="flex items-center justify-between gap-2 px-3 py-2 sm:px-5 sm:gap-3 lg:px-6 lg:gap-4">
-          {/* Logo */}
+      <header className="w-full bg-[#1A1A2E] z-50">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-2 px-4 py-3 sm:px-6 sm:gap-3 lg:px-8 lg:gap-4">
+          {/* Marque */}
           <Link
             to="/"
             className="flex shrink-0 items-center gap-2 sm:gap-3 leading-none"
             aria-label="Accueil World Design"
           >
-            <svg width="42" height="36" viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0 sm:h-12 sm:w-14">
-              {/* W lettre stylisée */}
-              <g>
-                {/* Partie gauche du W */}
-                <path d="M 20 40 L 50 130 Q 55 140 65 140 L 70 140 Q 75 140 75 130 L 60 50 Q 58 40 50 40 Q 42 40 40 50 L 25 120" fill="#0052CC"/>
-                {/* Partie droite du W */}
-                <path d="M 135 40 L 165 130 Q 167 140 175 140 L 180 140 Q 185 140 185 130 L 175 50 Q 173 40 165 40 Q 157 40 155 50 L 140 120" fill="#0052CC"/>
-                {/* Partie centrale du W */}
-                <path d="M 75 50 L 100 120 Q 102 135 115 135 L 135 50" fill="#0052CC"/>
-                {/* Courbes décoratives */}
-                <path d="M 40 100 Q 100 95 160 100" stroke="#0052CC" strokeWidth="4" fill="none" strokeLinecap="round"/>
-                <path d="M 50 120 Q 100 130 150 120" stroke="#0052CC" strokeWidth="3" fill="none" strokeLinecap="round"/>
-              </g>
-            </svg>
-            <div className="flex flex-col leading-tight">
-              <span className="text-base font-black text-[#0052CC] sm:text-xl">World</span>
-              <span className="text-base font-black text-[#0052CC] sm:text-xl">Design</span>
+            <div className="flex flex-col leading-none">
+              <span className="text-lg font-black text-white sm:text-xl">World</span>
+              <span className="text-lg font-black text-white sm:text-xl">Design</span>
             </div>
           </Link>
 
