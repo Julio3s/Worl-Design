@@ -35,6 +35,7 @@ export default function ProductsPage() {
     category: searchParams.get('category') || '',
     min_price: searchParams.get('min_price') || '',
     max_price: searchParams.get('max_price') || '',
+    search: searchParams.get('search') || '',
   });
 
   const currentPage = Math.max(1, Number(searchParams.get('page') || 1));
@@ -100,6 +101,9 @@ export default function ProductsPage() {
       }
       if (searchParams.get('max_price')) {
         params.max_price = searchParams.get('max_price');
+      }
+      if (searchParams.get('search')) {
+        params.search = searchParams.get('search');
       }
 
       try {

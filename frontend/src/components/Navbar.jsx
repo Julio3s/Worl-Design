@@ -2,13 +2,14 @@ import {
   LogOut,
   Menu,
   Package,
+  Search,
   ShoppingBag,
   Truck,
   UserRound,
   X,
 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 
 import { useAuthStore } from '../store/authStore';
 import { useCartStore } from '../store/cartStore';
@@ -37,6 +38,8 @@ function LogoIcon() {
 
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [searchValue, setSearchValue] = useState('');
+  const navigate = useNavigate();
   const items = useCartStore((state) => state.items);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const isAdmin = useAuthStore((state) => state.isAdmin);
@@ -91,18 +94,26 @@ export function Navbar() {
             </div>
           </Link>
 
-          {/* Bandeau livraison */}
-          <div className="flex flex-1 items-center gap-2 rounded-full bg-[#F3F4F6] px-3 py-2 sm:gap-3 sm:px-4 sm:py-2.5 md:gap-4">
-            <Truck className="hidden sm:block h-5 w-5 shrink-0 text-[#0052CC] sm:h-6 sm:w-6" strokeWidth={2} />
-            <div className="min-w-0">
-              <p className="text-xs font-semibold text-[#111827] truncate sm:text-sm">
-                Livraison rapide partout
-              </p>
-              <p className="text-[10px] text-[#6B7280] truncate sm:text-xs">
-                2 à 5 jours ouvrés
-              </p>
-            </div>
-          </div>
+          {/* Barre de recherche */}
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (searchValue.trim()) {
+                navigate(`/products?search=${encodeURIComponent(searchValue.trim())}`);
+                setSearchValue('');
+              }
+            }}
+            className="flex flex-1 items-center gap-2 rounded-full bg-[#F3F4F6] px-3 py-2 sm:px-4 sm:py-2.5"
+          >
+            <Search className="h-4 w-4 shrink-0 text-[#6B7280] sm:h-5 sm:w-5" strokeWidth={2} />
+            <input
+              type="text"
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value)}
+              placeholder="Rechercher un produit..."
+              className="min-w-0 flex-1 bg-transparent text-xs font-medium text-[#111827] outline-none placeholder:text-[#6B7280] sm:text-sm"
+            />
+          </form>
 
           {/* Actions */}
           <div className="flex shrink-0 items-center gap-2 sm:gap-3">
@@ -165,14 +176,27 @@ export function Navbar() {
             </div>
 
             <div className="flex flex-1 flex-col gap-3 overflow-y-auto px-4 py-5">
-              {/* Bandeau livraison mobile */}
-              <div className="flex items-center gap-3 rounded-full bg-[#F3F4F6] px-4 py-3">
-                <Truck className="hidden sm:block h-6 w-6 shrink-0 text-[#0052CC]" strokeWidth={2} />
-                <div>
-                  <p className="text-sm font-semibold text-[#111827]">Livraison rapide partout</p>
-                  <p className="text-xs text-[#6B7280]">2 à 5 jours ouvrés</p>
-                </div>
-              </div>
+              {/* Barre de recherche mobile */}
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  if (searchValue.trim()) {
+                    navigate(`/products?search=${encodeURIComponent(searchValue.trim())}`);
+                    setSearchValue('');
+                    setMobileOpen(false);
+                  }
+                }}
+                className="flex items-center gap-2 rounded-full bg-[#F3F4F6] px-4 py-3"
+              >
+                <Search className="h-5 w-5 shrink-0 text-[#6B7280]" strokeWidth={2} />
+                <input
+                  type="text"
+                  value={searchValue}
+                  onChange={(e) => setSearchValue(e.target.value)}
+                  placeholder="Rechercher un produit..."
+                  className="min-w-0 flex-1 bg-transparent text-sm font-medium text-[#111827] outline-none placeholder:text-[#6B7280]"
+                />
+              </form>
 
               {NAV_LINKS.map((link) => (
                 <NavLink
