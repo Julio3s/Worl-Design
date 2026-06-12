@@ -1,11 +1,11 @@
-import { Plus, ShoppingCart } from 'lucide-react';
+un import { Plus, ShoppingCart } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 import { useCartStore } from '../store/cartStore';
 import { formatCurrency } from '../utils/formatCurrency';
 import { getProductImage } from '../utils/media';
 
-export function ProductCard({ product, showAddButton = true, badgeLabel, className = '' }) {
+export function ProductCard({ product, showAddButton = false, badgeLabel, className = '' }) {
   const addItem = useCartStore((state) => state.addItem);
   const image = getProductImage(product);
   const outOfStock = Number(product.stock || 0) <= 0;
