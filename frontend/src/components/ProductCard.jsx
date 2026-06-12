@@ -35,10 +35,10 @@ export function ProductCard({ product, showAddButton = false, badgeLabel, classN
 
       {/* CONTENU — description tronquée + prix */}
       <div className="flex flex-1 flex-col gap-1.5 p-3 sm:p-3.5">
-        {/* Description tronquée avec "..." */}
+        {/* Description sur une ligne, coupée par ... */}
         {description ? (
-          <p className="line-clamp-2 text-xs leading-relaxed text-[#6B6B6B] sm:text-sm">
-            ...{description}
+          <p className="line-clamp-1 text-xs font-normal leading-relaxed text-[#6B6B6B] sm:text-sm">
+            {description}
           </p>
         ) : null}
 
