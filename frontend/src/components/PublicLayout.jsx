@@ -18,7 +18,7 @@ export function PublicLayout() {
     >
       <ScrollToTop />
       <Navbar />
-      <main className="flex-1">
+      <main className="flex-1 pt-16 sm:pt-20">
         <PageTransition>
           <Outlet />
         </PageTransition>
