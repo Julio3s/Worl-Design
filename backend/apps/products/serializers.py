@@ -165,43 +165,62 @@ class ProductAdminSerializer(serializers.ModelSerializer):
         return obj.category.slug if obj.category else None
 
     def create(self, validated_data):
-        validated_data.pop('images_data', None)
+        images_data_raw = validated_data.pop('images_data', None)
         product = super().create(validated_data)
-        self._handle_new_images(product)
+        self._rebuild_images(product, images_data_raw)
         return product
 
     def update(self, instance, validated_data):
-        validated_data.pop('images_data', None)
+        images_data_raw = validated_data.pop('images_data', None)
         product = super().update(instance, validated_data)
-        self._handle_new_images(product)
+        self._rebuild_images(product, images_data_raw)
         return product
 
-    def _handle_new_images(self, product):
-        """Crée des ProductImage à partir des fichiers images_new_* dans la requête."""
+    def _parse_images_data(self, raw_value):
+        """Parse images_data (JSON string) en liste de dicts."""
+        if not raw_value:
+            return []
+        import json
+        try:
+            data = json.loads(raw_value)
+        except (json.JSONDecodeError, TypeError):
+            return []
+        if not isinstance(data, list):
+            return []
+        return data
+
+    def _rebuild_images(self, product, images_data_raw):
+        """Supprime toutes les ProductImage existantes et les recrée
+        à partir des métadonnées conservées (images_data) + nouveaux fichiers uploadés."""
         request = self.context.get('request')
-        if not request:
-            return
+        images_meta = self._parse_images_data(images_data_raw)
 
-        # Construire la liste des nouveaux fichiers
-        new_files = []
-        i = 0
-        while True:
-            key = f'images_new_{i}'
-            uploaded = request.data.get(key) or request.FILES.get(key)
-            if uploaded is None:
-                break
-            new_files.append(uploaded)
-            i += 1
+        # Supprimer toutes les images existantes
+        product.images.all().delete()
 
-        if not new_files:
-            return
+        # 1. Recréer les images existantes conservées (public_id dans images_data)
+        for idx, meta in enumerate(images_meta):
+            public_id = meta.get('public_id', '')
+            if public_id:
+                # public_id est une URL Cloudinary complète, CloudinaryField accepte ça comme référence
+                ProductImage.objects.create(
+                    product=product,
+                    image=public_id,
+                    order=meta.get('order', idx),
+                )
 
-        # Ordre de départ après les images existantes
-        base_order = product.images.count()
-
-        for idx, uploaded_file in enumerate(new_files):
-            ProductImage.objects.create(
-                product=product,
-                image=uploaded_file,
-                order=base_order + idx,
-            )
+        # 2. Ajouter les nouveaux fichiers uploadés (images_new_*)
+        if request:
+            base_order = product.images.count()
+            i = 0
+            while True:
+                key = f'images_new_{i}'
+                uploaded = request.FILES.get(key)
+                if uploaded is None:
+                    break
+                ProductImage.objects.create(
+                    product=product,
+                    image=uploaded,
+                    order=base_order + i,
+                )
+                i += 1
