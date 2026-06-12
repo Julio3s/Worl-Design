@@ -173,14 +173,14 @@ export default function HomePage() {
       {/* ================================================================ */}
       {/* SECTION 1 — HERO                                                  */}
       {/* ================================================================ */}
-      <header className="relative flex min-h-[95svh] items-center overflow-hidden" style={{ background: 'linear-gradient(135deg, #F7F2EA 0%, #EFE4D4 100%)' }}>
+      <header className="relative flex min-h-[95svh] items-center overflow-hidden">
         {/* Image de fond */}
         <div className="absolute inset-0">
           <img
             src={HERO_IMAGE}
             alt=""
             aria-hidden="true"
-            className="h-full w-full object-cover opacity-40"
+            className="h-full w-full object-cover"
           />
         </div>
 
