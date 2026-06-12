@@ -131,24 +131,14 @@ class ProductAdminSerializer(serializers.ModelSerializer):
     )
     image_url = serializers.SerializerMethodField()
     images = ProductImageSerializer(many=True, read_only=True)
-    images_data = serializers.ListField(
-        child=serializers.DictField(),
+    images_data = serializers.CharField(
         write_only=True,
         required=False,
+        allow_blank=True,
     )
 
     category_name = serializers.SerializerMethodField()
     category_slug = serializers.SerializerMethodField()
-
-    def validate_images_data(self, value):
-        # Si images_data arrive comme string JSON (FormData), parser
-        if isinstance(value, str):
-            import json
-            try:
-                value = json.loads(value)
-            except (json.JSONDecodeError, TypeError):
-                raise serializers.ValidationError('images_data doit être un JSON valide')
-        return value
 
     class Meta:
         model = Product
