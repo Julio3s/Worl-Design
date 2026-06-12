@@ -1,6 +1,5 @@
 import {
   LogOut,
-  Mail,
   Menu,
   Package,
   ShoppingBag,
@@ -64,8 +63,8 @@ export function Navbar() {
 
   return (
     <>
-      <header className="fixed top-3 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-16px)] max-w-7xl rounded-2xl bg-white/90 shadow-[0_4px_20px_rgba(0,0,0,0.08)] backdrop-blur-md border border-white/80 sm:w-[calc(100%-32px)] lg:w-[calc(100%-48px)]">
-        <div className="flex items-center justify-between gap-2 px-4 py-3 sm:px-6 sm:gap-3 lg:px-8 lg:gap-4">
+      <header className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-24px)] max-w-7xl rounded-full bg-white/80 shadow-[0_8px_32px_rgba(0,0,0,0.12)] backdrop-blur-xl border border-white/60 sm:w-[calc(100%-48px)] lg:w-[calc(100%-64px)]">
+        <div className="flex items-center justify-between gap-2 px-3 py-2 sm:px-5 sm:gap-3 lg:px-6 lg:gap-4">
           {/* Logo */}
           <Link
             to="/"
@@ -107,14 +106,6 @@ export function Navbar() {
 
           {/* Actions */}
           <div className="flex shrink-0 items-center gap-2 sm:gap-3">
-            <a
-              href="#footer-contact"
-              className="flex h-11 w-11 items-center justify-center rounded-full bg-[#F3F4F6] transition hover:bg-[#E5E7EB]"
-              aria-label="Contact"
-            >
-              <Mail className="h-5 w-5 text-[#374151]" strokeWidth={2} />
-            </a>
-
             <button
               type="button"
               onClick={() => setMobileOpen(true)}
