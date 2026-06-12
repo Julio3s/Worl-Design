@@ -3,15 +3,12 @@ import { Skeleton } from '../Skeleton';
 function ProductCardSkeleton() {
   return (
     <div className="flex h-full flex-col overflow-hidden rounded-[18px] bg-white shadow-[0_4px_20px_rgba(0,0,0,0.06)]">
-      <Skeleton className="h-[180px] w-full rounded-none sm:h-[200px] lg:h-[220px]" />
-      <div className="flex flex-1 flex-col gap-2 p-3.5 sm:p-4">
+      <Skeleton className="h-[200px] w-full rounded-none sm:h-[220px] lg:h-[240px]" />
+      <div className="flex flex-col gap-1.5 p-3 sm:p-3.5">
         <Skeleton className="h-3 w-20" />
         <Skeleton className="h-4 w-full" />
         <Skeleton className="h-4 w-3/4" />
         <Skeleton className="h-5 w-24" />
-        <div className="mt-auto pt-1">
-          <Skeleton className="h-[46px] w-full rounded-full" />
-        </div>
       </div>
     </div>
   );
