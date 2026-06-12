@@ -33,8 +33,18 @@ export function getProductImage(product) {
     return HERO_FALLBACK;
   }
 
-  const image = product.image_url || CATEGORY_FALLBACKS[product.category?.slug] || HERO_FALLBACK;
+  // Priorité : image_url, puis première images[], puis fallback catégorie, puis fallback global
+  const primary = product.image_url;
+  if (primary) {
+    return appendCacheBuster(primary, product.updated_at);
+  }
 
+  const firstExtra = product.images?.[0]?.image_url;
+  if (firstExtra) {
+    return appendCacheBuster(firstExtra, product.updated_at);
+  }
+
+  const image = CATEGORY_FALLBACKS[product.category?.slug] || HERO_FALLBACK;
   return appendCacheBuster(image, product.updated_at);
 }
 

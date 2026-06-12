@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { Upload } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
+import { Plus, Trash2, Upload } from 'lucide-react';
 
 import { formatProductError } from '../../api/adminProducts';
 import { Modal } from '../Modal';
@@ -16,6 +16,27 @@ const EMPTY_FORM = {
   customization_hint: '',
 };
 
+function ExtraImageRow({ preview, order, onRemove }) {
+  return (
+    <div className="flex items-center gap-3 rounded-[8px] border border-[#E0DBD5] bg-[#F8F5F0] px-3 py-2">
+      <img
+        src={preview}
+        alt={`Image ${order + 1}`}
+        className="h-14 w-14 rounded-[6px] object-cover"
+      />
+      <span className="flex-1 text-sm text-text-muted">Image {order + 1}</span>
+      <button
+        type="button"
+        onClick={onRemove}
+        className="inline-flex h-8 w-8 items-center justify-center rounded-full text-accent transition hover:bg-[#FEE2E2]"
+        aria-label="Supprimer cette image"
+      >
+        <Trash2 className="h-4 w-4" />
+      </button>
+    </div>
+  );
+}
+
 export function ProductFormModal({
   open,
   product,
@@ -26,6 +47,9 @@ export function ProductFormModal({
   const [form, setForm] = useState(EMPTY_FORM);
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState('');
+  const [extraImages, setExtraImages] = useState([]);
+  const [existingImages, setExistingImages] = useState([]);
+  const [removedImageIds, setRemovedImageIds] = useState([]);
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
@@ -49,12 +73,22 @@ export function ProductFormModal({
         customization_hint: product.customization_hint || '',
       });
       setImagePreview(product.image_url || '');
+      const imgs = (product.images || []).map((img) => ({
+        id: img.id,
+        image_url: img.image_url,
+        order: img.order,
+      }));
+      setExistingImages(imgs);
+      setRemovedImageIds([]);
     } else {
       setForm(EMPTY_FORM);
       setImagePreview('');
+      setExistingImages([]);
+      setRemovedImageIds([]);
     }
 
     setImageFile(null);
+    setExtraImages([]);
     setError('');
   }, [open, product]);
 
@@ -73,10 +107,45 @@ export function ProductFormModal({
     setImagePreview(URL.createObjectURL(file));
   };
 
+  const handleAddExtraImage = (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setExtraImages((prev) => [...prev, { file, preview: URL.createObjectURL(file) }]);
+    event.target.value = '';
+  };
+
+  const handleRemoveExtraImage = (index) => {
+    setExtraImages((prev) => {
+      const next = [...prev];
+      URL.revokeObjectURL(next[index].preview);
+      next.splice(index, 1);
+      return next;
+    });
+  };
+
+  const handleRemoveExistingImage = useCallback((imageId) => {
+    setRemovedImageIds((prev) => [...prev, imageId]);
+    setExistingImages((prev) => prev.filter((img) => img.id !== imageId));
+  }, []);
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError('');
     setSubmitting(true);
+
+    // Construire images_data : union des existantes conservées + nouvelles
+    const existingData = existingImages.map((img, idx) => ({
+      public_id: img.image_url || '',
+      order: idx,
+    }));
+
+    const newData = extraImages.map((item, idx) => ({
+      image: item.file,
+      order: existingData.length + idx,
+    }));
+
+    const imagesData = [...existingData, ...newData];
 
     try {
       await onSubmit({
@@ -85,6 +154,7 @@ export function ProductFormModal({
         stock: Number(form.stock),
         category: form.category || null,
         imageFile,
+        imagesData,
       });
       onClose();
     } catch (caughtError) {
@@ -93,6 +163,12 @@ export function ProductFormModal({
       setSubmitting(false);
     }
   };
+
+  useEffect(() => {
+    return () => {
+      extraImages.forEach((item) => URL.revokeObjectURL(item.preview));
+    };
+  }, [extraImages]);
 
   return (
     <Modal
@@ -209,7 +285,7 @@ export function ProductFormModal({
         </div>
 
         <div className="space-y-3">
-          <span className="text-sm font-medium text-text-dark">Image produit</span>
+          <span className="text-sm font-medium text-text-dark">Image principale</span>
           <label className="flex cursor-pointer flex-col items-center justify-center gap-3 rounded-[8px] border border-dashed border-[#E0DBD5] bg-[#F8F5F0] px-4 py-8 text-center transition hover:border-accent">
             {imagePreview ? (
               <img
@@ -225,6 +301,41 @@ export function ProductFormModal({
             </span>
             <input type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
           </label>
+        </div>
+
+        {/* Images supplémentaires */}
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium text-text-dark">Images supplémentaires</span>
+            <label className="inline-flex cursor-pointer items-center gap-1.5 rounded-full border border-[#E0DBD5] bg-white px-3 py-1.5 text-xs font-semibold text-text-dark transition hover:border-accent hover:text-accent">
+              <Plus className="h-3.5 w-3.5" />
+              Ajouter
+              <input type="file" accept="image/*" className="hidden" onChange={handleAddExtraImage} />
+            </label>
+          </div>
+
+          {existingImages.length > 0 || extraImages.length > 0 ? (
+            <div className="grid gap-2 sm:grid-cols-2">
+              {existingImages.map((img) => (
+                <ExtraImageRow
+                  key={`existing-${img.id}`}
+                  preview={img.image_url}
+                  order={img.order}
+                  onRemove={() => handleRemoveExistingImage(img.id)}
+                />
+              ))}
+              {extraImages.map((item, idx) => (
+                <ExtraImageRow
+                  key={`new-${idx}`}
+                  preview={item.preview}
+                  order={existingImages.length + idx}
+                  onRemove={() => handleRemoveExtraImage(idx)}
+                />
+              ))}
+            </div>
+          ) : (
+            <p className="text-xs text-text-muted">Aucune image supplémentaire. Ajoutez-en pour enrichir la page détail.</p>
+          )}
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2">

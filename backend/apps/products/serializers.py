@@ -1,7 +1,7 @@
 from cloudinary import config as cloudinary_config
 from rest_framework import serializers
 
-from .models import Category, Product
+from .models import Category, Product, ProductImage
 
 
 def _cloudinary_url(resource):
@@ -72,13 +72,28 @@ class CategoryAdminSerializer(serializers.ModelSerializer):
         return category
 
 
-class ProductListSerializer(serializers.ModelSerializer):
-    category = CategorySerializer(read_only=True)
+class ProductImageSerializer(serializers.ModelSerializer):
     image_url = serializers.SerializerMethodField()
 
     class Meta:
+        model = ProductImage
+        fields = ['id', 'image', 'image_url', 'order']
+        extra_kwargs = {
+            'image': {'write_only': True, 'required': True},
+        }
+
+    def get_image_url(self, obj):
+        return _cloudinary_url(obj.image)
+
+
+class ProductListSerializer(serializers.ModelSerializer):
+    category = CategorySerializer(read_only=True)
+    image_url = serializers.SerializerMethodField()
+    images = ProductImageSerializer(many=True, read_only=True)
+
+    class Meta:
         model = Product
-        fields = ['id', 'name', 'slug', 'description', 'price', 'stock', 'image', 'image_url', 'is_active', 'is_customizable', 'category']
+        fields = ['id', 'name', 'slug', 'description', 'price', 'stock', 'image', 'image_url', 'images', 'is_active', 'is_customizable', 'category']
         extra_kwargs = {
             'image': {'write_only': True, 'required': False, 'allow_null': True},
         }
@@ -90,11 +105,13 @@ class ProductListSerializer(serializers.ModelSerializer):
 class ProductDetailSerializer(serializers.ModelSerializer):
     category = CategorySerializer(read_only=True)
     image_url = serializers.SerializerMethodField()
+    images = ProductImageSerializer(many=True, read_only=True)
 
     class Meta:
         model = Product
         fields = [
             'id', 'name', 'slug', 'description', 'price', 'stock', 'image', 'image_url',
+            'images',
             'category', 'is_active', 'is_featured', 'is_customizable',
             'customization_hint', 'created_at', 'updated_at'
         ]
@@ -113,6 +130,12 @@ class ProductAdminSerializer(serializers.ModelSerializer):
         allow_null=True,
     )
     image_url = serializers.SerializerMethodField()
+    images = ProductImageSerializer(many=True, read_only=True)
+    images_data = serializers.ListField(
+        child=serializers.DictField(),
+        write_only=True,
+        required=False,
+    )
     category_name = serializers.SerializerMethodField()
     category_slug = serializers.SerializerMethodField()
 
@@ -120,7 +143,8 @@ class ProductAdminSerializer(serializers.ModelSerializer):
         model = Product
         fields = [
             'id', 'name', 'slug', 'description', 'price', 'stock',
-            'image', 'image_url', 'category', 'category_name', 'category_slug',
+            'image', 'image_url', 'images', 'images_data',
+            'category', 'category_name', 'category_slug',
             'is_active', 'is_featured', 'is_customizable', 'customization_hint',
             'created_at', 'updated_at'
         ]
@@ -138,3 +162,25 @@ class ProductAdminSerializer(serializers.ModelSerializer):
 
     def get_category_slug(self, obj):
         return obj.category.slug if obj.category else None
+
+    def create(self, validated_data):
+        images_data = validated_data.pop('images_data', [])
+        product = super().create(validated_data)
+        self._set_images(product, images_data)
+        return product
+
+    def update(self, instance, validated_data):
+        images_data = validated_data.pop('images_data', None)
+        product = super().update(instance, validated_data)
+        if images_data is not None:
+            instance.images.all().delete()
+            self._set_images(product, images_data)
+        return product
+
+    def _set_images(self, product, images_data):
+        for idx, img in enumerate(images_data):
+            ProductImage.objects.create(
+                product=product,
+                image=img.get('public_id') or img.get('image'),
+                order=img.get('order', idx),
+            )

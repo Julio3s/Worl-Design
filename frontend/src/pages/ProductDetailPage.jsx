@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import { ArrowLeft, Eye, ShoppingCart } from 'lucide-react';
+import { ArrowLeft, ShoppingCart } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
 
 import { getProductBySlug } from '../api/catalog';
 import { ErrorState } from '../components/ErrorState';
-import ImageViewer from '../components/ImageViewer';
 import { LoadingState } from '../components/LoadingState';
+import ProductImageCarousel from '../components/ProductImageCarousel';
 import { QuantitySelector } from '../components/QuantitySelector';
 import { SectionHeading } from '../components/SectionHeading';
 import { usePageTitle } from '../hooks/usePageTitle';
@@ -14,6 +14,27 @@ import { useCartStore } from '../store/cartStore';
 import { formatCurrency } from '../utils/formatCurrency';
 import { validateCustomFile } from '../utils/customFileValidation';
 import { getProductImage } from '../utils/media';
+
+function buildImagesArray(product) {
+  if (!product) return [];
+
+  // Union : image principale + images supplémentaires
+  const result = [];
+
+  if (product.image_url) {
+    result.push({ image_url: product.image_url, order: 0 });
+  }
+
+  if (product.images && product.images.length > 0) {
+    product.images.forEach((img) => {
+      if (img.image_url && img.image_url !== product.image_url) {
+        result.push(img);
+      }
+    });
+  }
+
+  return result.length > 0 ? result : product.image_url ? [{ image_url: product.image_url, order: 0 }] : [];
+}
 
 function DetailStat({ label, value, highlight = false }) {
   return (
@@ -37,7 +58,6 @@ export default function ProductDetailPage() {
   const [customFile, setCustomFile] = useState(null);
   const [customFileError, setCustomFileError] = useState('');
   const [addedFeedback, setAddedFeedback] = useState('');
-  const [viewerOpen, setViewerOpen] = useState(false);
 
   usePageTitle(product?.name || 'Produit');
 
@@ -182,25 +202,10 @@ export default function ProductDetailPage() {
         </Link>
 
         <div className="mt-5 grid gap-6 sm:gap-8 lg:grid-cols-[0.9fr_1.1fr]">
-          <div className="mx-auto w-full max-w-[520px] overflow-hidden rounded-[8px] border border-[#E0DBD5] bg-white">
-            <div className="group/image relative aspect-square bg-[#F1ECE6]">
-              <img
-                src={image}
-                alt={product.name}
-                className="h-full w-full object-cover"
-                loading="eager"
-              />
-              {/* Overlay œil */}
-              <button
-                type="button"
-                onClick={() => setViewerOpen(true)}
-                className="absolute inset-0 flex items-center justify-center bg-black/0 transition group-hover/image:bg-black/25 focus:outline-none focus-visible:bg-black/25"
-                aria-label="Voir l'image en plein écran"
-              >
-                <Eye className="h-8 w-8 text-white opacity-0 transition group-hover/image:opacity-100 group-focus-visible/image:opacity-100" />
-              </button>
-            </div>
-          </div>
+          <ProductImageCarousel
+            images={buildImagesArray(product)}
+            productName={product.name}
+          />
 
           <div className="flex flex-col gap-5 w-full min-w-0">
               <div className="space-y-3 min-w-0">
@@ -321,13 +326,6 @@ export default function ProductDetailPage() {
         </div>
         </div>
       </section>
-
-      <ImageViewer
-        src={image}
-        alt={product.name}
-        isOpen={viewerOpen}
-        onClose={() => setViewerOpen(false)}
-      />
     </div>
   );
 }

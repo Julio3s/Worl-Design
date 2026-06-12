@@ -51,3 +51,17 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class ProductImage(models.Model):
+    """Additional images for a product."""
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')
+    image = CloudinaryField('image')
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        db_table = 'product_images'
+        ordering = ['order', 'id']
+
+    def __str__(self):
+        return f'Image {self.order} - {self.product.name}'

@@ -30,6 +30,11 @@ function buildProductFormData(payload) {
     formData.append('image', payload.imageFile);
   }
 
+  // Ajouter les images supplémentaires comme images_data (JSON)
+  if (payload.imagesData && payload.imagesData.length > 0) {
+    formData.append('images_data', JSON.stringify(payload.imagesData));
+  }
+
   return formData;
 }
 
