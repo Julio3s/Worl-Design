@@ -1,4 +1,4 @@
-un import { Plus, ShoppingCart } from 'lucide-react';
+import { Plus, ShoppingCart } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 import { useCartStore } from '../store/cartStore';
