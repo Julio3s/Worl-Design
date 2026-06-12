@@ -175,48 +175,43 @@ class ProductAdminSerializer(serializers.ModelSerializer):
         return obj.category.slug if obj.category else None
 
     def create(self, validated_data):
-        images_data = validated_data.pop('images_data', [])
+        validated_data.pop('images_data', None)
         product = super().create(validated_data)
-        self._set_images(product, images_data, self.context.get('request'))
+        self._handle_new_images(product)
         return product
 
     def update(self, instance, validated_data):
-        images_data = validated_data.pop('images_data', None)
+        validated_data.pop('images_data', None)
         product = super().update(instance, validated_data)
-        if images_data is not None:
-            instance.images.all().delete()
-            self._set_images(product, images_data, self.context.get('request'))
+        self._handle_new_images(product)
         return product
 
-    def _set_images(self, product, images_data, request):
-        for idx, img in enumerate(images_data):
-            public_id = img.get('public_id')
-            if public_id:
-                # Image existante conservée (Cloudinary public_id)
-                ProductImage.objects.create(
-                    product=product,
-                    image=public_id,
-                    order=img.get('order', idx),
-                )
-                continue
+    def _handle_new_images(self, product):
+        """Crée des ProductImage à partir des fichiers images_new_* dans la requête."""
+        request = self.context.get('request')
+        if not request:
+            return
 
-            # Nouvelle image uploadée via FormData
-            image_file = img.get('image') or img.get('file')
-            if image_file and hasattr(image_file, 'read'):
-                # C'est un fichier uploadé
-                ProductImage.objects.create(
-                    product=product,
-                    image=image_file,
-                    order=img.get('order', idx),
-                )
-                continue
+        # Construire la liste des nouveaux fichiers
+        new_files = []
+        i = 0
+        while True:
+            key = f'images_new_{i}'
+            uploaded = request.data.get(key) or request.FILES.get(key)
+            if uploaded is None:
+                break
+            new_files.append(uploaded)
+            i += 1
 
-            # Fichier envoyé séparément (images_new_*) — chercher dans request.data
-            if request:
-                new_file = request.data.get(f'images_new_{idx}')
-                if new_file and hasattr(new_file, 'read'):
-                    ProductImage.objects.create(
-                        product=product,
-                        image=new_file,
-                        order=img.get('order', idx),
-                    )
+        if not new_files:
+            return
+
+        # Ordre de départ après les images existantes
+        base_order = product.images.count()
+
+        for idx, uploaded_file in enumerate(new_files):
+            ProductImage.objects.create(
+                product=product,
+                image=uploaded_file,
+                order=base_order + idx,
+            )
