@@ -10,7 +10,7 @@ export default {
         primary: '#1A1A2E',
         accent: '#E94560',
         gold: '#F5A623',
-        price: '#1A1A2E',
+        price: '#1D4ED8',
         cream: '#F8F5F0',
         'text-dark': '#1A1A1A',
         'text-muted': '#6B6B6B',

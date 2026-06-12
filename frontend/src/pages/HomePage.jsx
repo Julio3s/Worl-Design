@@ -475,7 +475,7 @@ export default function HomePage() {
             {loading ? (
               <ProductGridSkeleton count={6} />
             ) : featuredProducts.length > 0 ? (
-              <div className="section-stack-2">
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
                 {featuredProducts.slice(0, 6).map((product, index) => (
                   <div
                     key={product.id}

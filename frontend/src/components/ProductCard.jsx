@@ -11,7 +11,10 @@ export function ProductCard({ product, showAddButton = true, badgeLabel, classNa
   const outOfStock = Number(product.stock || 0) <= 0;
   const isCustomizable = Boolean(product.is_customizable);
 
-  const handleAdd = () => {
+  const handleAdd = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
     if (outOfStock) {
       return;
     }
@@ -32,16 +35,18 @@ export function ProductCard({ product, showAddButton = true, badgeLabel, classNa
   return (
     <article
       className={[
-        'product-card-hover group flex h-full flex-col overflow-hidden rounded-[8px] border border-[#E0DBD5] bg-white hover:border-accent',
+        'group flex h-full flex-col overflow-hidden rounded-[18px] bg-white transition-shadow duration-200',
+        'shadow-[0_4px_20px_rgba(0,0,0,0.06)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.1)]',
         className,
       ].join(' ')}
     >
+      {/* IMAGE — 65% de la carte */}
       <Link to={`/products/${product.slug}`} className="block">
-        <div className="relative aspect-[5/3] overflow-hidden bg-[#F1ECE6]">
+        <div className="relative h-[180px] w-full overflow-hidden bg-[#F1ECE6] sm:h-[200px] lg:h-[220px]">
           <img
             src={image}
             alt={product.name}
-            className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]"
+            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
             loading="lazy"
           />
           {badgeLabel ? (
@@ -52,33 +57,35 @@ export function ProductCard({ product, showAddButton = true, badgeLabel, classNa
         </div>
       </Link>
 
-      <div className="flex flex-1 flex-col gap-3 p-4">
-        <div className="space-y-1">
-          <p className="text-xs font-semibold uppercase tracking-normal text-text-muted">
-            {product.category?.name || 'WORLD DESIGN'}
-          </p>
-          <h3 className="min-h-[3rem] break-words text-base font-semibold text-text-dark">
-            <Link to={`/products/${product.slug}`} className="transition hover:text-accent">
-              {product.name}
-            </Link>
+      {/* CONTENU — 35% de la carte */}
+      <div className="flex flex-1 flex-col gap-2 p-3.5 sm:p-4">
+        {/* Catégorie */}
+        <p className="text-[11px] font-semibold uppercase tracking-wider text-[#6B6B6B] sm:text-xs">
+          {product.category?.name || 'WORLD DESIGN'}
+        </p>
+
+        {/* Nom produit — 2 lignes max */}
+        <Link
+          to={`/products/${product.slug}`}
+          className="block"
+        >
+          <h3 className="line-clamp-2 text-sm font-semibold leading-snug text-[#1A1A2E] transition-colors hover:text-accent sm:text-[15px]">
+            {product.name}
           </h3>
-        </div>
+        </Link>
 
-        <div className="flex items-end justify-between gap-3">
-          <div className="min-w-0">
-            <p className="text-sm text-text-muted">Prix</p>
-            <p className="text-lg font-semibold text-price">
-              {formatCurrency(product.price)}
-            </p>
-          </div>
-        </div>
+        {/* Prix */}
+        <p className="text-base font-bold text-[#1D4ED8] sm:text-lg">
+          {formatCurrency(product.price)}
+        </p>
 
+        {/* Bouton Ajouter — prend tout l'espace restant */}
         {showAddButton ? (
-          <div className="mt-auto">
+          <div className="mt-auto pt-1">
             {isCustomizable ? (
               <Link
                 to={`/products/${product.slug}`}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-accent bg-white px-4 py-3 text-sm font-semibold text-accent transition hover:bg-accent hover:text-white active:scale-[0.98]"
+                className="inline-flex h-[46px] w-full items-center justify-center gap-2 rounded-full border border-accent bg-white px-4 text-sm font-semibold text-accent transition-colors hover:bg-accent hover:text-white active:scale-[0.98]"
               >
                 Personnaliser
               </Link>
@@ -87,7 +94,7 @@ export function ProductCard({ product, showAddButton = true, badgeLabel, classNa
                 type="button"
                 onClick={handleAdd}
                 disabled={outOfStock}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-accent px-4 py-3 text-sm font-semibold text-white transition hover:opacity-95 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+                className="inline-flex h-[46px] w-full items-center justify-center gap-2 rounded-full bg-accent px-4 text-sm font-semibold text-white transition-all hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {outOfStock ? (
                   'Indisponible'
