@@ -1,5 +1,6 @@
 import {
   LogOut,
+  Mail,
   Menu,
   Package,
   ShoppingBag,
@@ -106,18 +107,13 @@ export function Navbar() {
 
           {/* Actions */}
           <div className="flex shrink-0 items-center gap-2 sm:gap-3">
-            <Link
-              to="/cart"
-              className="relative flex h-11 w-11 items-center justify-center rounded-full bg-[#F3F4F6] transition hover:bg-[#E5E7EB]"
-              aria-label="Panier"
+            <a
+              href="#footer-contact"
+              className="flex h-11 w-11 items-center justify-center rounded-full bg-[#F3F4F6] transition hover:bg-[#E5E7EB]"
+              aria-label="Contact"
             >
-              <ShoppingBag className="h-5 w-5 text-[#374151]" strokeWidth={2} />
-              {cartCount > 0 ? (
-                <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full border-2 border-white bg-[#EF4444] text-[10px] font-bold text-white">
-                  {cartCount > 9 ? '9+' : cartCount}
-                </span>
-              ) : null}
-            </Link>
+              <Mail className="h-5 w-5 text-[#374151]" strokeWidth={2} />
+            </a>
 
             <button
               type="button"
