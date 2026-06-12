@@ -170,6 +170,7 @@ export default function ProductDetailPage() {
   return (
     <div className="bg-cream">
       <section className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-4xl">
         <Link
           to="/products"
           className="inline-flex items-center gap-2 text-sm font-medium text-text-muted transition hover:text-accent"
@@ -178,7 +179,7 @@ export default function ProductDetailPage() {
           Retour au catalogue
         </Link>
 
-        <div className="mt-5 grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
+        <div className="mt-5 grid gap-6 sm:gap-8 lg:grid-cols-[0.9fr_1.1fr]">
           <div className="mx-auto w-full max-w-[520px] overflow-hidden rounded-[8px] border border-[#E0DBD5] bg-white">
             <div className="aspect-square bg-[#F1ECE6] p-4">
               <img
@@ -190,7 +191,7 @@ export default function ProductDetailPage() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-5">
+          <div className="flex flex-col gap-5 w-full min-w-0">
               <div className="space-y-3 min-w-0">
                 <p className="text-sm font-semibold uppercase tracking-normal text-gold">
                   {product.category?.name || 'WORLD DESIGN'}
@@ -220,32 +221,32 @@ export default function ProductDetailPage() {
             </div>
 
             {isCustomizable ? (
-              <div className="space-y-4 rounded-[8px] border border-[#E0DBD5] bg-white px-4 py-4">
+              <div className="space-y-4 rounded-[8px] border border-[#E0DBD5] bg-white px-4 py-4 w-full min-w-0 overflow-hidden">
                 <SectionHeading
                   eyebrow="Personnalisation"
                   title="Ajoutez votre touche"
                   description="Le texte personnalisé est facultatif, et le fichier logo est optionnel."
                 />
 
-                <label className="flex flex-col gap-2 text-sm font-medium text-text-dark">
+                <label className="flex flex-col gap-2 text-sm font-medium text-text-dark min-w-0">
                   <span>Texte de personnalisation</span>
                   <textarea
                     value={customText}
                     onChange={(event) => setCustomText(event.target.value)}
                     maxLength={500}
                     placeholder={product.customization_hint || 'Écrivez votre message'}
-                    className="min-h-28 rounded-[8px] border border-[#E0DBD5] bg-white px-3 py-3 text-sm text-text-dark outline-none transition placeholder:text-text-muted focus:border-accent"
+                    className="min-h-28 w-full min-w-0 rounded-[8px] border border-[#E0DBD5] bg-white px-3 py-3 text-sm text-text-dark outline-none transition placeholder:text-text-muted focus:border-accent box-border"
                   />
                   <span className="text-xs text-text-muted">{customText.length}/500 caractères</span>
                 </label>
 
-                <label className="flex flex-col gap-2 text-sm font-medium text-text-dark">
+                <label className="flex flex-col gap-2 text-sm font-medium text-text-dark min-w-0">
                   <span>Fichier logo</span>
                   <input
                     type="file"
                     accept=".jpg,.jpeg,.png,.pdf,.ai,.svg"
                     onChange={handleCustomFileChange}
-                    className="rounded-[8px] border border-[#E0DBD5] bg-white px-3 py-2 text-sm text-text-dark file:mr-4 file:rounded-full file:border-0 file:bg-accent file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white"
+                    className="w-full min-w-0 rounded-[8px] border border-[#E0DBD5] bg-white px-3 py-2 text-sm text-text-dark file:mr-2 file:rounded-full file:border-0 file:bg-accent file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-white overflow-hidden"
                   />
                 </label>
 
@@ -306,6 +307,7 @@ export default function ProductDetailPage() {
               </div>
             </div>
           </div>
+        </div>
         </div>
       </section>
     </div>
