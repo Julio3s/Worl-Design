@@ -78,7 +78,7 @@ class ProductListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ['id', 'name', 'slug', 'price', 'stock', 'image', 'image_url', 'is_active', 'category']
+        fields = ['id', 'name', 'slug', 'description', 'price', 'stock', 'image', 'image_url', 'is_active', 'is_customizable', 'category']
         extra_kwargs = {
             'image': {'write_only': True, 'required': False, 'allow_null': True},
         }
