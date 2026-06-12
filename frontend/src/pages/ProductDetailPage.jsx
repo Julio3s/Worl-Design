@@ -145,8 +145,8 @@ export default function ProductDetailPage() {
 
   if (loading) {
     return (
-      <div className="bg-cream">
-        <section className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <div className="bg-cream overflow-x-hidden">
+      <section className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
           <LoadingState label="Chargement du produit..." />
         </section>
       </div>
@@ -191,17 +191,17 @@ export default function ProductDetailPage() {
           </div>
 
           <div className="flex flex-col gap-5">
-            <div className="space-y-3">
-              <p className="text-sm font-semibold uppercase tracking-normal text-gold">
-                {product.category?.name || 'WORLD DESIGN'}
-              </p>
-              <h1 className="font-display text-4xl font-bold leading-tight text-primary sm:text-5xl">
-                {product.name}
-              </h1>
-              <p className="max-w-2xl text-sm leading-7 text-text-muted sm:text-base">
-                {product.description}
-              </p>
-            </div>
+              <div className="space-y-3 min-w-0">
+                <p className="text-sm font-semibold uppercase tracking-normal text-gold">
+                  {product.category?.name || 'WORLD DESIGN'}
+                </p>
+                <h1 className="font-display text-2xl font-bold leading-tight text-primary sm:text-4xl md:text-5xl">
+                  {product.name}
+                </h1>
+                <p className="max-w-2xl text-sm leading-7 text-text-muted sm:text-base">
+                  {product.description}
+                </p>
+              </div>
 
             <div className="flex flex-wrap items-center gap-3">
               <p className="text-3xl font-bold text-price">
