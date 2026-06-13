@@ -231,11 +231,6 @@ export default function ProductDetailPage() {
               ) : null}
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-2">
-              <DetailStat label="Catégorie" value={product.category?.name || 'Sans catégorie'} />
-              <DetailStat label="Mis à jour" value={new Date(product.updated_at || product.created_at).toLocaleDateString('fr-FR')} />
-            </div>
-
             {isCustomizable ? (
               <div className="space-y-4 rounded-[8px] border border-[#E0DBD5] bg-white px-4 py-4 w-full min-w-0 overflow-hidden">
                 <SectionHeading
