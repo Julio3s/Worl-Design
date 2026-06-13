@@ -233,26 +233,27 @@ export default function ProductDetailPage() {
 
             {isCustomizable ? (
               <div className="space-y-4 rounded-[8px] border border-[#E0DBD5] bg-white px-4 py-4 w-full min-w-0 overflow-hidden">
-                <SectionHeading
-                  eyebrow="Personnalisation"
-                  title="Ajoutez votre touche"
-                  description="Le texte personnalisé est facultatif, et le fichier logo est optionnel."
-                />
+                <div>
+                  <h3 className="text-base font-bold text-text-dark">Ajoutez votre touche</h3>
+                </div>
 
                 <label className="flex flex-col gap-2 text-sm font-medium text-text-dark min-w-0">
-                  <span>Texte de personnalisation</span>
+                  <span>
+                    Texte de personnalisation{' '}
+                    <span className="text-accent font-semibold">(obligatoire)</span>
+                  </span>
                   <textarea
                     value={customText}
                     onChange={(event) => setCustomText(event.target.value)}
                     maxLength={500}
-                    placeholder={product.customization_hint || 'Écrivez votre message'}
-                    className="min-h-28 w-full min-w-0 rounded-[8px] border border-[#E0DBD5] bg-white px-3 py-3 text-sm text-text-dark outline-none transition placeholder:text-text-muted focus:border-accent box-border"
+                    placeholder="Entrez votre texte ici"
+                    className="min-h-[80px] w-full min-w-0 rounded-[8px] border border-[#E0DBD5] bg-white px-3 py-2 text-sm text-text-dark outline-none transition placeholder:text-text-muted focus:border-accent box-border"
                   />
                   <span className="text-xs text-text-muted">{customText.length}/500 caractères</span>
                 </label>
 
                 <label className="flex flex-col gap-2 text-sm font-medium text-text-dark min-w-0">
-                  <span>Fichier logo</span>
+                  <span>Ajouter vos pièces joint ici (logo ou image de la personnalisation)</span>
                   <input
                     type="file"
                     accept=".jpg,.jpeg,.png,.pdf,.ai,.svg"
