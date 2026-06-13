@@ -53,14 +53,14 @@ export default function ProductImageCarousel({ images, productName }) {
           </>
         ) : null}
 
-        {/* Icône œil plein écran */}
+        {/* Bouton œil plein écran (coin haut-droit) */}
         <button
           type="button"
           onClick={() => setViewerOpen(true)}
-          className="absolute inset-0 flex items-center justify-center bg-black/0 transition group-hover/carousel:bg-black/25 focus:outline-none focus-visible:bg-black/25"
+          className="absolute top-3 right-3 z-10 inline-flex h-10 w-10 items-center justify-center rounded-full bg-black/40 text-white opacity-0 transition hover:bg-black/60 group-hover/carousel:opacity-100 focus:outline-none focus-visible:opacity-100"
           aria-label="Voir l'image en plein écran"
         >
-          <Eye className="h-8 w-8 text-white opacity-0 transition group-hover/carousel:opacity-100 focus-visible:opacity-100" />
+          <Eye className="h-5 w-5" />
         </button>
       </div>
 
