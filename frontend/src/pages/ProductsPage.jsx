@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
-import { SearchX } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Search, SearchX } from 'lucide-react';
 import { Link, useSearchParams } from 'react-router-dom';
 
 import { getCategories, getProducts } from '../api/catalog';
@@ -38,6 +38,8 @@ export default function ProductsPage() {
     max_price: searchParams.get('max_price') || '',
     search: searchParams.get('search') || '',
   });
+  const [searchInput, setSearchInput] = useState(searchParams.get('search') || '');
+  const debounceRef = useRef(null);
 
   const currentPage = Math.max(1, Number(searchParams.get('page') || 1));
   const searchParamsString = searchParams.toString();
@@ -152,6 +154,33 @@ export default function ProductsPage() {
     return categories.find((category) => category.slug === filters.category)?.name || filters.category;
   }, [categories, filters.category]);
 
+  const handleSearchChange = (event) => {
+    const value = event.target.value;
+    setSearchInput(value);
+
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+    }
+
+    debounceRef.current = setTimeout(() => {
+      const nextParams = new URLSearchParams();
+      if (value.trim()) {
+        nextParams.set('search', value.trim());
+      }
+      if (filters.category) {
+        nextParams.set('category', filters.category);
+      }
+      if (filters.min_price) {
+        nextParams.set('min_price', filters.min_price);
+      }
+      if (filters.max_price) {
+        nextParams.set('max_price', filters.max_price);
+      }
+      nextParams.set('page', '1');
+      setSearchParams(nextParams, { replace: false });
+    }, 400);
+  };
+
   const handleFilterChange = (field, value) => {
     setFilters((current) => ({ ...current, [field]: value }));
   };
@@ -185,6 +214,7 @@ export default function ProductsPage() {
       max_price: '',
       search: '',
     });
+    setSearchInput('');
     setSearchParams({}, { replace: false });
   };
 
@@ -194,10 +224,22 @@ export default function ProductsPage() {
         <SectionHeading
           eyebrow="Catalogue"
           title="Tous les produits"
-          description="Filtrez par catégorie et plage de prix, puis naviguez avec la pagination numérotée."
+          description="Recherchez un produit ou une catégorie, filtrez par prix et catégorie."
         />
 
-        <div className="mt-6 flex items-center justify-end gap-2">
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
+          {/* Barre de recherche visible */}
+          <label className="relative flex-1 max-w-md">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
+            <input
+              type="search"
+              value={searchInput}
+              onChange={handleSearchChange}
+              placeholder="Rechercher un produit ou une catégorie..."
+              className="h-11 w-full rounded-[8px] border border-[#E0DBD5] bg-white pl-10 pr-3 text-sm outline-none transition focus:border-accent"
+            />
+          </label>
+
           <FilterDrawer label="Filtrer ici">
             <form onSubmit={applyFilters} className="space-y-4">
               <label className="flex flex-col gap-2 text-sm font-medium text-text-dark">
