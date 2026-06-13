@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Filter, SearchX } from 'lucide-react';
+import { SearchX } from 'lucide-react';
 import { Link, useSearchParams } from 'react-router-dom';
 
 import { getCategories, getProducts } from '../api/catalog';
 import { EmptyState } from '../components/EmptyState';
 import { ErrorState } from '../components/ErrorState';
+import FilterDrawer from '../components/FilterDrawer';
 import { Pagination } from '../components/Pagination';
 import { ProductCard } from '../components/ProductCard';
 import { ProductGridSkeleton } from '../components/skeletons/ProductGridSkeleton';
@@ -191,73 +192,71 @@ export default function ProductsPage() {
           description="Filtrez par catégorie et plage de prix, puis naviguez avec la pagination numérotée."
         />
 
-        <form
-          onSubmit={applyFilters}
-          className="mt-6 rounded-[8px] border border-[#E0DBD5] bg-white px-4 py-4"
-        >
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-[1.2fr_0.8fr_0.8fr_auto_auto]">
-            <label className="flex flex-col gap-2 text-sm font-medium text-text-dark">
-              <span>Catégorie</span>
-              <select
-                value={filters.category}
-                onChange={(event) => handleFilterChange('category', event.target.value)}
-                className="h-11 rounded-[8px] border border-[#E0DBD5] bg-white px-3 text-sm text-text-dark outline-none transition focus:border-accent"
-              >
-                <option value="">Toutes les catégories</option>
-                {loadingCategories ? (
-                  <option value="">Chargement...</option>
-                ) : (
-                  categories.map((category) => (
-                    <option key={category.id} value={category.slug}>
-                      {category.name}
-                    </option>
-                  ))
-                )}
-              </select>
-            </label>
+        <div className="mt-6 flex items-center justify-end gap-2">
+          <FilterDrawer label="Filtrer ici">
+            <form onSubmit={applyFilters} className="space-y-4">
+              <label className="flex flex-col gap-2 text-sm font-medium text-text-dark">
+                <span>Catégorie</span>
+                <select
+                  value={filters.category}
+                  onChange={(event) => handleFilterChange('category', event.target.value)}
+                  className="h-11 rounded-[8px] border border-[#E0DBD5] bg-white px-3 text-sm text-text-dark outline-none transition focus:border-accent"
+                >
+                  <option value="">Toutes les catégories</option>
+                  {loadingCategories ? (
+                    <option value="">Chargement...</option>
+                  ) : (
+                    categories.map((category) => (
+                      <option key={category.id} value={category.slug}>
+                        {category.name}
+                      </option>
+                    ))
+                  )}
+                </select>
+              </label>
 
-            <label className="flex flex-col gap-2 text-sm font-medium text-text-dark">
-              <span>Prix min</span>
-              <input
-                type="number"
-                min="0"
-                value={filters.min_price}
-                onChange={(event) => handleFilterChange('min_price', event.target.value)}
-                className="h-11 rounded-[8px] border border-[#E0DBD5] bg-white px-3 text-sm text-text-dark outline-none transition focus:border-accent"
-                placeholder="0"
-              />
-            </label>
+              <label className="flex flex-col gap-2 text-sm font-medium text-text-dark">
+                <span>Prix min</span>
+                <input
+                  type="number"
+                  min="0"
+                  value={filters.min_price}
+                  onChange={(event) => handleFilterChange('min_price', event.target.value)}
+                  className="h-11 rounded-[8px] border border-[#E0DBD5] bg-white px-3 text-sm text-text-dark outline-none transition focus:border-accent"
+                  placeholder="0"
+                />
+              </label>
 
-            <label className="flex flex-col gap-2 text-sm font-medium text-text-dark">
-              <span>Prix max</span>
-              <input
-                type="number"
-                min="0"
-                value={filters.max_price}
-                onChange={(event) => handleFilterChange('max_price', event.target.value)}
-                className="h-11 rounded-[8px] border border-[#E0DBD5] bg-white px-3 text-sm text-text-dark outline-none transition focus:border-accent"
-                placeholder="100000"
-              />
-            </label>
+              <label className="flex flex-col gap-2 text-sm font-medium text-text-dark">
+                <span>Prix max</span>
+                <input
+                  type="number"
+                  min="0"
+                  value={filters.max_price}
+                  onChange={(event) => handleFilterChange('max_price', event.target.value)}
+                  className="h-11 rounded-[8px] border border-[#E0DBD5] bg-white px-3 text-sm text-text-dark outline-none transition focus:border-accent"
+                  placeholder="100000"
+                />
+              </label>
 
-            <button
-              type="submit"
-              className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-accent px-5 text-sm font-semibold text-white transition hover:opacity-95 active:scale-[0.98]"
-            >
-              <Filter className="h-4 w-4" aria-hidden="true" />
-              Filtrer
-            </button>
-
-            <button
-              type="button"
-              onClick={resetFilters}
-              className="inline-flex h-11 items-center justify-center gap-2 rounded-full border border-[#E0DBD5] bg-white px-5 text-sm font-semibold text-text-dark transition hover:border-accent hover:text-accent active:scale-[0.98]"
-            >
-              <SearchX className="h-4 w-4" aria-hidden="true" />
-              Réinitialiser
-            </button>
-          </div>
-        </form>
+              <div className="flex gap-2">
+                <button
+                  type="submit"
+                  className="inline-flex flex-1 items-center justify-center rounded-full bg-accent px-4 py-2.5 text-sm font-semibold text-white transition hover:opacity-95"
+                >
+                  Appliquer
+                </button>
+                <button
+                  type="button"
+                  onClick={resetFilters}
+                  className="inline-flex items-center justify-center rounded-full border border-[#E0DBD5] bg-white px-4 py-2.5 text-sm font-semibold text-text-dark transition hover:border-accent hover:text-accent"
+                >
+                  <SearchX className="h-4 w-4" aria-hidden="true" />
+                </button>
+              </div>
+            </form>
+          </FilterDrawer>
+        </div>
 
         <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
           <p className="text-sm text-text-muted">

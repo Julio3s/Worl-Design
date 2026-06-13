@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { EyeOff, Pencil, Plus, Search } from 'lucide-react';
+import { EyeOff, Pencil, Plus } from 'lucide-react';
 
 import {
   createAdminProduct,
@@ -11,6 +11,7 @@ import { getCategories } from '../../api/catalog';
 import { AdminPage } from '../../components/admin/AdminPage';
 import { ProductFormModal } from '../../components/admin/ProductFormModal';
 import { ErrorState } from '../../components/ErrorState';
+import FilterDrawer from '../../components/FilterDrawer';
 import { TableSkeleton } from '../../components/skeletons/TableSkeleton';
 import { Modal } from '../../components/Modal';
 import { usePageTitle } from '../../hooks/usePageTitle';
@@ -145,41 +146,51 @@ export default function ProductsPage() {
       title="Produits"
       description="Gérez le catalogue, les stocks et la visibilité des produits."
     >
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="grid flex-1 gap-3 sm:grid-cols-[1.2fr_0.8fr_0.8fr]">
-          <label className="relative">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
-            <input
-              type="search"
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-              placeholder="Rechercher un produit..."
-              className="h-11 w-full rounded-[8px] border border-[#E0DBD5] bg-white pl-10 pr-3 text-sm outline-none transition focus:border-accent"
-            />
-          </label>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <FilterDrawer label="Filtrer ici">
+            <div className="space-y-4">
+              <label className="flex flex-col gap-2 text-sm font-medium text-text-dark">
+                <span>Recherche</span>
+                <input
+                  type="search"
+                  value={search}
+                  onChange={(event) => setSearch(event.target.value)}
+                  placeholder="Rechercher un produit..."
+                  className="h-11 rounded-[8px] border border-[#E0DBD5] bg-white px-3 text-sm outline-none transition focus:border-accent"
+                />
+              </label>
 
-          <select
-            value={categoryFilter}
-            onChange={(event) => setCategoryFilter(event.target.value)}
-            className="h-11 rounded-[8px] border border-[#E0DBD5] bg-white px-3 text-sm outline-none transition focus:border-accent"
-          >
-            <option value="">Toutes les catégories</option>
-            {categories.map((category) => (
-              <option key={category.id} value={category.slug}>
-                {category.name}
-              </option>
-            ))}
-          </select>
+              <label className="flex flex-col gap-2 text-sm font-medium text-text-dark">
+                <span>Catégorie</span>
+                <select
+                  value={categoryFilter}
+                  onChange={(event) => setCategoryFilter(event.target.value)}
+                  className="h-11 rounded-[8px] border border-[#E0DBD5] bg-white px-3 text-sm outline-none transition focus:border-accent"
+                >
+                  <option value="">Toutes les catégories</option>
+                  {categories.map((category) => (
+                    <option key={category.id} value={category.slug}>
+                      {category.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
 
-          <select
-            value={statusFilter}
-            onChange={(event) => setStatusFilter(event.target.value)}
-            className="h-11 rounded-[8px] border border-[#E0DBD5] bg-white px-3 text-sm outline-none transition focus:border-accent"
-          >
-            <option value="">Tous les statuts</option>
-            <option value="true">Actifs</option>
-            <option value="false">Inactifs</option>
-          </select>
+              <label className="flex flex-col gap-2 text-sm font-medium text-text-dark">
+                <span>Statut</span>
+                <select
+                  value={statusFilter}
+                  onChange={(event) => setStatusFilter(event.target.value)}
+                  className="h-11 rounded-[8px] border border-[#E0DBD5] bg-white px-3 text-sm outline-none transition focus:border-accent"
+                >
+                  <option value="">Tous les statuts</option>
+                  <option value="true">Actifs</option>
+                  <option value="false">Inactifs</option>
+                </select>
+              </label>
+            </div>
+          </FilterDrawer>
         </div>
 
         <button
