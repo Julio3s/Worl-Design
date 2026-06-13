@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Filter, Trash2, UserX } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { ChevronRight, Filter, Trash2, UserX } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 import { deleteAdminOrder, getAdminOrders } from '../../api/adminOrders';
 import { AdminPage } from '../../components/admin/AdminPage';
@@ -35,6 +35,7 @@ function formatOrderDate(value) {
 
 export default function OrdersPage() {
   usePageTitle('Admin commandes');
+  const navigate = useNavigate();
 
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -225,7 +226,8 @@ export default function OrdersPage() {
         </div>
       ) : (
         <div className="mt-6 overflow-x-auto rounded-[8px] border border-[#E0DBD5] bg-white">
-          <table className="min-w-full text-left text-sm">
+          {/* Version Desktop - Tableau */}
+          <table className="hidden md:table min-w-full text-left text-sm">
             <thead className="border-b border-[#E0DBD5] bg-[#F8F5F0] text-text-muted">
               <tr>
                 <th className="px-4 py-3 font-semibold">N°</th>
@@ -241,13 +243,13 @@ export default function OrdersPage() {
             </thead>
             <tbody>
               {orders.map((order) => (
-                <tr key={order.id} className="border-b border-[#F1ECE6] last:border-0">
-                  <td className="px-4 py-3">
-                    <Link to={`/admin/orders/${order.id}`} className="font-semibold text-accent hover:underline">
-                      #{order.id}
-                    </Link>
-                  </td>
-                  <td className="px-4 py-3">
+                <tr
+                  key={order.id}
+                  className="cursor-pointer border-b border-[#F1ECE6] transition hover:bg-[#F8F5F0] last:border-0"
+                  onClick={() => navigate(`/admin/orders/${order.id}`)}
+                >
+                  <td className="px-4 py-3 font-semibold text-accent">#{order.id}</td>
+                  <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                     <div className="flex items-center gap-2">
                       {order.is_guest ? (
                         <UserX className="h-4 w-4 text-[#92400E]" aria-hidden="true" title="Commande invité" />
@@ -273,7 +275,7 @@ export default function OrdersPage() {
                   <td className="px-4 py-3">
                     <OrderStatusBadge status={order.status} />
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                     <button
                       type="button"
                       onClick={() => handleDeleteOrder(order)}
@@ -289,6 +291,43 @@ export default function OrdersPage() {
               ))}
             </tbody>
           </table>
+
+          {/* Version Mobile - Cartes */}
+          <div className="divide-y divide-[#F1ECE6] md:hidden">
+            {orders.map((order) => (
+              <div
+                key={order.id}
+                className="cursor-pointer px-4 py-4 transition hover:bg-[#F8F5F0]"
+                onClick={() => navigate(`/admin/orders/${order.id}`)}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold text-accent">#{order.id}</span>
+                    {order.is_guest ? (
+                      <UserX className="h-3.5 w-3.5 text-[#92400E]" aria-hidden="true" title="Commande invité" />
+                    ) : null}
+                    <OrderStatusBadge status={order.status} />
+                  </div>
+                  <ChevronRight className="h-4 w-4 text-text-muted" />
+                </div>
+
+                <div className="mt-2 space-y-1">
+                  <p className="text-sm font-medium text-text-dark">{order.customer_name}</p>
+                  <p className="text-xs text-text-muted">{order.email || '—'} • {order.phone || '—'}</p>
+                  {order.delivery_address ? (
+                    <p className="text-xs text-text-muted truncate">{order.delivery_address}</p>
+                  ) : null}
+                  {order.custom_text_summary ? (
+                    <p className="text-xs text-text-muted truncate">Perso: {order.custom_text_summary}</p>
+                  ) : null}
+                  <div className="flex items-center justify-between pt-1">
+                    <span className="text-xs text-text-muted">{formatOrderDate(order.created_at)}</span>
+                    <span className="text-sm font-bold text-price">{formatCurrency(order.total_amount)}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </AdminPage>
