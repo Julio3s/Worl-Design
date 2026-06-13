@@ -78,7 +78,7 @@ def main():
     client.raise_request_exception = False
     anon_client.raise_request_exception = False
     passed = 0
-    total = 8
+    total = 9
 
     # 1. Public categories endpoint
     response = client.get('/api/products/categories/')
@@ -151,13 +151,21 @@ def main():
     )
     passed += print_result('5) GET /api/products/?category=...', ok, f'status={response.status_code}')
 
-    # 6. Public detail by slug returns the same product
+    # 6. Public search can match the category slug and still return the product
+    response = client.get('/api/products/?search=agent-04-category')
+    payload = response.json()
+    ok = response.status_code == 200 and any(
+        item.get('slug') == product_slug for item in payload.get('results', [])
+    )
+    passed += print_result('6) GET /api/products/?search=...', ok, f'status={response.status_code}')
+
+    # 7. Public detail by slug returns the same product
     response = client.get(f'/api/products/{product_slug}/')
     payload = response.json()
     ok = response.status_code == 200 and payload.get('slug') == product_slug
-    passed += print_result('6) GET /api/products/:slug/', ok, f'status={response.status_code}')
+    passed += print_result('7) GET /api/products/:slug/', ok, f'status={response.status_code}')
 
-    # 7. Update the product and upload a new image
+    # 8. Update the product and upload a new image
     update_file = SimpleUploadedFile(
         'agent04-product-update.jpg',
         b'updated-fake-image-content',
@@ -180,13 +188,13 @@ def main():
 
     updated_data = response.json() if response.status_code == 200 else {}
     ok = response.status_code == 200 and updated_data.get('name') == f'Agent 04 Demo Product Updated {unique_tag}'
-    passed += print_result('7) PATCH /api/admin/products/:id/', ok, f'status={response.status_code}')
+    passed += print_result('8) PATCH /api/admin/products/:id/', ok, f'status={response.status_code}')
 
-    # 8. Delete should deactivate, not remove from DB
+    # 9. Delete should deactivate, not remove from DB
     response = client.delete(f'/api/admin/products/{product_id}/')
     product = Product.objects.get(pk=product_id)
     ok = response.status_code == 200 and product.is_active is False
-    passed += print_result('8) DELETE /api/admin/products/:id/', ok, f'status={response.status_code}')
+    passed += print_result('9) DELETE /api/admin/products/:id/', ok, f'status={response.status_code}')
 
     print('=' * 60)
     print(f'RESULT: {passed}/{total} tests passed')

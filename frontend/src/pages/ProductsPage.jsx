@@ -79,6 +79,7 @@ export default function ProductsPage() {
       category: searchParams.get('category') || '',
       min_price: searchParams.get('min_price') || '',
       max_price: searchParams.get('max_price') || '',
+      search: searchParams.get('search') || '',
     });
   }, [searchParamsString]);
 
@@ -169,6 +170,9 @@ export default function ProductsPage() {
     if (filters.max_price) {
       nextParams.set('max_price', filters.max_price);
     }
+    if (filters.search) {
+      nextParams.set('search', filters.search);
+    }
     nextParams.set('page', '1');
 
     setSearchParams(nextParams, { replace: false });
@@ -179,6 +183,7 @@ export default function ProductsPage() {
       category: '',
       min_price: '',
       max_price: '',
+      search: '',
     });
     setSearchParams({}, { replace: false });
   };

@@ -1,8 +1,8 @@
 from decimal import Decimal, InvalidOperation
 
 from django.db import IntegrityError
+from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404
-from django.db.models import Count
 from rest_framework import status
 from rest_framework.decorators import api_view, parser_classes, permission_classes
 from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
@@ -119,6 +119,16 @@ def list_products(request):
     if category_slug:
         products = products.filter(category__slug=category_slug)
 
+    search = request.query_params.get('search', '').strip()
+    if search:
+        products = products.filter(
+            Q(name__icontains=search)
+            | Q(slug__icontains=search)
+            | Q(description__icontains=search)
+            | Q(category__name__icontains=search)
+            | Q(category__slug__icontains=search)
+        )
+
     try:
         min_price = _parse_decimal_param(request.query_params.get('min_price'), 'min_price')
         max_price = _parse_decimal_param(request.query_params.get('max_price'), 'max_price')
@@ -168,7 +178,13 @@ def admin_products(request):
 
         search = request.query_params.get('search', '').strip()
         if search:
-            products = products.filter(name__icontains=search)
+            products = products.filter(
+                Q(name__icontains=search)
+                | Q(slug__icontains=search)
+                | Q(description__icontains=search)
+                | Q(category__name__icontains=search)
+                | Q(category__slug__icontains=search)
+            )
 
         is_active = request.query_params.get('is_active')
         if is_active is not None:
