@@ -12,13 +12,6 @@ import { SectionHeading } from '../components/SectionHeading';
 import { usePageTitle } from '../hooks/usePageTitle';
 
 const PAGE_SIZE = 12;
-const PRICE_RANGES = [
-  { label: 'Tous les prix', min: '', max: '' },
-  { label: 'Moins de 5 000 F', min: '', max: '5000' },
-  { label: '5 000 - 15 000 F', min: '5000', max: '15000' },
-  { label: '15 000 - 50 000 F', min: '15000', max: '50000' },
-  { label: 'Plus de 50 000 F', min: '50000', max: '' },
-];
 
 function buildPageNumbers(totalPages) {
   return Array.from({ length: totalPages }, (_, index) => index + 1);
@@ -271,36 +264,48 @@ export default function ProductsPage() {
               </div>
             </div>
 
-            {/* Prix */}
-            <div className="w-full sm:w-52">
+            {/* Prix Min */}
+            <div className="w-full sm:w-32">
               <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-text-muted">
-                Fourchette de prix
+                Prix min
               </label>
-              <div className="relative">
-                <select
-                  value={`${filters.min_price || ''}-${filters.max_price || ''}`}
-                  onChange={(event) => {
-                    const [min, max] = event.target.value.split('-');
-                    handleFilterChange('min_price', min);
-                    handleFilterChange('max_price', max);
-                    const nextParams = new URLSearchParams();
-                    if (filters.category) nextParams.set('category', filters.category);
-                    if (min) nextParams.set('min_price', min);
-                    if (max) nextParams.set('max_price', max);
-                    if (filters.search) nextParams.set('search', filters.search);
-                    nextParams.set('page', '1');
-                    setSearchParams(nextParams, { replace: false });
-                  }}
-                  className="h-11 w-full appearance-none rounded-[8px] border border-[#E0DBD5] bg-cream px-3 pr-8 text-sm text-text-dark outline-none transition focus:border-accent"
-                >
-                  {PRICE_RANGES.map((range) => (
-                    <option key={range.label} value={`${range.min}-${range.max}`}>
-                      {range.label}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
-              </div>
+              <input
+                type="number"
+                min="0"
+                placeholder="Min"
+                value={filters.min_price}
+                onChange={(event) => handleFilterChange('min_price', event.target.value)}
+                className="h-11 w-full rounded-[8px] border border-[#E0DBD5] bg-cream px-3 text-sm text-text-dark outline-none transition focus:border-accent"
+              />
+            </div>
+
+            {/* Prix Max */}
+            <div className="w-full sm:w-32">
+              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-text-muted">
+                Prix max
+              </label>
+              <input
+                type="number"
+                min="0"
+                placeholder="Max"
+                value={filters.max_price}
+                onChange={(event) => handleFilterChange('max_price', event.target.value)}
+                className="h-11 w-full rounded-[8px] border border-[#E0DBD5] bg-cream px-3 text-sm text-text-dark outline-none transition focus:border-accent"
+              />
+            </div>
+
+            {/* Bouton Filtrer */}
+            <div>
+              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-text-muted opacity-0 sm:block">
+                Filtrer
+              </label>
+              <button
+                type="button"
+                onClick={applyFilters}
+                className="flex h-11 items-center justify-center rounded-[8px] bg-accent px-5 text-sm font-semibold text-white transition hover:opacity-95"
+              >
+                Filtrer
+              </button>
             </div>
 
             {/* Bouton reset */}
