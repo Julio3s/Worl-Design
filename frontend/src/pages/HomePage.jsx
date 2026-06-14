@@ -20,7 +20,7 @@ import { ProductGridSkeleton } from '../components/skeletons/ProductGridSkeleton
 import { useCartStore } from '../store/cartStore';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { getFeaturedProducts, getCategories } from '../api/catalog';
-import { getCategoryImage } from '../utils/media';
+import { getCategoryImage, getProductImage } from '../utils/media';
 
 // ─── Images ───────────────────────────────────────────────────────
 const HERO_IMAGE = '/images/hero-products-personalized.jpg';
@@ -475,13 +475,24 @@ export default function HomePage() {
             ) : featuredProducts.length > 0 ? (
               <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
                 {featuredProducts.slice(0, 6).map((product, index) => (
-                  <div
+                  <Link
                     key={product.id}
-                    className="animate-fadeInUp"
+                    to={`/products/${product.slug}`}
+                    className="group animate-fadeInUp"
                     style={{ animationDelay: `${index * 80}ms` }}
                   >
-                    <ProductCard product={product} showAddButton />
-                  </div>
+                    <div className="aspect-square overflow-hidden rounded-2xl bg-[#F1ECE6] transition-shadow duration-300 group-hover:shadow-[0_8px_30px_rgba(0,0,0,0.1)]">
+                      <img
+                        src={getProductImage(product)}
+                        alt={product.name}
+                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        loading="lazy"
+                      />
+                    </div>
+                    <p className="mt-1.5 line-clamp-1 text-xs leading-relaxed text-[#6B6B6B]">
+                      {product.description || ''}
+                    </p>
+                  </Link>
                 ))}
               </div>
             ) : (
