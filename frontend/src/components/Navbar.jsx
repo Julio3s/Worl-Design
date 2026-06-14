@@ -91,7 +91,13 @@ export function Navbar() {
             }}
             className="flex flex-1 items-center gap-2 rounded-full bg-[#F3F4F6] px-3 py-2 sm:px-4 sm:py-2.5"
           >
-            <Search className="h-4 w-4 shrink-0 text-[#6B7280] sm:h-5 sm:w-5" strokeWidth={2} />
+            <button
+              type="submit"
+              className="inline-flex items-center justify-center"
+              aria-label="Rechercher"
+            >
+              <Search className="h-4 w-4 shrink-0 text-[#6B7280] sm:h-5 sm:w-5" strokeWidth={2} />
+            </button>
             <input
               type="text"
               value={searchValue}
@@ -174,7 +180,13 @@ export function Navbar() {
                 }}
                 className="flex items-center gap-2 rounded-full bg-[#F3F4F6] px-4 py-3"
               >
-                <Search className="h-5 w-5 shrink-0 text-[#6B7280]" strokeWidth={2} />
+                <button
+                  type="submit"
+                  className="inline-flex items-center justify-center"
+                  aria-label="Rechercher"
+                >
+                  <Search className="h-5 w-5 shrink-0 text-[#6B7280]" strokeWidth={2} />
+                </button>
                 <input
                   type="text"
                   value={searchValue}
