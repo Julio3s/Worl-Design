@@ -344,7 +344,7 @@ export default function HomePage() {
                     to={`/products?category=${cat.id}`}
                     className="group flex flex-col gap-0"
                   >
-                    <div className="aspect-[4/3] overflow-hidden rounded-2xl border border-black/5 bg-[#F8F5F0] transition-shadow duration-300 hover:shadow-[0_8px_30px_rgba(0,0,0,0.1)]">
+                    <div className="aspect-[3/4] overflow-hidden rounded-2xl border border-black/5 bg-[#F8F5F0] transition-shadow duration-300 hover:shadow-[0_8px_30px_rgba(0,0,0,0.1)]">
                       <img
                         src={getCategoryImage(cat)}
                         alt={cat.name}
