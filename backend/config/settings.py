@@ -6,13 +6,15 @@ import os
 from pathlib import Path
 from decouple import config, Csv
 from datetime import timedelta
+from django.core.exceptions import ImproperlyConfigured
+from django.core.management.utils import get_random_secret_key
 import cloudinary
 
 # Build paths inside the project
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config('SECRET_KEY', default='django-insecure-temp-key-change-in-production')
+SECRET_KEY = config('SECRET_KEY', default='')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 def _get_bool_env(name, default=False):
@@ -33,6 +35,12 @@ def _get_bool_env(name, default=False):
 
 DEBUG = _get_bool_env('DEBUG', default=True)
 
+if not SECRET_KEY:
+    if DEBUG:
+        SECRET_KEY = get_random_secret_key()
+    else:
+        raise ImproperlyConfigured('SECRET_KEY must be set when DEBUG is False.')
+
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1,testserver', cast=Csv())
 render_host = config('RENDER_EXTERNAL_HOSTNAME', default='')
 if render_host:
@@ -50,6 +58,7 @@ INSTALLED_APPS = [
     # Third-party apps
     'rest_framework',
     'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
     'cloudinary',
     'cloudinary_storage',
@@ -151,7 +160,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': config('CLOUDINARY_CLOUD_NAME', default='demo-cloudinary-cloud-name'),
     'API_KEY': config('CLOUDINARY_API_KEY', default='demo-cloudinary-api-key'),
-    'API_SECRET': config('CLOUDINARY_API_SECRET', default='demo-cloudinary-api-secret'),
+    'API_SECRET': config('CLOUDINARY_API_SECRET', default=''),
 }
 
 if CLOUDINARY_STORAGE['CLOUD_NAME']:
@@ -215,7 +224,7 @@ SILENCED_SYSTEM_CHECKS = ['django_ratelimit.E003', 'django_ratelimit.W001']
 
 # FedaPay Configuration
 SITE_URL = config('SITE_URL', default='http://localhost:8000')
-FEDAPAY_SECRET_KEY = config('FEDAPAY_SECRET_KEY', default='demo-fedapay-secret-key')
+FEDAPAY_SECRET_KEY = config('FEDAPAY_SECRET_KEY', default='')
 FEDAPAY_API_BASE_URL = config('FEDAPAY_API_BASE_URL', default='https://sandbox-api.fedapay.com/v1').rstrip('/')
 FEDAPAY_RETURN_URL = config('FEDAPAY_RETURN_URL', default='http://localhost:5173/order-success')
 FEDAPAY_WEBHOOK_URL = config('FEDAPAY_WEBHOOK_URL', default=f'{SITE_URL}/api/payments/webhook/')

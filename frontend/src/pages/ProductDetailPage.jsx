@@ -114,9 +114,10 @@ export default function ProductDetailPage() {
 
   const outOfStock = Number(product?.stock || 0) <= 0;
   const isCustomizable = Boolean(product?.is_customizable);
+  const customTextEmpty = isCustomizable && !customText.trim();
 
   const handleAddToCart = () => {
-    if (!product || outOfStock) {
+    if (!product || outOfStock || customTextEmpty) {
       return;
     }
 
@@ -209,51 +210,43 @@ export default function ProductDetailPage() {
 
           <div className="flex flex-col gap-5 w-full min-w-0">
               <div className="space-y-3 min-w-0">
-                <p className="text-sm font-semibold uppercase tracking-normal text-gold">
-                  {product.category?.name || 'WORLD DESIGN'}
-                </p>
-                <h1 className="font-display text-2xl font-bold leading-tight text-primary sm:text-4xl md:text-5xl">
+                <p className="text-sm font-semibold uppercase tracking-normal text-black">
                   {product.name}
-                </h1>
+                </p>
+                <div className="flex flex-wrap items-center gap-3">
+                  <p className="font-roboto text-xl font-bold text-black">
+                    {formatCurrency(product.price)}
+                  </p>
+                  {product.is_customizable ? (
+                    <span className="inline-flex rounded-full bg-[#FEF3C7] px-3 py-1 text-xs font-semibold text-[#92400E]">
+                      Personnalisable
+                    </span>
+                  ) : null}
+                </div>
                 <p className="max-w-2xl text-sm leading-7 text-text-muted sm:text-base">
                   {product.description}
                 </p>
               </div>
 
-            <div className="flex flex-wrap items-center gap-3">
-              <p className="text-3xl font-bold text-price">
-                {formatCurrency(product.price)}
-              </p>
-              {product.is_customizable ? (
-                <span className="inline-flex rounded-full bg-[#FEF3C7] px-3 py-1 text-xs font-semibold text-[#92400E]">
-                  Personnalisable
-                </span>
-              ) : null}
-            </div>
-
             {isCustomizable ? (
               <div className="space-y-4 rounded-[8px] border border-[#E0DBD5] bg-white px-4 py-4 w-full min-w-0 overflow-hidden">
-                <div>
-                  <h3 className="text-base font-bold text-text-dark">Ajoutez votre touche</h3>
-                </div>
-
                 <label className="flex flex-col gap-2 text-sm font-medium text-text-dark min-w-0">
                   <span>
-                    Texte de personnalisation{' '}
+                    Ajoutez votre touche{' '}
                     <span className="text-accent font-semibold">(obligatoire)</span>
                   </span>
                   <textarea
                     value={customText}
                     onChange={(event) => setCustomText(event.target.value)}
                     maxLength={500}
-                    placeholder="Entrez votre texte ici"
+                    placeholder="Ex: Texte personnalisé, nom, date, message..."
                     className="min-h-[80px] w-full min-w-0 rounded-[8px] border border-[#E0DBD5] bg-white px-3 py-2 text-sm text-text-dark outline-none transition placeholder:text-text-muted focus:border-accent box-border"
                   />
                   <span className="text-xs text-text-muted">{customText.length}/500 caractères</span>
                 </label>
 
                 <label className="flex flex-col gap-2 text-sm font-medium text-text-dark min-w-0">
-                  <span>Ajouter vos pièces joint ici (logo ou image de la personnalisation)</span>
+                  <span>Ajouter "logo ou image de la personnalisation"</span>
                   <input
                     type="file"
                     accept=".jpg,.jpeg,.png,.pdf,.ai,.svg"
@@ -303,7 +296,7 @@ export default function ProductDetailPage() {
                   <button
                     type="button"
                     onClick={handleAddToCart}
-                    disabled={outOfStock}
+                    disabled={outOfStock || customTextEmpty}
                     className="inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-accent px-5 py-3 text-sm font-semibold text-white transition hover:opacity-95 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <ShoppingCart className="h-4 w-4" aria-hidden="true" />

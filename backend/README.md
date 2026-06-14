@@ -145,7 +145,7 @@ Les clients peuvent commander sans créer de compte. Les champs `user` est nulla
 ## Admin Django
 
 Accès sur `http://localhost:8000/admin/`
-Credentials : admin@wdesign.com / admin123 (après seed)
+Credentials : configurez `SEED_ADMIN_PASSWORD` pour le compte admin de seed
 
 ## Déploiement
 

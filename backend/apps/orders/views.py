@@ -2,6 +2,7 @@ import json
 import re
 from collections import defaultdict
 
+from django_ratelimit.decorators import ratelimit
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -99,7 +100,9 @@ def create_order(request):
     )
     if serializer.is_valid():
         order = serializer.save()
-        return Response(OrderDetailSerializer(order).data, status=status.HTTP_201_CREATED)
+        response_data = OrderDetailSerializer(order).data
+        response_data['payment_token'] = order.payment_token
+        return Response(response_data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -130,6 +133,7 @@ def order_detail(request, order_id):
 
 @api_view(['GET'])
 @permission_classes([AllowAny])
+@ratelimit(key='ip', rate='5/m', method='GET')
 def search_guest_order(request):
     """Search for guest order by email and phone."""
     email = request.query_params.get('email') or request.query_params.get('guest_email')

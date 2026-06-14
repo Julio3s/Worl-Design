@@ -1,7 +1,13 @@
 import api from './axios';
 
-export async function initiatePayment(orderId) {
-  const { data } = await api.post('/payments/initiate/', { order_id: orderId });
+export async function initiatePayment(orderId, paymentToken) {
+  const payload = { order_id: orderId };
+
+  if (paymentToken) {
+    payload.payment_token = paymentToken;
+  }
+
+  const { data } = await api.post('/payments/initiate/', payload);
   return data;
 }
 

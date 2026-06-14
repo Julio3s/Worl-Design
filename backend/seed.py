@@ -17,11 +17,15 @@ def seed_database():
     
     # Create superuser
     User = get_user_model()
+    admin_password = os.environ.get('SEED_ADMIN_PASSWORD')
+    if not admin_password:
+        raise RuntimeError('SEED_ADMIN_PASSWORD is required to create the seed admin user.')
+
     if not User.objects.filter(email='admin@wdesign.com').exists():
         User.objects.create_superuser(
             email='admin@wdesign.com',
             username='admin',
-            password='admin123',
+            password=admin_password,
             phone='+228XXXXXXXX',
         )
         print("✓ Superuser created: admin@wdesign.com")

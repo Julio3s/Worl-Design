@@ -1,4 +1,5 @@
 import os
+import secrets
 from decimal import Decimal
 
 from cloudinary import config as cloudinary_config
@@ -201,6 +202,7 @@ class OrderCreateSerializer(serializers.Serializer):
                 note=_normalize_text(validated_data.get('note')),
                 status='PENDING',
                 total_amount=Decimal('0.00'),
+                payment_token=secrets.token_urlsafe(32),
             )
 
             for item_data in items_data:

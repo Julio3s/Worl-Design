@@ -1,4 +1,5 @@
 import logging
+from secrets import compare_digest
 import uuid
 from collections import defaultdict
 from decimal import Decimal
@@ -515,17 +516,34 @@ def _resolve_payment_state(payload):
     return 'unknown', details
 
 
+def _can_initiate_payment(request, order, provided_token):
+    if request.user and request.user.is_authenticated:
+        return order.user_id == request.user.id
+
+    if order.user_id is not None:
+        return False
+
+    if not order.payment_token or not provided_token:
+        return False
+
+    return compare_digest(str(order.payment_token), str(provided_token))
+
+
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def initiate_payment(request):
     order_id = request.data.get('order_id')
     if not order_id:
         return Response({'detail': 'order_id is required'}, status=status.HTTP_400_BAD_REQUEST)
+    payment_token = request.data.get('payment_token') or request.data.get('order_token')
 
     try:
         order = Order.objects.select_related('user').prefetch_related('items__product').get(id=order_id)
     except (Order.DoesNotExist, ValueError, TypeError):
         return Response({'detail': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    if not _can_initiate_payment(request, order, payment_token):
+        return Response({'detail': 'Permission denied'}, status=status.HTTP_403_FORBIDDEN)
 
     existing_payment = Payment.objects.filter(order=order).first()
     if existing_payment and existing_payment.status == 'SUCCESS':

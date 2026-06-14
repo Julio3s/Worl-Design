@@ -160,7 +160,7 @@ export default function CheckoutPage() {
       });
 
       try {
-        const payment = await initiatePayment(order.id);
+        const payment = await initiatePayment(order.id, order.payment_token);
 
         if (typeof window !== 'undefined') {
           window.sessionStorage.setItem(LAST_ORDER_STORAGE_KEY, String(order.id));

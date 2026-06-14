@@ -2,8 +2,8 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework_simplejwt.views import TokenRefreshView
 from django.contrib.auth import authenticate
 from django_ratelimit.decorators import ratelimit
 from django.views.decorators.http import require_http_methods
@@ -48,9 +48,17 @@ def login(request):
 
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
+@permission_classes([AllowAny])
 def logout(request):
     """User logout endpoint. Client should discard the JWT token."""
+    refresh = request.data.get('refresh')
+
+    if refresh:
+        try:
+            RefreshToken(refresh).blacklist()
+        except TokenError:
+            pass
+
     return Response({'detail': 'Logged out successfully'}, status=status.HTTP_200_OK)
 
 
@@ -72,9 +80,16 @@ def refresh_token(request):
     
     try:
         refresh_token_obj = RefreshToken(refresh)
+        user_id = refresh_token_obj.get('user_id')
+        if not user_id:
+            return Response({'detail': 'Invalid refresh token'}, status=status.HTTP_401_UNAUTHORIZED)
+
+        refresh_token_obj.blacklist()
+        user = User.objects.get(pk=user_id)
+        new_refresh_token = RefreshToken.for_user(user)
         return Response({
-            'access': str(refresh_token_obj.access_token),
-            'refresh': str(refresh_token_obj) if hasattr(refresh_token_obj, '__str__') else refresh
+            'access': str(new_refresh_token.access_token),
+            'refresh': str(new_refresh_token),
         }, status=status.HTTP_200_OK)
-    except Exception as e:
+    except (TokenError, User.DoesNotExist):
         return Response({'detail': 'Invalid or expired refresh token'}, status=status.HTTP_401_UNAUTHORIZED)
