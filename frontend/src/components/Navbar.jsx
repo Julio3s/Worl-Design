@@ -103,7 +103,7 @@ export function Navbar() {
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
               placeholder="Rechercher un produit..."
-              className="min-w-0 flex-1 bg-transparent text-xs font-medium text-[#111827] outline-none placeholder:text-[#6B7280] sm:text-sm"
+              className="min-w-0 flex-1 bg-transparent text-[16px] font-medium text-[#111827] outline-none placeholder:text-[#6B7280]"
             />
           </form>
 
@@ -192,7 +192,7 @@ export function Navbar() {
                   value={searchValue}
                   onChange={(e) => setSearchValue(e.target.value)}
                   placeholder="Rechercher un produit..."
-                  className="min-w-0 flex-1 bg-transparent text-sm font-medium text-[#111827] outline-none placeholder:text-[#6B7280]"
+                  className="min-w-0 flex-1 bg-transparent text-[16px] font-medium text-[#111827] outline-none placeholder:text-[#6B7280]"
                 />
               </form>
 
