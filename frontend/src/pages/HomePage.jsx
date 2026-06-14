@@ -234,8 +234,8 @@ export default function HomePage() {
       </header>
 
       {/* ================================================================ */}
-{/* ================================================================ */}
-      {/* SECTION 2 - PRODUITS VEDETTES                                    */}
+      {/* ================================================================ */}
+      {/* SECTION 2 - PRODUITS VEDETTES (Carrousel horizontal catalog-style)*/}
       {/* ================================================================ */}
       <section className="section-shell" style={{ backgroundColor: '#F8F5F0' }}>
         <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -245,7 +245,7 @@ export default function HomePage() {
                 Produits vedettes
               </h2>
               <p className="mt-3 max-w-2xl text-sm leading-7 text-[#1A1A2E]/60 sm:text-base">
-                Faites defiler horizontalement pour voir les produits, avec une mise en page adaptee a tous les ecrans.
+                Faites défiler horizontalement pour découvrir nos meilleures ventes.
               </p>
             </div>
             <Link
@@ -264,7 +264,8 @@ export default function HomePage() {
                   {Array.from({ length: 4 }).map((_, i) => (
                     <div
                       key={i}
-                      className="h-[420px] w-[82vw] max-w-[340px] flex-shrink-0 animate-pulse rounded-3xl bg-[#EFE7DC] sm:w-[360px] md:w-[380px] lg:w-[400px]"
+                      className="w-52 sm:w-56 md:w-60 flex-shrink-0 animate-pulse rounded-[18px] bg-[#EFE7DC]"
+                      style={{ height: '320px' }}
                     />
                   ))}
                 </div>
@@ -272,12 +273,12 @@ export default function HomePage() {
             ) : error ? (
               <ErrorState description={error} onRetry={loadData} />
             ) : featuredProducts.length > 0 ? (
-              <div className="-mx-4 overflow-x-auto px-4 pb-3 sm:-mx-6 sm:px-6 lg:-mx-0 lg:px-0">
+              <div className="-mx-4 overflow-x-auto px-4 pb-3 sm:-mx-6 sm:px-6 lg:-mx-0 lg:px-0 scrollbar-thin">
                 <div className="flex snap-x snap-mandatory gap-4 pb-2" style={{ minWidth: 'min-content' }}>
                   {featuredProducts.map((product, index) => (
                     <div
                       key={product.id}
-                      className="w-[82vw] max-w-[340px] flex-shrink-0 snap-start sm:w-[360px] md:w-[380px] lg:w-[400px] animate-fadeInUp"
+                      className="w-52 sm:w-56 md:w-60 flex-shrink-0 snap-start animate-fadeInUp"
                       style={{ animationDelay: `${index * 80}ms` }}
                     >
                       <ProductCard product={product} badgeLabel="BEST SELLER" showAddButton />
@@ -288,7 +289,7 @@ export default function HomePage() {
             ) : (
               <EmptyState
                 title="Pas encore de produits vedettes"
-                description="Revenez bientot ou explorez tout le catalogue."
+                description="Revenez bientôt ou explorez tout le catalogue."
                 action={
                   <Link
                     to="/products"
@@ -336,29 +337,23 @@ export default function HomePage() {
             ) : error ? (
               <ErrorState description={error} onRetry={loadData} />
             ) : categories.length > 0 ? (
-              <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
                 {categories.map((cat) => (
                   <Link
                     key={cat.id}
                     to={`/products?category=${cat.id}`}
-                    className="group relative overflow-hidden rounded-2xl border border-black/5 bg-white transition-all duration-300"
+                    className="group flex flex-col gap-0"
                   >
-                    <div className="aspect-[5/2] overflow-hidden bg-[#F8F5F0]">
+                    <div className="aspect-[4/3] overflow-hidden rounded-2xl border border-black/5 bg-[#F8F5F0] transition-shadow duration-300 hover:shadow-[0_8px_30px_rgba(0,0,0,0.1)]">
                       <img
                         src={getCategoryImage(cat)}
                         alt={cat.name}
                         className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                       />
                     </div>
-                    <div className="p-5">
-                      <h3 className="text-lg font-bold text-[#1A1A2E] transition group-hover:text-[#E94560]">
-                        {cat.name}
-                      </h3>
-                      <div className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-[#E94560]">
-                        Découvrir
-                        <ChevronRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
-                      </div>
-                    </div>
+                    <p className="mt-2 text-sm font-semibold text-[#1A1A2E] text-center">
+                      {cat.name}
+                    </p>
                   </Link>
                 ))}
               </div>

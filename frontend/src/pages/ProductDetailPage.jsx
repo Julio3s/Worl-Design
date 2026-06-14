@@ -7,7 +7,6 @@ import { ErrorState } from '../components/ErrorState';
 import { LoadingState } from '../components/LoadingState';
 import ProductImageCarousel from '../components/ProductImageCarousel';
 import { QuantitySelector } from '../components/QuantitySelector';
-import { SectionHeading } from '../components/SectionHeading';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { useSeo } from '../hooks/useSeo';
 import { useCartStore } from '../store/cartStore';
@@ -34,17 +33,6 @@ function buildImagesArray(product) {
   }
 
   return result.length > 0 ? result : product.image_url ? [{ image_url: product.image_url, order: 0 }] : [];
-}
-
-function DetailStat({ label, value, highlight = false }) {
-  return (
-    <div className="rounded-[8px] border border-[#E0DBD5] bg-white px-4 py-3">
-      <p className="text-xs font-semibold uppercase tracking-normal text-text-muted">{label}</p>
-      <p className={highlight ? 'mt-1 text-base font-semibold text-accent' : 'mt-1 text-sm font-medium text-text-dark'}>
-        {value}
-      </p>
-    </div>
-  );
 }
 
 export default function ProductDetailPage() {
@@ -262,9 +250,40 @@ export default function ProductDetailPage() {
                 ) : null}
 
                 {customFile ? (
-                  <p className="text-sm text-text-muted">
-                    Sélectionné: {customFile.name}
-                  </p>
+                  <div className="flex items-center gap-3 rounded-[8px] border border-[#E0DBD5] bg-[#FAFAFA] p-3">
+                    {customFile.type?.startsWith('image/') ? (
+                      <img
+                        src={URL.createObjectURL(customFile)}
+                        alt="Aperçu du logo"
+                        className="h-14 w-14 rounded-[6px] border border-[#E0DBD5] object-cover"
+                      />
+                    ) : (
+                      <div className="flex h-14 w-14 items-center justify-center rounded-[6px] border border-[#E0DBD5] bg-white text-xs font-semibold text-text-muted">
+                        PDF
+                      </div>
+                    )}
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-medium text-text-dark">
+                        {customFile.name}
+                      </p>
+                      <p className="text-xs text-text-muted">
+                        {(customFile.size / 1024).toFixed(1)} Ko
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setCustomFile(null);
+                        setCustomFileError('');
+                      }}
+                      className="shrink-0 rounded-full p-1 text-text-muted transition hover:bg-[#FEE2E2] hover:text-[#991B1B]"
+                      aria-label="Supprimer le fichier"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M18 6L6 18M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
                 ) : null}
               </div>
             ) : null}
