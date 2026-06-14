@@ -271,12 +271,13 @@ export default function ProductsPage() {
                   Prix min
                 </label>
                 <input
-                  type="number"
-                  min="0"
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
                   placeholder="Min"
                   value={filters.min_price}
-                  onChange={(event) => handleFilterChange('min_price', event.target.value)}
-                  className="h-11 w-full rounded-[8px] border border-[#E0DBD5] bg-cream px-3 text-sm text-text-dark outline-none transition focus:border-accent"
+                  onChange={(event) => handleFilterChange('min_price', event.target.value.replace(/[^0-9]/g, ''))}
+                  className="h-11 w-full rounded-[8px] border border-[#E0DBD5] bg-cream px-3 text-[16px] text-text-dark outline-none transition focus:border-accent"
                 />
               </div>
               <div className="flex-1">
@@ -284,12 +285,13 @@ export default function ProductsPage() {
                   Prix max
                 </label>
                 <input
-                  type="number"
-                  min="0"
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
                   placeholder="Max"
                   value={filters.max_price}
-                  onChange={(event) => handleFilterChange('max_price', event.target.value)}
-                  className="h-11 w-full rounded-[8px] border border-[#E0DBD5] bg-cream px-3 text-sm text-text-dark outline-none transition focus:border-accent"
+                  onChange={(event) => handleFilterChange('max_price', event.target.value.replace(/[^0-9]/g, ''))}
+                  className="h-11 w-full rounded-[8px] border border-[#E0DBD5] bg-cream px-3 text-[16px] text-text-dark outline-none transition focus:border-accent"
                 />
               </div>
             </div>
