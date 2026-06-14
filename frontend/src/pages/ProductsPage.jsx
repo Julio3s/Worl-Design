@@ -1,11 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Search, SearchX } from 'lucide-react';
+import { Search, SearchX, ChevronDown } from 'lucide-react';
 import { Link, useSearchParams } from 'react-router-dom';
 
 import { getCategories, getProducts } from '../api/catalog';
 import { EmptyState } from '../components/EmptyState';
 import { ErrorState } from '../components/ErrorState';
-import FilterDrawer from '../components/FilterDrawer';
 import { Pagination } from '../components/Pagination';
 import { ProductCard } from '../components/ProductCard';
 import { ProductGridSkeleton } from '../components/skeletons/ProductGridSkeleton';
@@ -13,6 +12,13 @@ import { SectionHeading } from '../components/SectionHeading';
 import { usePageTitle } from '../hooks/usePageTitle';
 
 const PAGE_SIZE = 12;
+const PRICE_RANGES = [
+  { label: 'Tous les prix', min: '', max: '' },
+  { label: 'Moins de 5 000 F', min: '', max: '5000' },
+  { label: '5 000 - 15 000 F', min: '5000', max: '15000' },
+  { label: '15 000 - 50 000 F', min: '15000', max: '50000' },
+  { label: 'Plus de 50 000 F', min: '50000', max: '' },
+];
 
 function buildPageNumbers(totalPages) {
   return Array.from({ length: totalPages }, (_, index) => index + 1);
@@ -227,29 +233,47 @@ export default function ProductsPage() {
           description="Recherchez un produit ou une catégorie, filtrez par prix et catégorie."
         />
 
-        <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
-          {/* Barre de recherche visible */}
-          <label className="relative flex-1 max-w-md">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
-            <input
-              type="search"
-              value={searchInput}
-              onChange={handleSearchChange}
-              placeholder="Rechercher un produit ou une catégorie..."
-              className="h-11 w-full rounded-[8px] border border-[#E0DBD5] bg-white pl-10 pr-3 text-sm outline-none transition focus:border-accent"
-            />
-          </label>
+        {/* Filtres visibles directement */}
+        <form onSubmit={applyFilters} className="mt-6 rounded-[12px] border border-[#E0DBD5] bg-white p-4 sm:p-5">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:gap-4">
+            {/* Recherche */}
+            <div className="flex-1">
+              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-text-muted">
+                Recherche
+              </label>
+              <div className="relative">
+                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
+                <input
+                  type="search"
+                  value={searchInput}
+                  onChange={handleSearchChange}
+                  placeholder="Rechercher..."
+                  className="h-11 w-full rounded-[8px] border border-[#E0DBD5] bg-cream pl-10 pr-3 text-sm text-text-dark outline-none transition focus:border-accent"
+                />
+              </div>
+            </div>
 
-          <FilterDrawer label="Filtrer ici">
-            <form onSubmit={applyFilters} className="space-y-4">
-              <label className="flex flex-col gap-2 text-sm font-medium text-text-dark">
-                <span>Catégorie</span>
+            {/* Catégorie */}
+            <div className="w-full sm:w-48">
+              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-text-muted">
+                Catégorie
+              </label>
+              <div className="relative">
                 <select
                   value={filters.category}
-                  onChange={(event) => handleFilterChange('category', event.target.value)}
-                  className="h-11 rounded-[8px] border border-[#E0DBD5] bg-white px-3 text-sm text-text-dark outline-none transition focus:border-accent"
+                  onChange={(event) => {
+                    handleFilterChange('category', event.target.value);
+                    const nextParams = new URLSearchParams();
+                    if (event.target.value) nextParams.set('category', event.target.value);
+                    if (filters.min_price) nextParams.set('min_price', filters.min_price);
+                    if (filters.max_price) nextParams.set('max_price', filters.max_price);
+                    if (filters.search) nextParams.set('search', filters.search);
+                    nextParams.set('page', '1');
+                    setSearchParams(nextParams, { replace: false });
+                  }}
+                  className="h-11 w-full appearance-none rounded-[8px] border border-[#E0DBD5] bg-cream px-3 pr-8 text-sm text-text-dark outline-none transition focus:border-accent"
                 >
-                  <option value="">Toutes les catégories</option>
+                  <option value="">Toutes</option>
                   {loadingCategories ? (
                     <option value="">Chargement...</option>
                   ) : (
@@ -260,50 +284,55 @@ export default function ProductsPage() {
                     ))
                   )}
                 </select>
-              </label>
-
-              <label className="flex flex-col gap-2 text-sm font-medium text-text-dark">
-                <span>Prix min</span>
-                <input
-                  type="number"
-                  min="0"
-                  value={filters.min_price}
-                  onChange={(event) => handleFilterChange('min_price', event.target.value)}
-                  className="h-11 rounded-[8px] border border-[#E0DBD5] bg-white px-3 text-sm text-text-dark outline-none transition focus:border-accent"
-                  placeholder="0"
-                />
-              </label>
-
-              <label className="flex flex-col gap-2 text-sm font-medium text-text-dark">
-                <span>Prix max</span>
-                <input
-                  type="number"
-                  min="0"
-                  value={filters.max_price}
-                  onChange={(event) => handleFilterChange('max_price', event.target.value)}
-                  className="h-11 rounded-[8px] border border-[#E0DBD5] bg-white px-3 text-sm text-text-dark outline-none transition focus:border-accent"
-                  placeholder="100000"
-                />
-              </label>
-
-              <div className="flex gap-2">
-                <button
-                  type="submit"
-                  className="inline-flex flex-1 items-center justify-center rounded-full bg-accent px-4 py-2.5 text-sm font-semibold text-white transition hover:opacity-95"
-                >
-                  Appliquer
-                </button>
-                <button
-                  type="button"
-                  onClick={resetFilters}
-                  className="inline-flex items-center justify-center rounded-full border border-[#E0DBD5] bg-white px-4 py-2.5 text-sm font-semibold text-text-dark transition hover:border-accent hover:text-accent"
-                >
-                  <SearchX className="h-4 w-4" aria-hidden="true" />
-                </button>
+                <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
               </div>
-            </form>
-          </FilterDrawer>
-        </div>
+            </div>
+
+            {/* Prix */}
+            <div className="w-full sm:w-52">
+              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-text-muted">
+                Prix
+              </label>
+              <div className="relative">
+                <select
+                  value={`${filters.min_price || ''}-${filters.max_price || ''}`}
+                  onChange={(event) => {
+                    const [min, max] = event.target.value.split('-');
+                    handleFilterChange('min_price', min);
+                    handleFilterChange('max_price', max);
+                    const nextParams = new URLSearchParams();
+                    if (filters.category) nextParams.set('category', filters.category);
+                    if (min) nextParams.set('min_price', min);
+                    if (max) nextParams.set('max_price', max);
+                    if (filters.search) nextParams.set('search', filters.search);
+                    nextParams.set('page', '1');
+                    setSearchParams(nextParams, { replace: false });
+                  }}
+                  className="h-11 w-full appearance-none rounded-[8px] border border-[#E0DBD5] bg-cream px-3 pr-8 text-sm text-text-dark outline-none transition focus:border-accent"
+                >
+                  {PRICE_RANGES.map((range) => (
+                    <option key={range.label} value={`${range.min}-${range.max}`}>
+                      {range.label}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
+              </div>
+            </div>
+
+            {/* Bouton reset */}
+            <div>
+              <button
+                type="button"
+                onClick={resetFilters}
+                className="flex h-11 w-11 items-center justify-center rounded-[8px] border border-[#E0DBD5] bg-cream text-text-muted transition hover:border-accent hover:text-accent"
+                title="Réinitialiser les filtres"
+              >
+                <SearchX className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+        </form>
 
         <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
           <p className="text-sm text-text-muted">
