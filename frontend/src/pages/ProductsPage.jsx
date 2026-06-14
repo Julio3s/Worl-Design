@@ -264,34 +264,34 @@ export default function ProductsPage() {
               </div>
             </div>
 
-            {/* Prix Min */}
-            <div className="w-full sm:w-32">
-              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-text-muted">
-                Prix min
-              </label>
-              <input
-                type="number"
-                min="0"
-                placeholder="Min"
-                value={filters.min_price}
-                onChange={(event) => handleFilterChange('min_price', event.target.value)}
-                className="h-11 w-full rounded-[8px] border border-[#E0DBD5] bg-cream px-3 text-sm text-text-dark outline-none transition focus:border-accent"
-              />
-            </div>
-
-            {/* Prix Max */}
-            <div className="w-full sm:w-32">
-              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-text-muted">
-                Prix max
-              </label>
-              <input
-                type="number"
-                min="0"
-                placeholder="Max"
-                value={filters.max_price}
-                onChange={(event) => handleFilterChange('max_price', event.target.value)}
-                className="h-11 w-full rounded-[8px] border border-[#E0DBD5] bg-cream px-3 text-sm text-text-dark outline-none transition focus:border-accent"
-              />
+            {/* Prix Min & Max côte à côte */}
+            <div className="flex w-full gap-2 sm:w-64">
+              <div className="flex-1">
+                <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-text-muted">
+                  Prix min
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  placeholder="Min"
+                  value={filters.min_price}
+                  onChange={(event) => handleFilterChange('min_price', event.target.value)}
+                  className="h-11 w-full rounded-[8px] border border-[#E0DBD5] bg-cream px-3 text-sm text-text-dark outline-none transition focus:border-accent"
+                />
+              </div>
+              <div className="flex-1">
+                <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-text-muted">
+                  Prix max
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  placeholder="Max"
+                  value={filters.max_price}
+                  onChange={(event) => handleFilterChange('max_price', event.target.value)}
+                  className="h-11 w-full rounded-[8px] border border-[#E0DBD5] bg-cream px-3 text-sm text-text-dark outline-none transition focus:border-accent"
+                />
+              </div>
             </div>
 
             {/* Bouton Filtrer */}
