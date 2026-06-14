@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Search, SearchX, ChevronDown } from 'lucide-react';
+import { SearchX, ChevronDown } from 'lucide-react';
 import { Link, useSearchParams } from 'react-router-dom';
 
 import { getCategories, getProducts } from '../api/catalog';
@@ -234,34 +234,8 @@ export default function ProductsPage() {
         />
 
         {/* Filtres visibles directement */}
-        <form onSubmit={applyFilters} className="mt-6 rounded-[12px] border border-[#E0DBD5] bg-white p-4 sm:p-5">
+        <div className="mt-6 rounded-[12px] border border-[#E0DBD5] bg-white p-4 sm:p-5">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:gap-4">
-            {/* Recherche */}
-            <div className="flex-1">
-              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-text-muted">
-                Recherche
-              </label>
-              <div className="flex gap-2">
-                <div className="relative flex-1">
-                  <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
-                  <input
-                    type="search"
-                    value={searchInput}
-                    onChange={handleSearchChange}
-                    placeholder="Rechercher..."
-                    className="h-11 w-full rounded-[8px] border border-[#E0DBD5] bg-cream pl-10 pr-3 text-sm text-text-dark outline-none transition focus:border-accent"
-                  />
-                </div>
-                <button
-                  type="submit"
-                  className="flex h-11 items-center gap-1.5 rounded-[8px] bg-accent px-4 text-sm font-semibold text-white transition hover:opacity-90"
-                >
-                  <Search className="h-4 w-4" />
-                  <span className="hidden sm:inline">Rechercher</span>
-                </button>
-              </div>
-            </div>
-
             {/* Catégorie */}
             <div className="w-full sm:w-48">
               <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-text-muted">
@@ -282,7 +256,7 @@ export default function ProductsPage() {
                   }}
                   className="h-11 w-full appearance-none rounded-[8px] border border-[#E0DBD5] bg-cream px-3 pr-8 text-sm text-text-dark outline-none transition focus:border-accent"
                 >
-                  <option value="">Toutes</option>
+                  <option value="">Toutes les catégories</option>
                   {loadingCategories ? (
                     <option value="">Chargement...</option>
                   ) : (
@@ -300,7 +274,7 @@ export default function ProductsPage() {
             {/* Prix */}
             <div className="w-full sm:w-52">
               <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-text-muted">
-                Prix
+                Fourchette de prix
               </label>
               <div className="relative">
                 <select
@@ -331,6 +305,9 @@ export default function ProductsPage() {
 
             {/* Bouton reset */}
             <div>
+              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-text-muted opacity-0 sm:block">
+                Reset
+              </label>
               <button
                 type="button"
                 onClick={resetFilters}
@@ -341,7 +318,7 @@ export default function ProductsPage() {
               </button>
             </div>
           </div>
-        </form>
+        </div>
 
         <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
           <p className="text-sm text-text-muted">
