@@ -15,7 +15,6 @@ import { useAuthStore } from '../store/authStore';
 import { useCartStore } from '../store/cartStore';
 
 const NAV_LINKS = [
-  { to: '/', label: 'Accueil', end: true },
   { to: '/products', label: 'Catalogue' },
 ];
 
@@ -80,8 +79,8 @@ export function Navbar() {
             </div>
           </Link>
 
-          {/* Navigation + recherche */}
-          <nav className="hidden items-center gap-2 sm:flex">
+          {/* Navigation centrée */}
+          <nav className="hidden flex-1 items-center justify-center gap-2 sm:flex">
             {NAV_LINKS.map((link) => (
               <NavLink
                 key={link.to}
