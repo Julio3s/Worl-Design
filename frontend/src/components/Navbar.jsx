@@ -80,7 +80,7 @@ export function Navbar() {
           </Link>
 
           {/* Navigation centrée */}
-          <nav className="hidden flex-1 items-center justify-center gap-2 sm:flex">
+          <nav className="flex flex-1 items-center justify-center gap-2">
             {NAV_LINKS.map((link) => (
               <NavLink
                 key={link.to}
