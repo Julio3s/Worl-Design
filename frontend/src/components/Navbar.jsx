@@ -80,7 +80,7 @@ export function Navbar() {
           </Link>
 
           {/* Navigation centrée */}
-          <nav className="flex flex-1 items-center justify-center gap-2">
+          <nav className="flex flex-1 items-center justify-center">
             {NAV_LINKS.map((link) => (
               <NavLink
                 key={link.to}
@@ -98,14 +98,6 @@ export function Navbar() {
                 {link.label}
               </NavLink>
             ))}
-            <button
-              type="button"
-              onClick={() => navigate('/products')}
-              className="ml-1 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white/80 transition hover:bg-white/20 hover:text-white"
-              aria-label="Catalogue"
-            >
-              <ShoppingBag className="h-4 w-4" strokeWidth={2} />
-            </button>
           </nav>
 
           {/* Actions */}
