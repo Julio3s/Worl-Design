@@ -80,32 +80,34 @@ export function Navbar() {
             </div>
           </Link>
 
-          {/* Barre de recherche */}
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              if (searchValue.trim()) {
-                navigate(`/products?search=${encodeURIComponent(searchValue.trim())}`);
-                setSearchValue('');
-              }
-            }}
-            className="flex flex-1 items-center gap-2 rounded-full bg-[#F3F4F6] px-3 py-2 sm:px-4 sm:py-2.5"
-          >
+          {/* Navigation + recherche */}
+          <nav className="hidden items-center gap-2 sm:flex">
+            {NAV_LINKS.map((link) => (
+              <NavLink
+                key={link.to}
+                to={link.to}
+                end={link.end}
+                className={({ isActive }) =>
+                  [
+                    'rounded-full px-4 py-2 text-sm font-semibold transition',
+                    isActive
+                      ? 'bg-white/20 text-white'
+                      : 'text-white/80 hover:bg-white/10 hover:text-white',
+                  ].join(' ')
+                }
+              >
+                {link.label}
+              </NavLink>
+            ))}
             <button
-              type="submit"
-              className="inline-flex items-center justify-center"
-              aria-label="Rechercher"
+              type="button"
+              onClick={() => navigate('/products')}
+              className="ml-1 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white/80 transition hover:bg-white/20 hover:text-white"
+              aria-label="Catalogue"
             >
-              <Search className="h-4 w-4 shrink-0 text-[#6B7280] sm:h-5 sm:w-5" strokeWidth={2} />
+              <ShoppingBag className="h-4 w-4" strokeWidth={2} />
             </button>
-            <input
-              type="text"
-              value={searchValue}
-              onChange={(e) => setSearchValue(e.target.value)}
-              placeholder="Rechercher un produit..."
-              className="min-w-0 flex-1 bg-transparent text-[16px] font-medium text-[#111827] outline-none placeholder:text-[#6B7280]"
-            />
-          </form>
+          </nav>
 
           {/* Actions */}
           <div className="flex shrink-0 items-center gap-2 sm:gap-3">
@@ -168,33 +170,6 @@ export function Navbar() {
             </div>
 
             <div className="flex flex-1 flex-col gap-3 overflow-y-auto px-4 py-5">
-              {/* Barre de recherche mobile */}
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  if (searchValue.trim()) {
-                    navigate(`/products?search=${encodeURIComponent(searchValue.trim())}`);
-                    setSearchValue('');
-                    setMobileOpen(false);
-                  }
-                }}
-                className="flex items-center gap-2 rounded-full bg-[#F3F4F6] px-4 py-3"
-              >
-                <button
-                  type="submit"
-                  className="inline-flex items-center justify-center"
-                  aria-label="Rechercher"
-                >
-                  <Search className="h-5 w-5 shrink-0 text-[#6B7280]" strokeWidth={2} />
-                </button>
-                <input
-                  type="text"
-                  value={searchValue}
-                  onChange={(e) => setSearchValue(e.target.value)}
-                  placeholder="Rechercher un produit..."
-                  className="min-w-0 flex-1 bg-transparent text-[16px] font-medium text-[#111827] outline-none placeholder:text-[#6B7280]"
-                />
-              </form>
 
               {NAV_LINKS.map((link) => (
                 <NavLink

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { SearchX, ChevronDown } from 'lucide-react';
+import { SearchX, ChevronDown, ShoppingCart } from 'lucide-react';
 import { Link, useSearchParams } from 'react-router-dom';
 
 import { getCategories, getProducts } from '../api/catalog';
@@ -10,6 +10,7 @@ import { ProductCard } from '../components/ProductCard';
 import { ProductGridSkeleton } from '../components/skeletons/ProductGridSkeleton';
 import { SectionHeading } from '../components/SectionHeading';
 import { usePageTitle } from '../hooks/usePageTitle';
+import { useCartStore } from '../store/cartStore';
 
 const PAGE_SIZE = 12;
 
@@ -217,6 +218,12 @@ export default function ProductsPage() {
     setSearchParams({}, { replace: false });
   };
 
+  const items = useCartStore((state) => state.items);
+  const cartCount = useMemo(
+    () => items.reduce((sum, item) => sum + Number(item.quantity || 0), 0),
+    [items],
+  );
+
   return (
     <div className="bg-cream">
       <section className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
@@ -385,6 +392,20 @@ export default function ProductsPage() {
           </div>
         )}
       </section>
+
+      {/* Bouton panier flottant */}
+      <Link
+        to="/cart"
+        className="fixed bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-accent text-white shadow-lg transition hover:opacity-95 active:scale-[0.95]"
+        aria-label="Voir le panier"
+      >
+        <ShoppingCart className="h-6 w-6" strokeWidth={2} />
+        {cartCount > 0 ? (
+          <span className="absolute -right-1 -top-1 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-[#DC2626] px-1 text-[11px] font-bold text-white">
+            {cartCount > 99 ? '99+' : cartCount}
+          </span>
+        ) : null}
+      </Link>
     </div>
   );
 }
