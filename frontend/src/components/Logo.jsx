@@ -1,10 +1,10 @@
 import { Link } from 'react-router-dom';
 
 const SIZE_CLASSES = {
-  sm: 'h-12',
-  md: 'h-16',
-  lg: 'h-20',
-  xl: 'h-24',
+  sm: 'h-20',
+  md: 'h-24',
+  lg: 'h-28',
+  xl: 'h-32',
 };
 
 export function Logo({ to = '/', size = 'md', className = '', showLink = true }) {

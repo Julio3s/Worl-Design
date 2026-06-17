@@ -84,7 +84,7 @@ export function Navbar() {
             <img 
               src="/logo-wd.png" 
               alt="World Design" 
-              className="h-10 w-auto sm:h-12"
+              className="h-20 w-auto sm:h-24"
               onError={(e) => {
                 e.target.onerror = null;
                 e.target.style.display = 'none';
@@ -229,7 +229,7 @@ export function Navbar() {
                 <img 
                   src="/logo-wd.png" 
                   alt="World Design" 
-                  className="h-10 w-auto"
+                  className="h-20 w-auto"
                   onError={(e) => {
                     e.target.onerror = null;
                     e.target.style.display = 'none';
