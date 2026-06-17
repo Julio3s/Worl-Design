@@ -19,11 +19,11 @@ services:
       - key: DEBUG
         value: false
       - key: ALLOWED_HOSTS
-        value: world-design-backend.onrender.com,localhost,127.0.0.1
+        value: worl-design.onrender.com,worlddesign-shop.com,www.worlddesign-shop.com,localhost,127.0.0.1
       - key: CORS_ALLOWED_ORIGINS
-        value: https://world-design-frontend.onrender.com,http://localhost:5173
+        value: https://worlddesign-shop.com,https://www.worlddesign-shop.com,https://worl-design-frontend.onrender.com,http://localhost:5173
       - key: CSRF_TRUSTED_ORIGINS
-        value: https://world-design-backend.onrender.com,https://world-design-frontend.onrender.com,http://localhost:5173
+        value: https://worl-design.onrender.com,https://worlddesign-shop.com,https://www.worlddesign-shop.com,https://worl-design-frontend.onrender.com,http://localhost:5173
       - key: CLOUDINARY_CLOUD_NAME
         value: demo-cloudinary-cloud-name
       - key: CLOUDINARY_API_KEY
@@ -53,11 +53,11 @@ services:
           name: world-design-db
           property: port
       - key: SITE_URL
-        value: https://world-design-backend.onrender.com
+        value: https://worlddesign-shop.com
       - key: FEDAPAY_API_BASE_URL
         value: https://api.fedapay.com/v1
       - key: FEDAPAY_RETURN_URL
-        value: https://world-design-frontend.onrender.com/order-success
+        value: https://worlddesign-shop.com/order-success
 
   - type: static
     name: world-design-frontend
@@ -69,6 +69,6 @@ services:
       - key: NODE_VERSION
         value: 20
       - key: VITE_API_BASE_URL
-        value: https://world-design-backend.onrender.com/api
+        value: https://worl-design.onrender.com/api
       - key: VITE_GOOGLE_MAPS_API_KEY
         value: demo-google-maps-api-key

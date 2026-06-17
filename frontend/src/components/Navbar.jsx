@@ -3,19 +3,19 @@ import {
   Menu,
   Package,
   Search,
-  ShoppingBag,
-  Truck,
+  ShoppingCart,
   UserRound,
   X,
 } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 
 import { useAuthStore } from '../store/authStore';
 import { useCartStore } from '../store/cartStore';
 
 const NAV_LINKS = [
-  { to: '/products', label: 'Catalogue' },
+  { to: '/', label: 'Accueil', end: true },
+  { to: '/products', label: 'Boutique', end: false },
 ];
 
 function getUserLabel(user) {
@@ -25,19 +25,11 @@ function getUserLabel(user) {
   return fullName || user.email || 'Mon compte';
 }
 
-function LogoIcon() {
-  return (
-    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
-      <rect width="32" height="32" rx="4" fill="#0052CC"/>
-      <path d="M8 10L16 22L24 10" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-      <circle cx="16" cy="14" r="2" fill="white"/>
-    </svg>
-  );
-}
-
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const [searchValue, setSearchValue] = useState('');
+  const searchInputRef = useRef(null);
   const navigate = useNavigate();
   const items = useCartStore((state) => state.items);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
@@ -58,6 +50,22 @@ export function Navbar() {
     loadFromStorage();
   }, [loadFromStorage]);
 
+  useEffect(() => {
+    if (searchOpen && searchInputRef.current) {
+      searchInputRef.current.focus();
+    }
+  }, [searchOpen]);
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    if (searchValue.trim()) {
+      navigate(`/products?search=${encodeURIComponent(searchValue.trim())}`);
+      setSearchValue('');
+      setSearchOpen(false);
+      setMobileOpen(false);
+    }
+  };
+
   const handleLogout = () => {
     logout();
     setMobileOpen(false);
@@ -65,22 +73,22 @@ export function Navbar() {
 
   return (
     <>
-      <header className="w-full bg-[#1A1A2E] z-50">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-2 px-4 py-3 sm:px-6 sm:gap-3 lg:px-8 lg:gap-4">
-          {/* Marque */}
+      <header className="sticky top-0 z-50 w-full bg-white shadow-sm border-b border-gray-200">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
+          {/* Logo */}
           <Link
             to="/"
-            className="flex shrink-0 items-center gap-2 sm:gap-3 leading-none"
+            className="flex shrink-0 items-center gap-2 leading-none"
             aria-label="Accueil World Design"
           >
             <div className="flex flex-col leading-none">
-              <span className="text-lg font-black text-white sm:text-xl">World</span>
-              <span className="text-lg font-black text-white sm:text-xl">Design</span>
+              <span className="text-lg font-black text-gray-900 sm:text-xl">World</span>
+              <span className="text-lg font-black text-gray-900 sm:text-xl">Design</span>
             </div>
           </Link>
 
-          {/* Navigation centrée */}
-          <nav className="flex flex-1 items-center justify-center">
+          {/* Navigation desktop - centrée */}
+          <nav className="hidden md:flex items-center gap-1">
             {NAV_LINKS.map((link) => (
               <NavLink
                 key={link.to}
@@ -88,10 +96,10 @@ export function Navbar() {
                 end={link.end}
                 className={({ isActive }) =>
                   [
-                    'rounded-full px-4 py-2 text-sm font-semibold transition',
+                    'px-4 py-2 text-sm font-medium rounded-lg transition',
                     isActive
-                      ? 'bg-white/20 text-white'
-                      : 'text-white/80 hover:bg-white/10 hover:text-white',
+                      ? 'bg-gray-900 text-white'
+                      : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900',
                   ].join(' ')
                 }
               >
@@ -100,145 +108,225 @@ export function Navbar() {
             ))}
           </nav>
 
-          {/* Actions */}
-          <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+          {/* Actions droite */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            {/* Barre de recherche desktop */}
+            <form onSubmit={handleSearchSubmit} className="hidden md:flex items-center">
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Rechercher..."
+                  value={searchValue}
+                  onChange={(e) => setSearchValue(e.target.value)}
+                  className="w-40 lg:w-56 rounded-full border border-gray-300 bg-gray-50 py-2 pl-10 pr-4 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition"
+                />
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+              </div>
+            </form>
+
+            {/* Icône recherche mobile */}
+            <button
+              type="button"
+              onClick={() => setSearchOpen(!searchOpen)}
+              className="flex h-9 w-9 items-center justify-center rounded-full text-gray-700 hover:bg-gray-100 transition md:hidden"
+              aria-label="Rechercher"
+            >
+              <Search className="h-5 w-5" />
+            </button>
+
+            {/* Panier */}
+            <Link
+              to="/cart"
+              className="relative flex h-9 w-9 items-center justify-center rounded-full text-gray-700 hover:bg-gray-100 transition"
+              aria-label="Panier"
+            >
+              <ShoppingCart className="h-5 w-5" />
+              {cartCount > 0 && (
+                <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
+                  {cartCount > 99 ? '99+' : cartCount}
+                </span>
+              )}
+            </Link>
+
+            {/* Compte utilisateur desktop */}
+            {isAuthenticated ? (
+              <div className="hidden md:flex items-center gap-1">
+                <Link
+                  to={profileHref}
+                  className="flex h-9 w-9 items-center justify-center rounded-full text-gray-700 hover:bg-gray-100 transition"
+                  aria-label={userLabel}
+                >
+                  <UserRound className="h-5 w-5" />
+                </Link>
+              </div>
+            ) : (
+              <Link
+                to="/login"
+                className="hidden md:inline-flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
+              >
+                <UserRound className="h-4 w-4" />
+                Connexion
+              </Link>
+            )}
+
+            {/* Menu hamburger mobile */}
             <button
               type="button"
               onClick={() => setMobileOpen(true)}
-              className="flex h-11 w-11 items-center justify-center rounded-full bg-[#F3F4F6] transition hover:bg-[#E5E7EB] lg:hidden"
+              className="flex h-9 w-9 items-center justify-center rounded-full text-gray-700 hover:bg-gray-100 transition md:hidden"
               aria-label="Ouvrir le menu"
             >
-              <Menu className="h-5 w-5 text-[#374151]" strokeWidth={2} />
+              <Menu className="h-5 w-5" />
             </button>
           </div>
         </div>
+
+        {/* Barre de recherche mobile */}
+        {searchOpen && (
+          <div className="border-t border-gray-200 px-4 py-3 md:hidden">
+            <form onSubmit={handleSearchSubmit} className="relative">
+              <input
+                ref={searchInputRef}
+                type="text"
+                placeholder="Rechercher un produit..."
+                value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value)}
+                className="w-full rounded-full border border-gray-300 bg-gray-50 py-2 pl-10 pr-4 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+              />
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+            </form>
+          </div>
+        )}
       </header>
 
       {/* Menu mobile (tiroir latéral) */}
       {mobileOpen ? (
-        <div className="fixed inset-0 z-[60] lg:hidden">
+        <div className="fixed inset-0 z-[60] md:hidden">
           <button
             type="button"
-            className="absolute inset-0 bg-[#1A1A2E]/55"
+            className="absolute inset-0 bg-black/50"
             aria-label="Fermer le menu"
             onClick={() => setMobileOpen(false)}
           />
-          <aside className="absolute right-0 top-0 flex h-full w-[92vw] max-w-sm flex-col bg-white shadow-[0_20px_60px_rgba(0,0,0,0.2)]">
-            <div className="flex items-center justify-between border-b border-[#EFEFEF] px-4 py-4">
+          <aside className="absolute right-0 top-0 flex h-full w-[85vw] max-w-sm flex-col bg-white shadow-xl">
+            {/* En-tête du tiroir */}
+            <div className="flex items-center justify-between border-b border-gray-200 px-4 py-4">
               <Link
                 to="/"
-                className="flex items-center gap-3 leading-none"
+                className="flex items-center gap-2 leading-none"
                 onClick={() => setMobileOpen(false)}
               >
-                <svg width="48" height="42" viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  {/* W lettre stylisée */}
-                  <g>
-                    {/* Partie gauche du W */}
-                    <path d="M 20 40 L 50 130 Q 55 140 65 140 L 70 140 Q 75 140 75 130 L 60 50 Q 58 40 50 40 Q 42 40 40 50 L 25 120" fill="#0052CC"/>
-                    {/* Partie droite du W */}
-                    <path d="M 135 40 L 165 130 Q 167 140 175 140 L 180 140 Q 185 140 185 130 L 175 50 Q 173 40 165 40 Q 157 40 155 50 L 140 120" fill="#0052CC"/>
-                    {/* Partie centrale du W */}
-                    <path d="M 75 50 L 100 120 Q 102 135 115 135 L 135 50" fill="#0052CC"/>
-                    {/* Courbes décoratives */}
-                    <path d="M 40 100 Q 100 95 160 100" stroke="#0052CC" strokeWidth="4" fill="none" strokeLinecap="round"/>
-                    <path d="M 50 120 Q 100 130 150 120" stroke="#0052CC" strokeWidth="3" fill="none" strokeLinecap="round"/>
-                  </g>
-                </svg>
                 <div className="flex flex-col leading-tight">
-                  <span className="font-black text-[#0052CC]">World</span>
-                  <span className="font-black text-[#0052CC]">Design</span>
+                  <span className="text-lg font-black text-gray-900">World</span>
+                  <span className="text-lg font-black text-gray-900">Design</span>
                 </div>
               </Link>
-
               <button
                 type="button"
                 onClick={() => setMobileOpen(false)}
-                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#EFEFEF] bg-white text-[#374151]"
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 text-gray-700 hover:bg-gray-200 transition"
                 aria-label="Fermer le menu"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
 
-            <div className="flex flex-1 flex-col gap-3 overflow-y-auto px-4 py-5">
-
-              {NAV_LINKS.map((link) => (
-                <NavLink
-                  key={link.to}
-                  to={link.to}
-                  end={link.end}
-                  onClick={() => setMobileOpen(false)}
-                  className={({ isActive }) =>
-                    [
-                      'flex items-center justify-between rounded-full border px-4 py-3 text-base font-semibold transition',
-                      isActive
-                        ? 'border-[#0052CC] bg-[#0052CC] text-white'
-                        : 'border-[#EFEFEF] bg-white text-[#1A1A2E] hover:border-[#0052CC]/30 hover:bg-[#F8F5F0]',
-                    ].join(' ')
-                  }
-                >
-                  <span>{link.label}</span>
-                </NavLink>
-              ))}
-
-              {isAuthenticated ? (
-                <>
-                  <div className="rounded-full border border-[#EFEFEF] bg-[#F8F5F0] px-4 py-3">
-                    <p className="text-xs font-semibold uppercase tracking-wider text-[#0052CC]">Mon compte</p>
-                    <p className="mt-1 text-sm font-semibold text-[#1A1A2E]">{userLabel}</p>
-                  </div>
-
+            {/* Liens de navigation mobile */}
+            <div className="flex-1 overflow-y-auto px-4 py-5">
+              <nav className="flex flex-col gap-2">
+                {NAV_LINKS.map((link) => (
                   <NavLink
-                    to="/my-orders"
+                    key={link.to}
+                    to={link.to}
+                    end={link.end}
                     onClick={() => setMobileOpen(false)}
                     className={({ isActive }) =>
                       [
-                        'flex items-center justify-between rounded-full border px-4 py-3 text-base font-semibold transition',
+                        'rounded-lg px-4 py-3 text-base font-medium transition',
                         isActive
-                          ? 'border-[#0052CC] bg-[#0052CC] text-white'
-                          : 'border-[#EFEFEF] bg-white text-[#1A1A2E] hover:border-[#0052CC]/30 hover:bg-[#F8F5F0]',
+                          ? 'bg-gray-900 text-white'
+                          : 'text-gray-700 hover:bg-gray-100',
                       ].join(' ')
                     }
                   >
-                    <span className="inline-flex items-center gap-2">
-                      <Package className="h-4 w-4" />
-                      Mes commandes
-                    </span>
+                    {link.label}
                   </NavLink>
+                ))}
+              </nav>
 
-                  {isAdmin ? (
+              <div className="mt-6 border-t border-gray-200 pt-6">
+                {/* Compte */}
+                {isAuthenticated ? (
+                  <div className="space-y-2">
+                    <div className="rounded-lg bg-gray-50 px-4 py-3">
+                      <p className="text-xs font-semibold uppercase tracking-wider text-gray-500">
+                        Mon compte
+                      </p>
+                      <p className="mt-1 text-sm font-semibold text-gray-900">{userLabel}</p>
+                    </div>
+
                     <NavLink
-                      to="/admin/dashboard"
+                      to="/my-orders"
                       onClick={() => setMobileOpen(false)}
-                      className="flex items-center justify-between rounded-full border border-[#EFEFEF] bg-white px-4 py-3 text-base font-semibold text-[#1A1A2E] transition hover:border-[#0052CC]/30 hover:bg-[#F8F5F0]"
+                      className="flex items-center gap-3 rounded-lg px-4 py-3 text-base font-medium text-gray-700 hover:bg-gray-100 transition"
                     >
-                      <span>Admin</span>
+                      <Package className="h-5 w-5" />
+                      Mes commandes
                     </NavLink>
-                  ) : null}
 
-                  <button
-                    type="button"
-                    onClick={handleLogout}
-                    className="inline-flex items-center justify-between rounded-full border border-[#EFEFEF] bg-white px-4 py-3 text-base font-semibold text-[#0052CC] transition hover:bg-[#F8F5F0]"
-                  >
-                    <span className="inline-flex items-center gap-2">
-                      <LogOut className="h-4 w-4" />
+                    <NavLink
+                      to="/cart"
+                      onClick={() => setMobileOpen(false)}
+                      className="flex items-center gap-3 rounded-lg px-4 py-3 text-base font-medium text-gray-700 hover:bg-gray-100 transition"
+                    >
+                      <ShoppingCart className="h-5 w-5" />
+                      Mon panier
+                      {cartCount > 0 && (
+                        <span className="ml-auto rounded-full bg-red-500 px-2 py-0.5 text-xs font-bold text-white">
+                          {cartCount}
+                        </span>
+                      )}
+                    </NavLink>
+
+                    {isAdmin ? (
+                      <NavLink
+                        to="/admin/dashboard"
+                        onClick={() => setMobileOpen(false)}
+                        className="flex items-center gap-3 rounded-lg px-4 py-3 text-base font-medium text-gray-700 hover:bg-gray-100 transition"
+                      >
+                        <span>Administration</span>
+                      </NavLink>
+                    ) : null}
+
+                    <button
+                      type="button"
+                      onClick={handleLogout}
+                      className="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-base font-medium text-red-600 hover:bg-red-50 transition"
+                    >
+                      <LogOut className="h-5 w-5" />
                       Déconnexion
-                    </span>
-                  </button>
-                </>
-              ) : (
-                <NavLink
-                  to="/login"
-                  onClick={() => setMobileOpen(false)}
-                  className="flex items-center justify-between rounded-full border border-[#EFEFEF] bg-white px-4 py-3 text-base font-semibold text-[#1A1A2E] transition hover:border-[#0052CC]/30 hover:bg-[#F8F5F0]"
-                >
-                  <span className="inline-flex items-center gap-2">
-                    <UserRound className="h-4 w-4" />
-                    Connexion
-                  </span>
-                </NavLink>
-              )}
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <NavLink
+                      to="/login"
+                      onClick={() => setMobileOpen(false)}
+                      className="flex items-center justify-center rounded-lg bg-gray-900 px-4 py-3 text-base font-medium text-white hover:bg-gray-800 transition"
+                    >
+                      <UserRound className="mr-2 h-5 w-5" />
+                      Connexion
+                    </NavLink>
+                    <NavLink
+                      to="/register"
+                      onClick={() => setMobileOpen(false)}
+                      className="flex items-center justify-center rounded-lg border border-gray-300 px-4 py-3 text-base font-medium text-gray-700 hover:bg-gray-50 transition"
+                    >
+                      Créer un compte
+                    </NavLink>
+                  </div>
+                )}
+              </div>
             </div>
           </aside>
         </div>
