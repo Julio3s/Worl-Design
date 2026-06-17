@@ -8,6 +8,7 @@ import { CartSummary } from '../components/CartSummary';
 import { ErrorState } from '../components/ErrorState';
 import { SectionHeading } from '../components/SectionHeading';
 import { AddressAutocomplete } from '../components/AddressAutocomplete';
+import { PhoneInput } from '../components/PhoneInput';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { useAuthStore } from '../store/authStore';
 import { useCartStore } from '../store/cartStore';
@@ -214,17 +215,12 @@ export default function CheckoutPage() {
               />
             </label>
 
-            <label className="flex flex-col gap-2 text-sm font-medium text-text-dark">
-              <span>Téléphone</span>
-              <input
-                type="tel"
-                required
-                value={form.phone}
-                onChange={handleChange('phone')}
-                className="h-11 rounded-[8px] border border-[#E0DBD5] bg-white px-3 text-sm outline-none transition focus:border-accent"
-                placeholder="+228 90 00 00 00"
-              />
-            </label>
+            <PhoneInput
+              value={form.phone}
+              onChange={(value) => setForm((current) => ({ ...current, phone: value }))}
+              required
+              placeholder="+228 90 00 00 00"
+            />
 
             <AddressAutocomplete
               value={form.delivery_address}

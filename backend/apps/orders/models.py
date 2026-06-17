@@ -22,7 +22,7 @@ class Order(models.Model):
     # Customer checkout fields (required for guest checkout, populated for authenticated users too)
     name = models.CharField(max_length=255, blank=True, null=True)
     email = models.EmailField(blank=True, null=True)
-    phone = models.CharField(max_length=20, blank=True, null=True)
+    phone = models.CharField(max_length=30, blank=True, null=True)
     delivery_address = models.TextField(blank=True, null=True)
     
     # Order metadata
