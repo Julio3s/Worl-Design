@@ -81,7 +81,17 @@ export function Navbar() {
             className="flex shrink-0 items-center gap-2 leading-none"
             aria-label="Accueil World Design"
           >
-            <div className="flex flex-col leading-none">
+            <img 
+              src="/logo-wd.svg" 
+              alt="World Design" 
+              className="h-10 w-auto sm:h-12"
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.style.display = 'none';
+                e.target.nextElementSibling.style.display = 'flex';
+              }}
+            />
+            <div className="hidden flex-col leading-none">
               <span className="text-lg font-black text-gray-900 sm:text-xl">World</span>
               <span className="text-lg font-black text-gray-900 sm:text-xl">Design</span>
             </div>
@@ -216,7 +226,17 @@ export function Navbar() {
                 className="flex items-center gap-2 leading-none"
                 onClick={() => setMobileOpen(false)}
               >
-                <div className="flex flex-col leading-tight">
+                <img 
+                  src="/logo-wd.svg" 
+                  alt="World Design" 
+                  className="h-10 w-auto"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.style.display = 'none';
+                    e.target.nextElementSibling.style.display = 'flex';
+                  }}
+                />
+                <div className="hidden flex-col leading-tight">
                   <span className="text-lg font-black text-gray-900">World</span>
                   <span className="text-lg font-black text-gray-900">Design</span>
                 </div>
