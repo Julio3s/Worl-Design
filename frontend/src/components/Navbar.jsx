@@ -1,13 +1,9 @@
 import {
-  BadgeCheck,
-  ChevronRight,
   LogOut,
   Menu,
   Package,
   Search,
   ShoppingCart,
-  Sparkles,
-  Truck,
   UserRound,
   X,
 } from 'lucide-react';
@@ -22,12 +18,6 @@ const NAV_LINKS = [
   { to: '/products', label: 'Boutique', end: false },
 ];
 
-const VALUE_PROPS = [
-  { icon: Sparkles, label: 'Sur mesure' },
-  { icon: Truck, label: 'Livraison rapide' },
-  { icon: BadgeCheck, label: 'Qualité premium' },
-];
-
 function getUserLabel(user) {
   if (!user) return 'Mon compte';
 
@@ -35,39 +25,10 @@ function getUserLabel(user) {
   return fullName || user.email || 'Mon compte';
 }
 
-function Brand({ onClick, compact = false }) {
-  return (
-    <Link
-      to="/"
-      className="group flex min-w-0 items-center gap-3 leading-none"
-      aria-label="Accueil World Design"
-      onClick={onClick}
-    >
-      <img
-        src="/logo-wd.png"
-        alt="World Design"
-        className={compact ? 'h-14 w-auto sm:h-16' : 'h-16 w-auto sm:h-20'}
-        onError={(e) => {
-          e.target.onerror = null;
-          e.target.style.display = 'none';
-          e.target.nextElementSibling.style.display = 'flex';
-        }}
-      />
-      <div className="hidden min-w-0 flex-col leading-none xl:flex">
-        <span className="text-[10px] font-bold uppercase tracking-[0.35em] text-primary/45">
-          Atelier créatif
-        </span>
-        <span className="mt-1 text-xl font-black text-primary">World Design</span>
-      </div>
-    </Link>
-  );
-}
-
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchValue, setSearchValue] = useState('');
-  const [isDesktop, setIsDesktop] = useState(false);
   const searchInputRef = useRef(null);
   const navigate = useNavigate();
   const items = useCartStore((state) => state.items);
@@ -88,19 +49,6 @@ export function Navbar() {
   useEffect(() => {
     loadFromStorage();
   }, [loadFromStorage]);
-
-  useEffect(() => {
-    const updateViewportFlags = () => {
-      setIsDesktop(window.innerWidth >= 1100);
-    };
-
-    updateViewportFlags();
-    window.addEventListener('resize', updateViewportFlags);
-
-    return () => {
-      window.removeEventListener('resize', updateViewportFlags);
-    };
-  }, []);
 
   useEffect(() => {
     if (searchOpen && searchInputRef.current) {
@@ -125,193 +73,187 @@ export function Navbar() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full bg-[linear-gradient(180deg,rgba(248,245,240,0.98),rgba(248,245,240,0.92))] backdrop-blur-xl">
-        <div className="border-b border-white/60 bg-[linear-gradient(90deg,#1A1A2E_0%,#23314d_55%,#E94560_100%)] text-white">
-          <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-2 sm:px-6 lg:px-8">
-            <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.28em] text-white/85 sm:text-xs">
-              <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
-              Studio de marquage sur mesure
-            </p>
-            {isDesktop ? (
-              <div className="hidden items-center gap-2 sm:flex">
-                {VALUE_PROPS.map((item) => {
-                  const Icon = item.icon;
-                  return (
-                    <span
-                      key={item.label}
-                      className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-medium text-white/85"
-                    >
-                      <Icon className="h-3.5 w-3.5" aria-hidden="true" />
-                      {item.label}
-                    </span>
-                  );
-                })}
-              </div>
-            ) : null}
-          </div>
-        </div>
-
-        <div className="mx-auto max-w-7xl px-4 py-3 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-3 rounded-[28px] border border-white/80 bg-white/85 px-3 py-3 shadow-[0_18px_45px_rgba(26,26,46,0.10)] ring-1 ring-black/5 backdrop-blur-xl sm:px-4 lg:gap-4">
-            <Brand />
-
-            <nav className="hidden flex-1 items-center justify-center gap-2 lg:flex">
-              {NAV_LINKS.map((link) => (
-                <NavLink
-                  key={link.to}
-                  to={link.to}
-                  end={link.end}
-                  className={({ isActive }) =>
-                    [
-                      'rounded-full px-4 py-2 text-sm font-semibold transition',
-                      isActive
-                        ? 'bg-primary text-white shadow-lg shadow-primary/20'
-                        : 'text-primary/70 hover:bg-[#F8F5F0] hover:text-primary',
-                    ].join(' ')
-                  }
-                >
-                  {link.label}
-                </NavLink>
-              ))}
-            </nav>
-
-            <div className="ml-auto flex items-center gap-2 sm:gap-3">
-              <form onSubmit={handleSearchSubmit} className="hidden xl:flex items-center">
-                <div className="relative w-64">
-                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-primary/35" />
-                  <input
-                    type="text"
-                    placeholder="Rechercher un produit..."
-                    value={searchValue}
-                    onChange={(e) => setSearchValue(e.target.value)}
-                    className="w-full rounded-full border border-[#E0DBD5] bg-[#FBFAF7] py-2.5 pl-10 pr-4 text-sm text-primary placeholder:text-primary/40 outline-none transition focus:border-accent focus:ring-4 focus:ring-accent/10"
-                  />
-                </div>
-              </form>
-
-              <button
-                type="button"
-                onClick={() => setSearchOpen(!searchOpen)}
-                className="flex h-11 w-11 items-center justify-center rounded-full border border-[#E0DBD5] bg-white text-primary transition hover:border-accent hover:text-accent xl:hidden"
-                aria-label="Rechercher"
-              >
-                <Search className="h-5 w-5" aria-hidden="true" />
-              </button>
-
-              <Link
-                to="/cart"
-                className="relative inline-flex h-11 items-center justify-center rounded-full border border-[#E0DBD5] bg-white px-3 text-sm font-semibold text-primary/70 transition hover:border-accent/30 hover:text-accent hover:shadow-sm"
-                aria-label="Panier"
-              >
-                <ShoppingCart className="h-5 w-5" aria-hidden="true" />
-                {cartCount > 0 && (
-                  <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-accent px-1 text-[10px] font-bold text-white">
-                    {cartCount > 99 ? '99+' : cartCount}
-                  </span>
-                )}
-              </Link>
-
-              {isDesktop ? (
-                <>
-                  {isAuthenticated ? (
-                    <Link
-                      to={profileHref}
-                      className="flex h-11 w-11 items-center justify-center rounded-full border border-[#E0DBD5] bg-white text-primary/75 transition hover:border-accent hover:text-accent hover:shadow-sm"
-                      aria-label={userLabel}
-                    >
-                      <UserRound className="h-4 w-4" aria-hidden="true" />
-                    </Link>
-                  ) : (
-                    <Link
-                      to="/login"
-                      className="flex h-11 w-11 items-center justify-center rounded-full border border-[#E0DBD5] bg-white text-primary/75 transition hover:border-accent hover:text-accent hover:shadow-sm"
-                      aria-label="Connexion"
-                    >
-                      <UserRound className="h-4 w-4" aria-hidden="true" />
-                    </Link>
-                  )}
-
-                  <Link
-                    to="/products"
-                    className="inline-flex items-center gap-2 rounded-full bg-[linear-gradient(135deg,#1A1A2E_0%,#E94560_100%)] px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-accent/25 transition hover:-translate-y-0.5 hover:shadow-xl hover:shadow-accent/30"
-                  >
-                    Créer un projet
-                    <ChevronRight className="h-4 w-4" aria-hidden="true" />
-                  </Link>
-                </>
-              ) : null}
-
-              <button
-                type="button"
-                onClick={() => setMobileOpen(true)}
-                className="flex h-11 w-11 items-center justify-center rounded-full border border-[#E0DBD5] bg-white text-primary transition hover:border-accent hover:text-accent lg:hidden"
-                aria-label="Ouvrir le menu"
-              >
-                <Menu className="h-5 w-5" aria-hidden="true" />
-              </button>
+      <header className="sticky top-0 z-50 w-full bg-white shadow-sm border-b border-gray-200">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
+          {/* Logo */}
+          <Link
+            to="/"
+            className="flex shrink-0 items-center gap-2 leading-none"
+            aria-label="Accueil World Design"
+          >
+            <img
+              src="/logo-wd.svg"
+              alt="World Design"
+              className="h-10 w-auto sm:h-12"
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.style.display = 'none';
+                e.target.nextElementSibling.style.display = 'flex';
+              }}
+            />
+            <div className="hidden flex-col leading-none">
+              <span className="text-lg font-black text-gray-900 sm:text-xl">World</span>
+              <span className="text-lg font-black text-gray-900 sm:text-xl">Design</span>
             </div>
+          </Link>
+
+          {/* Navigation desktop - centrée */}
+          <nav className="hidden md:flex items-center gap-1">
+            {NAV_LINKS.map((link) => (
+              <NavLink
+                key={link.to}
+                to={link.to}
+                end={link.end}
+                className={({ isActive }) =>
+                  [
+                    'px-4 py-2 text-sm font-medium rounded-lg transition',
+                    isActive
+                      ? 'bg-gray-900 text-white'
+                      : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900',
+                  ].join(' ')
+                }
+              >
+                {link.label}
+              </NavLink>
+            ))}
+          </nav>
+
+          {/* Actions droite */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            {/* Barre de recherche desktop */}
+            <form onSubmit={handleSearchSubmit} className="hidden md:flex items-center">
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Rechercher..."
+                  value={searchValue}
+                  onChange={(e) => setSearchValue(e.target.value)}
+                  className="w-40 lg:w-56 rounded-full border border-gray-300 bg-gray-50 py-2 pl-10 pr-4 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition"
+                />
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+              </div>
+            </form>
+
+            {/* Icône recherche mobile */}
+            <button
+              type="button"
+              onClick={() => setSearchOpen(!searchOpen)}
+              className="flex h-9 w-9 items-center justify-center rounded-full text-gray-700 hover:bg-gray-100 transition md:hidden"
+              aria-label="Rechercher"
+            >
+              <Search className="h-5 w-5" />
+            </button>
+
+            {/* Panier */}
+            <Link
+              to="/cart"
+              className="relative flex h-9 w-9 items-center justify-center rounded-full text-gray-700 hover:bg-gray-100 transition"
+              aria-label="Panier"
+            >
+              <ShoppingCart className="h-5 w-5" />
+              {cartCount > 0 && (
+                <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
+                  {cartCount > 99 ? '99+' : cartCount}
+                </span>
+              )}
+            </Link>
+
+            {/* Compte utilisateur desktop */}
+            {isAuthenticated ? (
+              <div className="hidden md:flex items-center gap-1">
+                <Link
+                  to={profileHref}
+                  className="flex h-9 w-9 items-center justify-center rounded-full text-gray-700 hover:bg-gray-100 transition"
+                  aria-label={userLabel}
+                >
+                  <UserRound className="h-5 w-5" />
+                </Link>
+              </div>
+            ) : (
+              <Link
+                to="/login"
+                className="hidden md:inline-flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
+              >
+                <UserRound className="h-4 w-4" />
+                Connexion
+              </Link>
+            )}
+
+            {/* Menu hamburger mobile */}
+            <button
+              type="button"
+              onClick={() => setMobileOpen(true)}
+              className="flex h-9 w-9 items-center justify-center rounded-full text-gray-700 hover:bg-gray-100 transition md:hidden"
+              aria-label="Ouvrir le menu"
+            >
+              <Menu className="h-5 w-5" />
+            </button>
           </div>
         </div>
 
+        {/* Barre de recherche mobile */}
         {searchOpen && (
-          <div className="border-t border-white/70 bg-white/95 px-4 py-3 shadow-sm md:hidden">
-            <form onSubmit={handleSearchSubmit} className="relative mx-auto max-w-3xl">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-primary/35" />
+          <div className="border-t border-gray-200 px-4 py-3 md:hidden">
+            <form onSubmit={handleSearchSubmit} className="relative">
               <input
                 ref={searchInputRef}
                 type="text"
                 placeholder="Rechercher un produit..."
                 value={searchValue}
                 onChange={(e) => setSearchValue(e.target.value)}
-                className="w-full rounded-full border border-[#E0DBD5] bg-[#FBFAF7] py-3 pl-10 pr-4 text-sm text-primary placeholder:text-primary/40 outline-none transition focus:border-accent focus:ring-4 focus:ring-accent/10"
+                className="w-full rounded-full border border-gray-300 bg-gray-50 py-2 pl-10 pr-4 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
               />
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
             </form>
           </div>
         )}
       </header>
 
+      {/* Menu mobile (tiroir latéral) */}
       {mobileOpen ? (
-        <div className="fixed inset-0 z-[60] lg:hidden">
+        <div className="fixed inset-0 z-[60] md:hidden">
           <button
             type="button"
-            className="absolute inset-0 bg-black/55"
+            className="absolute inset-0 bg-black/50"
             aria-label="Fermer le menu"
             onClick={() => setMobileOpen(false)}
           />
-          <aside className="absolute right-0 top-0 flex h-full w-[90vw] max-w-sm flex-col overflow-hidden bg-[#FBFAF7] shadow-2xl">
-            <div className="bg-[linear-gradient(135deg,#1A1A2E_0%,#23314d_55%,#E94560_100%)] px-5 py-5 text-white">
-              <div className="flex items-start justify-between gap-4">
-                <Brand onClick={() => setMobileOpen(false)} compact />
-                <button
-                  type="button"
-                  onClick={() => setMobileOpen(false)}
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-white/10 text-white transition hover:bg-white/20"
-                  aria-label="Fermer le menu"
-                >
-                  <X className="h-5 w-5" aria-hidden="true" />
-                </button>
-              </div>
-              <p className="mt-4 max-w-xs text-sm leading-relaxed text-white/82">
-                Goodies premium, identité forte et finitions qui donnent envie de commander.
-              </p>
-              <div className="mt-4 flex flex-wrap gap-2">
-                {VALUE_PROPS.map((item) => {
-                  const Icon = item.icon;
-                  return (
-                    <span
-                      key={item.label}
-                      className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-medium text-white/85"
-                    >
-                      <Icon className="h-3.5 w-3.5" aria-hidden="true" />
-                      {item.label}
-                    </span>
-                  );
-                })}
-              </div>
+          <aside className="absolute right-0 top-0 flex h-full w-[85vw] max-w-sm flex-col bg-white shadow-xl">
+            {/* En-tête du tiroir */}
+            <div className="flex items-center justify-between border-b border-gray-200 px-4 py-4">
+              <Link
+                to="/"
+                className="flex items-center gap-2 leading-none"
+                onClick={() => setMobileOpen(false)}
+              >
+                <img
+                  src="/logo-wd.svg"
+                  alt="World Design"
+                  className="h-10 w-auto"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.style.display = 'none';
+                    e.target.nextElementSibling.style.display = 'flex';
+                  }}
+                />
+                <div className="hidden flex-col leading-tight">
+                  <span className="text-lg font-black text-gray-900">World</span>
+                  <span className="text-lg font-black text-gray-900">Design</span>
+                </div>
+              </Link>
+              <button
+                type="button"
+                onClick={() => setMobileOpen(false)}
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 text-gray-700 hover:bg-gray-200 transition"
+                aria-label="Fermer le menu"
+              >
+                <X className="h-5 w-5" />
+              </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto px-5 py-5">
-              <div className="grid gap-3">
+            {/* Liens de navigation mobile */}
+            <div className="flex-1 overflow-y-auto px-4 py-5">
+              <nav className="flex flex-col gap-2">
                 {NAV_LINKS.map((link) => (
                   <NavLink
                     key={link.to}
@@ -320,117 +262,90 @@ export function Navbar() {
                     onClick={() => setMobileOpen(false)}
                     className={({ isActive }) =>
                       [
-                        'flex items-center justify-between rounded-2xl border px-4 py-4 text-base font-semibold transition',
+                        'rounded-lg px-4 py-3 text-base font-medium transition',
                         isActive
-                          ? 'border-primary bg-primary text-white shadow-lg shadow-primary/15'
-                          : 'border-[#E0DBD5] bg-white text-primary hover:border-accent/30 hover:text-accent',
+                          ? 'bg-gray-900 text-white'
+                          : 'text-gray-700 hover:bg-gray-100',
                       ].join(' ')
                     }
                   >
-                    <span>{link.label}</span>
-                    <ChevronRight className="h-4 w-4" aria-hidden="true" />
+                    {link.label}
                   </NavLink>
                 ))}
-              </div>
+              </nav>
 
-              <div className="mt-6 rounded-2xl border border-[#E0DBD5] bg-white p-4">
+              <div className="mt-6 border-t border-gray-200 pt-6">
+                {/* Compte */}
                 {isAuthenticated ? (
-                  <div className="space-y-3">
-                    <div>
-                      <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary/45">
+                  <div className="space-y-2">
+                    <div className="rounded-lg bg-gray-50 px-4 py-3">
+                      <p className="text-xs font-semibold uppercase tracking-wider text-gray-500">
                         Mon compte
                       </p>
-                      <p className="mt-1 text-lg font-bold text-primary">{userLabel}</p>
+                      <p className="mt-1 text-sm font-semibold text-gray-900">{userLabel}</p>
                     </div>
 
                     <NavLink
                       to="/my-orders"
                       onClick={() => setMobileOpen(false)}
-                      className="flex items-center justify-between rounded-xl bg-[#FBFAF7] px-4 py-3 text-sm font-semibold text-primary transition hover:bg-[#F4EFE7]"
+                      className="flex items-center gap-3 rounded-lg px-4 py-3 text-base font-medium text-gray-700 hover:bg-gray-100 transition"
                     >
-                      <span className="flex items-center gap-2">
-                        <Package className="h-4 w-4" aria-hidden="true" />
-                        Mes commandes
-                      </span>
-                      <ChevronRight className="h-4 w-4" aria-hidden="true" />
+                      <Package className="h-5 w-5" />
+                      Mes commandes
+                    </NavLink>
+
+                    <NavLink
+                      to="/cart"
+                      onClick={() => setMobileOpen(false)}
+                      className="flex items-center gap-3 rounded-lg px-4 py-3 text-base font-medium text-gray-700 hover:bg-gray-100 transition"
+                    >
+                      <ShoppingCart className="h-5 w-5" />
+                      Mon panier
+                      {cartCount > 0 && (
+                        <span className="ml-auto rounded-full bg-red-500 px-2 py-0.5 text-xs font-bold text-white">
+                          {cartCount}
+                        </span>
+                      )}
                     </NavLink>
 
                     {isAdmin ? (
                       <NavLink
                         to="/admin/dashboard"
                         onClick={() => setMobileOpen(false)}
-                        className="flex items-center justify-between rounded-xl bg-[#FBFAF7] px-4 py-3 text-sm font-semibold text-primary transition hover:bg-[#F4EFE7]"
+                        className="flex items-center gap-3 rounded-lg px-4 py-3 text-base font-medium text-gray-700 hover:bg-gray-100 transition"
                       >
-                        <span className="flex items-center gap-2">
-                          <BadgeCheck className="h-4 w-4" aria-hidden="true" />
-                          Administration
-                        </span>
-                        <ChevronRight className="h-4 w-4" aria-hidden="true" />
+                        <span>Administration</span>
                       </NavLink>
                     ) : null}
 
                     <button
                       type="button"
                       onClick={handleLogout}
-                      className="flex w-full items-center justify-between rounded-xl bg-red-50 px-4 py-3 text-sm font-semibold text-red-600 transition hover:bg-red-100"
+                      className="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-base font-medium text-red-600 hover:bg-red-50 transition"
                     >
-                      <span className="flex items-center gap-2">
-                        <LogOut className="h-4 w-4" aria-hidden="true" />
-                        Déconnexion
-                      </span>
-                      <ChevronRight className="h-4 w-4" aria-hidden="true" />
+                      <LogOut className="h-5 w-5" />
+                      Déconnexion
                     </button>
                   </div>
                 ) : (
-                  <div className="space-y-3">
-                    <div>
-                      <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary/45">
-                        Votre espace
-                      </p>
-                      <p className="mt-1 text-lg font-bold text-primary">Connectez-vous</p>
-                    </div>
-
+                  <div className="space-y-2">
                     <NavLink
                       to="/login"
                       onClick={() => setMobileOpen(false)}
-                      className="flex items-center justify-between rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-white transition hover:opacity-95"
+                      className="flex items-center justify-center rounded-lg bg-gray-900 px-4 py-3 text-base font-medium text-white hover:bg-gray-800 transition"
                     >
-                      <span className="flex items-center gap-2">
-                        <UserRound className="h-4 w-4" aria-hidden="true" />
-                        Connexion
-                      </span>
-                      <ChevronRight className="h-4 w-4" aria-hidden="true" />
+                      <UserRound className="mr-2 h-5 w-5" />
+                      Connexion
                     </NavLink>
-
                     <NavLink
                       to="/register"
                       onClick={() => setMobileOpen(false)}
-                      className="flex items-center justify-between rounded-xl border border-[#E0DBD5] bg-[#FBFAF7] px-4 py-3 text-sm font-semibold text-primary transition hover:border-accent hover:text-accent"
+                      className="flex items-center justify-center rounded-lg border border-gray-300 px-4 py-3 text-base font-medium text-gray-700 hover:bg-gray-50 transition"
                     >
-                      <span>Créer un compte</span>
-                      <ChevronRight className="h-4 w-4" aria-hidden="true" />
+                      Créer un compte
                     </NavLink>
                   </div>
                 )}
-              </div>
-
-              <div className="mt-6 grid gap-3">
-                <Link
-                  to="/products"
-                  onClick={() => setMobileOpen(false)}
-                  className="inline-flex items-center justify-center gap-2 rounded-full bg-[linear-gradient(135deg,#1A1A2E_0%,#E94560_100%)] px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-accent/20 transition hover:-translate-y-0.5"
-                >
-                  Créer un projet
-                  <ChevronRight className="h-4 w-4" aria-hidden="true" />
-                </Link>
-                <Link
-                  to="/cart"
-                  onClick={() => setMobileOpen(false)}
-                  className="inline-flex items-center justify-center gap-2 rounded-full border border-[#E0DBD5] bg-white px-5 py-3 text-sm font-semibold text-primary transition hover:border-accent hover:text-accent"
-                >
-                  <ShoppingCart className="h-4 w-4" aria-hidden="true" />
-                  Voir le panier
-                </Link>
               </div>
             </div>
           </aside>
