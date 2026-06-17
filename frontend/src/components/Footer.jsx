@@ -24,7 +24,7 @@ export function Footer() {
           {/* Marque */}
           <div>
             <Link to="/" aria-label="Accueil World Design">
-              <img src="/logo.png" alt="World Design" style={{ height: 42, width: "auto" }} />
+              <img src="/logo-wd.png" alt="World Design" style={{ height: 42, width: "auto" }} />
             </Link>
             <p className="mt-4 text-sm leading-relaxed text-white/70 max-w-xs">
               Goodies personnalisés de qualité pour vos projets de marque.

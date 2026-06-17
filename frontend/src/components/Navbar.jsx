@@ -82,7 +82,7 @@ export function Navbar() {
             aria-label="Accueil World Design"
           >
             <img 
-              src="/logo-wd.svg" 
+              src="/logo-wd.png" 
               alt="World Design" 
               className="h-10 w-auto sm:h-12"
               onError={(e) => {
@@ -227,7 +227,7 @@ export function Navbar() {
                 onClick={() => setMobileOpen(false)}
               >
                 <img 
-                  src="/logo-wd.svg" 
+                  src="/logo-wd.png" 
                   alt="World Design" 
                   className="h-10 w-auto"
                   onError={(e) => {
