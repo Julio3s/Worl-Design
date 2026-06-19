@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { MapPin, Navigation } from 'lucide-react';
+import { MapPin, Navigation, Loader2 } from 'lucide-react';
 
 export function AddressAutocomplete({ value, onChange, placeholder = 'Adresse de livraison' }) {
   const inputRef = useRef(null);
@@ -7,20 +7,15 @@ export function AddressAutocomplete({ value, onChange, placeholder = 'Adresse de
   const [inputValue, setInputValue] = useState(value || '');
   const [isLoaded, setIsLoaded] = useState(false);
   const [locating, setLocating] = useState(false);
-  const [showMap, setShowMap] = useState(false);
-  const [mapError, setMapError] = useState(false);
-  const mapRef = useRef(null);
-  const mapInstanceRef = useRef(null);
-  const markerRef = useRef(null);
 
-  // Initialiser l'autocomplete
+  // Initialiser l'autocomplete Google
   const initAutocomplete = () => {
     if (!inputRef.current || !window.google?.maps?.places) {
       return;
     }
 
     if (autocompleteRef.current) {
-      return; // Déjà initialisé
+      return;
     }
 
     autocompleteRef.current = new window.google.maps.places.Autocomplete(inputRef.current, {
@@ -46,14 +41,12 @@ export function AddressAutocomplete({ value, onChange, placeholder = 'Adresse de
       return;
     }
 
-    // Vérifier si l'API est déjà chargée
     if (window.google?.maps?.places) {
       setIsLoaded(true);
       initAutocomplete();
       return;
     }
 
-    // Charger le script Google Maps
     const script = document.createElement('script');
     script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&language=fr`;
     script.async = true;
@@ -65,7 +58,6 @@ export function AddressAutocomplete({ value, onChange, placeholder = 'Adresse de
     script.onerror = () => {
       console.error('Failed to load Google Maps API');
       setIsLoaded(false);
-      setMapError(true);
     };
     document.head.appendChild(script);
 
@@ -80,75 +72,6 @@ export function AddressAutocomplete({ value, onChange, placeholder = 'Adresse de
     onChange(newValue);
   };
 
-  const initMiniMap = () => {
-    if (!mapRef.current || !window.google?.maps) {
-      console.error('Map container or Google Maps API not available');
-      setMapError(true);
-      return;
-    }
-
-    if (mapInstanceRef.current) {
-      mapInstanceRef.current.setCenter({ lat: 6.1725, lng: 1.2314 });
-      return;
-    }
-
-    try {
-      const mapOptions = {
-        center: { lat: 6.1725, lng: 1.2314 },
-        zoom: 13,
-        disableDefaultUI: true,
-        zoomControl: true,
-        mapTypeControl: false,
-        streetViewControl: false,
-        fullscreenControl: false,
-        mapTypeId: window.google.maps.MapTypeId.ROADMAP,
-      };
-
-      mapInstanceRef.current = new window.google.maps.Map(mapRef.current, mapOptions);
-
-      // Force map to render properly
-      const googleMap = mapInstanceRef.current;
-      setTimeout(() => {
-        window.google.maps.event.trigger(googleMap, 'resize');
-        googleMap.setCenter(mapOptions.center);
-      }, 100);
-
-      mapInstanceRef.current.addListener('click', async (event) => {
-        const { lat, lng } = event.latLng;
-
-        if (markerRef.current) {
-          markerRef.current.setPosition({ lat, lng });
-        } else {
-          markerRef.current = new window.google.maps.Marker({
-            position: { lat, lng },
-            map: mapInstanceRef.current,
-            animation: window.google.maps.Animation.DROP,
-          });
-        }
-
-        try {
-          const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
-          const response = await fetch(
-            `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${apiKey}&language=fr`
-          );
-          const data = await response.json();
-          if (data.results && data.results[0]) {
-            const address = data.results[0].formatted_address;
-            setInputValue(address);
-            onChange(address);
-            setShowMap(false);
-          }
-        } catch (error) {
-          console.error('Geocoding error:', error);
-          alert('Impossible de récupérer l\'adresse.');
-        }
-      });
-    } catch (error) {
-      console.error('Map initialization error:', error);
-      setMapError(true);
-    }
-  };
-
   const handleUseMyLocation = () => {
     if (!navigator.geolocation) {
       alert('La géolocalisation n\'est pas supportée par votre navigateur.');
@@ -156,50 +79,63 @@ export function AddressAutocomplete({ value, onChange, placeholder = 'Adresse de
     }
 
     setLocating(true);
-    setShowMap(true);
-    setMapError(false);
 
     navigator.geolocation.getCurrentPosition(
-      (position) => {
+      async (position) => {
         const { latitude, longitude } = position.coords;
 
-        if (mapInstanceRef.current) {
-          mapInstanceRef.current.setCenter({ lat: latitude, lng: longitude });
-          mapInstanceRef.current.setZoom(16);
-
-          if (markerRef.current) {
-            markerRef.current.setPosition({ lat: latitude, lng: longitude });
-          } else {
-            markerRef.current = new window.google.maps.Marker({
-              position: { lat: latitude, lng: longitude },
-              map: mapInstanceRef.current,
-              animation: window.google.maps.Animation.DROP,
-            });
+        try {
+          const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+          if (!apiKey) {
+            throw new Error('API key not configured');
           }
-        }
 
-        setLocating(false);
+          // Utiliser l'API Geocoding pour convertir les coordonnées en adresse
+          const response = await fetch(
+            `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${apiKey}&language=fr`
+          );
+          const data = await response.json();
+          
+          if (data.results && data.results[0]) {
+            const address = data.results[0].formatted_address;
+            setInputValue(address);
+            onChange(address);
+          } else {
+            alert('Impossible de trouver l\'adresse correspondant à votre position.');
+          }
+        } catch (error) {
+          console.error('Geocoding error:', error);
+          alert('Impossible de récupérer votre adresse. Veuillez la saisir manuellement.');
+        } finally {
+          setLocating(false);
+        }
       },
       (error) => {
         console.error('Geolocation error:', error);
-        alert('Impossible de récupérer votre position. Veuillez autoriser l\'accès à votre position.');
+        let errorMessage = 'Impossible de récupérer votre position.';
+        
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            errorMessage = 'Accès à la position refusé. Veuillez autoriser l\'accès dans les paramètres de votre navigateur.';
+            break;
+          case error.POSITION_UNAVAILABLE:
+            errorMessage = 'Position indisponible. Vérifiez que votre GPS est activé.';
+            break;
+          case error.TIMEOUT:
+            errorMessage = 'Délai dépassé. Veuillez réessayer.';
+            break;
+        }
+        
+        alert(errorMessage);
         setLocating(false);
-        setShowMap(false);
       },
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 }
+      { 
+        enableHighAccuracy: true, 
+        timeout: 10000, 
+        maximumAge: 300000 
+      }
     );
   };
-
-  useEffect(() => {
-    if (showMap && isLoaded) {
-      // Wait for the container to be visible and rendered
-      const timer = setTimeout(() => {
-        initMiniMap();
-      }, 200);
-      return () => clearTimeout(timer);
-    }
-    return undefined;
-  }, [showMap, isLoaded]);
 
   return (
     <label className="flex flex-col gap-2 text-sm font-medium text-text-dark">
@@ -226,50 +162,13 @@ export function AddressAutocomplete({ value, onChange, placeholder = 'Adresse de
           title="Utiliser ma position actuelle"
         >
           {locating ? (
-            <div className="h-4 w-4 animate-spin rounded-full border-2 border-accent border-t-transparent" />
+            <Loader2 className="h-4 w-4 animate-spin text-accent" />
           ) : (
             <Navigation className="h-4 w-4" />
           )}
         </button>
       </div>
-      {showMap && (
-        <div className="mt-2 overflow-hidden rounded-[8px] border border-[#E0DBD5]">
-          <div 
-            ref={mapRef} 
-            className="h-48 w-full bg-gray-100" 
-            style={{ 
-              minHeight: '192px',
-              position: 'relative',
-              zIndex: 1
-            }} 
-          />
-          {mapError && (
-            <div className="flex items-center justify-center bg-gray-200 p-4">
-              <p className="text-xs text-text-muted">Impossible de charger la carte. Vérifiez votre connexion.</p>
-            </div>
-          )}
-          {!mapError && !locating && (
-            <div className="flex items-center justify-between bg-[#F8F5F0] px-3 py-2">
-              <p className="text-xs text-text-muted">
-                Cliquez sur la carte pour sélectionner votre adresse
-              </p>
-              <button
-                type="button"
-                onClick={() => setShowMap(false)}
-                className="text-xs font-semibold text-accent transition hover:opacity-80"
-              >
-                Fermer
-              </button>
-            </div>
-          )}
-          {locating && (
-            <div className="flex items-center justify-between bg-[#F8F5F0] px-3 py-2">
-              <p className="text-xs text-text-muted">Récupération de votre position...</p>
-            </div>
-          )}
-        </div>
-      )}
-      {!isLoaded && !showMap && (
+      {!isLoaded && (
         <p className="mt-1 text-xs text-text-muted">
           (Autocomplete Google Maps non disponible - entrez manuellement)
         </p>
