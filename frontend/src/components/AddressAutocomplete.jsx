@@ -1,75 +1,55 @@
 import { useEffect, useRef, useState } from 'react';
 import { MapPin, Navigation, Loader2 } from 'lucide-react';
 
+const SUGGESTIONS = [
+  'Lomé, Togo',
+  'Cotonou, Bénin',
+  'Porto-Novo, Bénin',
+  'Abidjan, Côte d\'Ivoire',
+  'Accra, Ghana',
+  'Lagos, Nigeria',
+  'Ouagadougou, Burkina Faso',
+  'Bamako, Mali',
+  'Dakar, Sénégal',
+  'Niamey, Niger',
+  'Conakry, Guinée',
+  'Libreville, Gabon',
+  'Yaoundé, Cameroun',
+  'Kinshasa, RDC',
+  'Brazzaville, Congo',
+];
+
 export function AddressAutocomplete({ value, onChange, placeholder = 'Adresse de livraison' }) {
-  const inputRef = useRef(null);
-  const autocompleteRef = useRef(null);
   const [inputValue, setInputValue] = useState(value || '');
-  const [isLoaded, setIsLoaded] = useState(false);
   const [locating, setLocating] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [filteredSuggestions, setFilteredSuggestions] = useState([]);
+  const inputRef = useRef(null);
 
-  // Initialiser l'autocomplete Google
-  const initAutocomplete = () => {
-    if (!inputRef.current || !window.google?.maps?.places) {
-      return;
-    }
-
-    if (autocompleteRef.current) {
-      return;
-    }
-
-    autocompleteRef.current = new window.google.maps.places.Autocomplete(inputRef.current, {
-      types: ['address'],
-      fields: ['formatted_address', 'geometry', 'address_components'],
-    });
-
-    autocompleteRef.current.addListener('place_changed', () => {
-      const place = autocompleteRef.current.getPlace();
-      if (place && place.formatted_address) {
-        setInputValue(place.formatted_address);
-        onChange(place.formatted_address);
-      }
-    });
-  };
-
-  // Charger l'API Google Maps
   useEffect(() => {
-    const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
-    if (!apiKey) {
-      console.warn('VITE_GOOGLE_MAPS_API_KEY not configured');
-      setIsLoaded(false);
-      return;
-    }
-
-    if (window.google?.maps?.places) {
-      setIsLoaded(true);
-      initAutocomplete();
-      return;
-    }
-
-    const script = document.createElement('script');
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&language=fr`;
-    script.async = true;
-    script.defer = true;
-    script.onload = () => {
-      setIsLoaded(true);
-      initAutocomplete();
-    };
-    script.onerror = () => {
-      console.error('Failed to load Google Maps API');
-      setIsLoaded(false);
-    };
-    document.head.appendChild(script);
-
-    return () => {
-      // Cleanup
-    };
-  }, []);
+    setInputValue(value || '');
+  }, [value]);
 
   const handleChange = (e) => {
     const newValue = e.target.value;
     setInputValue(newValue);
     onChange(newValue);
+
+    if (newValue.trim().length > 0) {
+      const filtered = SUGGESTIONS.filter((suggestion) =>
+        suggestion.toLowerCase().includes(newValue.toLowerCase())
+      );
+      setFilteredSuggestions(filtered);
+      setShowSuggestions(filtered.length > 0);
+    } else {
+      setShowSuggestions(false);
+    }
+  };
+
+  const handleSuggestionClick = (suggestion) => {
+    setInputValue(suggestion);
+    onChange(suggestion);
+    setShowSuggestions(false);
   };
 
   const handleUseMyLocation = () => {
@@ -90,7 +70,6 @@ export function AddressAutocomplete({ value, onChange, placeholder = 'Adresse de
             return;
           }
 
-          // Utiliser l'API Geocoding pour convertir les coordonnées en adresse
           const response = await fetch(
             `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${apiKey}&language=fr`
           );
@@ -103,7 +82,6 @@ export function AddressAutocomplete({ value, onChange, placeholder = 'Adresse de
           }
         } catch (error) {
           console.error('Geocoding error:', error);
-          // Silently fail - user can enter address manually
         } finally {
           setLocating(false);
         }
@@ -120,6 +98,13 @@ export function AddressAutocomplete({ value, onChange, placeholder = 'Adresse de
     );
   };
 
+  const handleBlur = () => {
+    // Delay hiding suggestions to allow click on suggestion
+    setTimeout(() => {
+      setShowSuggestions(false);
+    }, 200);
+  };
+
   return (
     <label className="flex flex-col gap-2 text-sm font-medium text-text-dark">
       <span className="inline-flex items-center gap-1">
@@ -133,8 +118,19 @@ export function AddressAutocomplete({ value, onChange, placeholder = 'Adresse de
           required
           value={inputValue}
           onChange={handleChange}
+          onBlur={handleBlur}
+          onFocus={() => {
+            if (inputValue.trim().length > 0) {
+              const filtered = SUGGESTIONS.filter((suggestion) =>
+                suggestion.toLowerCase().includes(inputValue.toLowerCase())
+              );
+              setFilteredSuggestions(filtered);
+              setShowSuggestions(filtered.length > 0);
+            }
+          }}
           placeholder={placeholder}
           className="h-11 w-full rounded-[8px] border border-[#E0DBD5] bg-white px-3 pr-12 text-sm outline-none transition focus:border-accent"
+          autoComplete="off"
         />
         <button
           type="button"
@@ -150,12 +146,23 @@ export function AddressAutocomplete({ value, onChange, placeholder = 'Adresse de
             <Navigation className="h-4 w-4" />
           )}
         </button>
+
+        {/* Suggestions dropdown */}
+        {showSuggestions && filteredSuggestions.length > 0 && (
+          <div className="absolute z-10 mt-1 w-full rounded-[8px] border border-[#E0DBD5] bg-white shadow-lg">
+            {filteredSuggestions.map((suggestion, index) => (
+              <button
+                key={index}
+                type="button"
+                onClick={() => handleSuggestionClick(suggestion)}
+                className="w-full px-3 py-2 text-left text-sm text-text-dark transition hover:bg-[#F8F5F0] first:rounded-t-[8px] last:rounded-b-[8px]"
+              >
+                {suggestion}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
-      {!isLoaded && (
-        <p className="mt-1 text-xs text-text-muted">
-          (Autocomplete Google Maps non disponible - entrez manuellement)
-        </p>
-      )}
     </label>
   );
 }
