@@ -99,6 +99,9 @@ export default function ProductImageCarousel({ images, productName }) {
         alt={`${productName} - image ${active + 1}`}
         isOpen={viewerOpen}
         onClose={() => setViewerOpen(false)}
+        hasMultiple={total > 1}
+        onPrev={goPrev}
+        onNext={goNext}
       />
     </div>
   );

@@ -1,22 +1,57 @@
-import { useEffect, useCallback, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { X } from 'lucide-react';
 
-export default function ImageViewer({ src, alt, isOpen, onClose }) {
+const SWIPE_THRESHOLD = 50;
+
+export default function ImageViewer({ src, alt, isOpen, onClose, hasMultiple, onPrev, onNext }) {
   const [loaded, setLoaded] = useState(false);
+  const touchStartX = useRef(null);
+  const touchEndX = useRef(null);
 
   const handleKeyDown = useCallback(
     (e) => {
       if (e.key === 'Escape') {
         onClose();
       }
+      if (hasMultiple) {
+        if (e.key === 'ArrowLeft') onPrev?.();
+        if (e.key === 'ArrowRight') onNext?.();
+      }
     },
-    [onClose],
+    [onClose, hasMultiple, onPrev, onNext],
   );
+
+  const handleTouchStart = (e) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchEndX.current = null;
+  };
+
+  const handleTouchMove = (e) => {
+    touchEndX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    if (touchStartX.current === null || touchEndX.current === null || !hasMultiple) return;
+
+    const diff = touchStartX.current - touchEndX.current;
+
+    if (Math.abs(diff) > SWIPE_THRESHOLD) {
+      if (diff > 0) {
+        onNext?.();
+      } else {
+        onPrev?.();
+      }
+    }
+
+    touchStartX.current = null;
+    touchEndX.current = null;
+  };
 
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
       window.addEventListener('keydown', handleKeyDown);
+      setLoaded(false);
     } else {
       document.body.style.overflow = '';
     }
@@ -33,8 +68,11 @@ export default function ImageViewer({ src, alt, isOpen, onClose }) {
 
   return (
     <div
-      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/85 backdrop-blur-sm p-4"
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/85 backdrop-blur-sm p-4 select-none"
       onClick={onClose}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
       role="dialog"
       aria-modal="true"
       aria-label={alt || 'Image en plein écran'}
@@ -66,6 +104,7 @@ export default function ImageViewer({ src, alt, isOpen, onClose }) {
             loaded ? 'opacity-100' : 'opacity-0'
           }`}
           onLoad={() => setLoaded(true)}
+          draggable={false}
         />
       </div>
     </div>
