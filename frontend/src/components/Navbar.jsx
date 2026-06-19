@@ -1,4 +1,5 @@
 import {
+  Heart,
   LogOut,
   Menu,
   Package,
@@ -12,6 +13,7 @@ import { Link, NavLink, useNavigate } from 'react-router-dom';
 
 import { useAuthStore } from '../store/authStore';
 import { useCartStore } from '../store/cartStore';
+import { useWishlistStore } from '../store/wishlistStore';
 
 const NAV_LINKS = [
   { to: '/', label: 'Accueil', end: true },
@@ -37,6 +39,8 @@ export function Navbar() {
   const user = useAuthStore((state) => state.user);
   const logout = useAuthStore((state) => state.logout);
   const loadFromStorage = useCartStore((state) => state.loadFromStorage);
+  const wishlistCount = useWishlistStore((state) => state.items.length);
+  const loadWishlist = useWishlistStore((state) => state.loadFromStorage);
 
   const cartCount = useMemo(
     () => items.reduce((sum, item) => sum + Number(item.quantity || 0), 0),
@@ -48,7 +52,8 @@ export function Navbar() {
 
   useEffect(() => {
     loadFromStorage();
-  }, [loadFromStorage]);
+    loadWishlist();
+  }, [loadFromStorage, loadWishlist]);
 
   useEffect(() => {
     if (searchOpen && searchInputRef.current) {
@@ -143,6 +148,20 @@ export function Navbar() {
             >
               <Search className="h-5 w-5" />
             </button>
+
+            {/* Favoris */}
+            <Link
+              to="/wishlist"
+              className="relative flex h-9 w-9 items-center justify-center rounded-full text-gray-700 hover:bg-gray-100 transition"
+              aria-label="Favoris"
+            >
+              <Heart className="h-5 w-5" />
+              {wishlistCount > 0 && (
+                <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-accent text-[10px] font-bold text-white">
+                  {wishlistCount > 99 ? '99+' : wishlistCount}
+                </span>
+              )}
+            </Link>
 
             {/* Panier */}
             <Link
@@ -292,6 +311,20 @@ export function Navbar() {
                     >
                       <Package className="h-5 w-5" />
                       Mes commandes
+                    </NavLink>
+
+                    <NavLink
+                      to="/wishlist"
+                      onClick={() => setMobileOpen(false)}
+                      className="flex items-center gap-3 rounded-lg px-4 py-3 text-base font-medium text-gray-700 hover:bg-gray-100 transition"
+                    >
+                      <Heart className="h-5 w-5" />
+                      Mes favoris
+                      {wishlistCount > 0 && (
+                        <span className="ml-auto rounded-full bg-accent px-2 py-0.5 text-xs font-bold text-white">
+                          {wishlistCount}
+                        </span>
+                      )}
                     </NavLink>
 
                     <NavLink

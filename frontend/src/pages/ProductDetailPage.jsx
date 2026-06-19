@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ArrowLeft, ShoppingCart } from 'lucide-react';
+import { ArrowLeft, Heart, Share2, ShoppingCart } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
 
 import { getProductBySlug } from '../api/catalog';
@@ -10,6 +10,7 @@ import { QuantitySelector } from '../components/QuantitySelector';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { useSeo } from '../hooks/useSeo';
 import { useCartStore } from '../store/cartStore';
+import { useWishlistStore } from '../store/wishlistStore';
 import { formatCurrency } from '../utils/formatCurrency';
 import { validateCustomFile } from '../utils/customFileValidation';
 import { getProductImage } from '../utils/media';
@@ -38,6 +39,7 @@ function buildImagesArray(product) {
 export default function ProductDetailPage() {
   const { slug } = useParams();
   const addItem = useCartStore((state) => state.addItem);
+  const toggleWishlist = useWishlistStore((state) => state.toggleItem);
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -103,6 +105,25 @@ export default function ProductDetailPage() {
   const outOfStock = Number(product?.stock || 0) <= 0;
   const isCustomizable = Boolean(product?.is_customizable);
   const customTextEmpty = isCustomizable && !customText.trim();
+  const isWishlisted = useWishlistStore((state) => (product ? state.isWishlisted(product.id) : false));
+
+  const handleShare = async () => {
+    const url = window.location.href;
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: product?.name || 'World Design',
+          text: product?.description || '',
+          url,
+        });
+      } catch {
+        // ignore
+      }
+    } else {
+      await navigator.clipboard.writeText(url);
+      alert('Lien copié dans le presse-papier');
+    }
+  };
 
   const handleAddToCart = () => {
     if (!product || outOfStock || customTextEmpty) {
@@ -210,6 +231,26 @@ export default function ProductDetailPage() {
                       Personnalisable
                     </span>
                   ) : null}
+                  <div className="ml-auto flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => toggleWishlist(product)}
+                      className={`flex h-9 w-9 items-center justify-center rounded-full border border-[#E0DBD5] bg-white transition hover:border-accent hover:text-accent ${
+                        isWishlisted ? 'text-accent' : 'text-text-muted'
+                      }`}
+                      aria-label={isWishlisted ? 'Retirer des favoris' : 'Ajouter aux favoris'}
+                    >
+                      <Heart className={`h-4 w-4 ${isWishlisted ? 'fill-accent' : ''}`} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleShare}
+                      className="flex h-9 w-9 items-center justify-center rounded-full border border-[#E0DBD5] bg-white text-text-muted transition hover:border-accent hover:text-accent"
+                      aria-label="Partager"
+                    >
+                      <Share2 className="h-4 w-4" />
+                    </button>
+                  </div>
                 </div>
                 <p className="max-w-2xl text-sm leading-7 text-text-muted sm:text-base">
                   {product.description}

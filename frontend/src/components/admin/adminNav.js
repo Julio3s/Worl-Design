@@ -1,4 +1,4 @@
-import { LayoutDashboard, Package, ShoppingBag, Tags, Users } from 'lucide-react';
+import { Heart, LayoutDashboard, Package, ShoppingBag, Tags, Users } from 'lucide-react';
 
 export const ADMIN_NAV_ITEMS = [
   {
@@ -35,6 +35,13 @@ export const ADMIN_NAV_ITEMS = [
     shortLabel: 'Clients',
     breadcrumb: 'Clients',
     icon: Users,
+  },
+  {
+    to: '/wishlist',
+    label: 'Favoris',
+    shortLabel: 'Favoris',
+    breadcrumb: 'Favoris',
+    icon: Heart,
   },
 ];
 

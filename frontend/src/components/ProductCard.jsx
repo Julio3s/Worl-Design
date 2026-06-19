@@ -1,12 +1,33 @@
-import { ShoppingCart } from 'lucide-react';
+import { ShoppingCart, Heart, Share2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 import { formatCurrency } from '../utils/formatCurrency';
 import { getProductImage } from '../utils/media';
+import { useWishlistStore } from '../store/wishlistStore';
 
 export function ProductCard({ product, showAddButton = false, badgeLabel, className = '' }) {
   const image = getProductImage(product);
   const description = product.description || '';
+  const toggleWishlist = useWishlistStore((state) => state.toggleItem);
+  const isWishlisted = useWishlistStore((state) => state.isWishlisted(product.id));
+
+  const handleShare = async () => {
+    const url = window.location.origin + `/products/${product.slug}`;
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: product.name,
+          text: product.description,
+          url,
+        });
+      } catch {
+        // ignore
+      }
+    } else {
+      await navigator.clipboard.writeText(url);
+      alert('Lien copié dans le presse-papier');
+    }
+  };
 
   return (
     <article
@@ -32,6 +53,28 @@ export function ProductCard({ product, showAddButton = false, badgeLabel, classN
           ) : null}
         </div>
       </Link>
+
+      {/* Actions rapides */}
+      <div className="absolute right-2 top-2 flex flex-col gap-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+        <button
+          type="button"
+          onClick={() => toggleWishlist(product)}
+          className={`flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-gray-700 shadow-sm backdrop-blur-sm transition hover:bg-white ${
+            isWishlisted ? 'text-accent' : ''
+          }`}
+          aria-label={isWishlisted ? 'Retirer des favoris' : 'Ajouter aux favoris'}
+        >
+          <Heart className={`h-4 w-4 ${isWishlisted ? 'fill-accent' : ''}`} />
+        </button>
+        <button
+          type="button"
+          onClick={handleShare}
+          className="flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-gray-700 shadow-sm backdrop-blur-sm transition hover:bg-white"
+          aria-label="Partager"
+        >
+          <Share2 className="h-4 w-4" />
+        </button>
+      </div>
 
       {/* CONTENU — description tronquée + prix */}
       <div className="flex flex-1 flex-col gap-1.5 p-3 sm:p-3.5">
