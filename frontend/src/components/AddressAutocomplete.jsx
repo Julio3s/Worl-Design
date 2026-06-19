@@ -74,7 +74,6 @@ export function AddressAutocomplete({ value, onChange, placeholder = 'Adresse de
 
   const handleUseMyLocation = () => {
     if (!navigator.geolocation) {
-      alert('La géolocalisation n\'est pas supportée par votre navigateur.');
       return;
     }
 
@@ -87,7 +86,8 @@ export function AddressAutocomplete({ value, onChange, placeholder = 'Adresse de
         try {
           const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
           if (!apiKey) {
-            throw new Error('API key not configured');
+            setLocating(false);
+            return;
           }
 
           // Utiliser l'API Geocoding pour convertir les coordonnées en adresse
@@ -100,33 +100,16 @@ export function AddressAutocomplete({ value, onChange, placeholder = 'Adresse de
             const address = data.results[0].formatted_address;
             setInputValue(address);
             onChange(address);
-          } else {
-            alert('Impossible de trouver l\'adresse correspondant à votre position.');
           }
         } catch (error) {
           console.error('Geocoding error:', error);
-          alert('Impossible de récupérer votre adresse. Veuillez la saisir manuellement.');
+          // Silently fail - user can enter address manually
         } finally {
           setLocating(false);
         }
       },
       (error) => {
         console.error('Geolocation error:', error);
-        let errorMessage = 'Impossible de récupérer votre position.';
-        
-        switch (error.code) {
-          case error.PERMISSION_DENIED:
-            errorMessage = 'Accès à la position refusé. Veuillez autoriser l\'accès dans les paramètres de votre navigateur.';
-            break;
-          case error.POSITION_UNAVAILABLE:
-            errorMessage = 'Position indisponible. Vérifiez que votre GPS est activé.';
-            break;
-          case error.TIMEOUT:
-            errorMessage = 'Délai dépassé. Veuillez réessayer.';
-            break;
-        }
-        
-        alert(errorMessage);
         setLocating(false);
       },
       { 
