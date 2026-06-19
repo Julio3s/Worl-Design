@@ -1,6 +1,5 @@
 import { Link, NavLink } from 'react-router-dom';
 
-import { Logo } from '../Logo';
 import { ADMIN_NAV_ITEMS } from './adminNav';
 
 function sidebarLinkClass({ isActive }) {
@@ -16,7 +15,21 @@ export function AdminSidebar() {
   return (
     <aside className="hidden w-60 shrink-0 flex-col border-r border-white/10 bg-primary text-white lg:flex">
       <div className="border-b border-white/10 px-4 py-4">
-        <Logo to="/admin/dashboard" size="sm" />
+        <Link
+          to="/admin/dashboard"
+          className="flex items-center gap-3 leading-none"
+          aria-label="World Design - Accueil admin"
+        >
+          <img
+            src="/logo-photo.png"
+            alt="World Design"
+            className="h-12 w-12 rounded-[8px] object-cover"
+          />
+          <div className="flex flex-col leading-tight">
+            <span className="text-base font-black text-white">WORLD</span>
+            <span className="text-base font-black text-accent">DESIGN</span>
+          </div>
+        </Link>
         <p className="mt-2 text-xs font-medium uppercase tracking-normal text-white/60">
           Espace admin
         </p>
