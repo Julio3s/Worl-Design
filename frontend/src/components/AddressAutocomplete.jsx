@@ -18,8 +18,7 @@ export function AddressAutocomplete({ value, onChange, placeholder = 'Adresse de
     }
 
     autocompleteRef.current = new window.google.maps.places.Autocomplete(inputRef.current, {
-      componentRestrictions: { country: 'tg' }, // Togo
-      types: ['geocode'],
+      types: ['address'],
       fields: ['formatted_address', 'geometry', 'address_components'],
     });
 
@@ -89,7 +88,6 @@ export function AddressAutocomplete({ value, onChange, placeholder = 'Adresse de
           onChange={handleChange}
           placeholder={placeholder}
           className="h-11 w-full rounded-[8px] border border-[#E0DBD5] bg-white px-3 text-sm outline-none transition focus:border-accent"
-          autoComplete="off"
         />
         {!isLoaded && (
           <p className="mt-1 text-xs text-text-muted">
