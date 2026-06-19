@@ -274,7 +274,7 @@ export default function CheckoutPage() {
               <button
                 type="submit"
                 disabled={submitting || loadingProducts || missingFiles.length > 0}
-                className="inline-flex flex-1 items-center justify-center rounded-full bg-accent px-5 py-3 text-base font-semibold text-white transition hover:opacity-95 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+                className="inline-flex flex-1 items-center justify-center rounded-full bg-accent px-3 py-2 text-sm font-semibold text-white transition hover:opacity-95 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 sm:px-5 sm:py-3 sm:text-base"
               >
                 {submitting ? 'Redirection vers le paiement...' : 'Payer par carte ou mobile money'}
               </button>
