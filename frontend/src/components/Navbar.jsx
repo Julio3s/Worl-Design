@@ -87,8 +87,8 @@ export function Navbar() {
               className="h-12 w-auto sm:h-14 rounded-[8px] object-cover"
             />
             <div className="flex flex-col leading-none">
-              <span className="text-base font-extrabold text-gray-900 sm:text-lg">WORLD</span>
-              <span className="text-base font-extrabold text-accent sm:text-lg">DESIGN</span>
+              <span className="text-xs font-extrabold text-gray-900 sm:text-sm">WORLD</span>
+              <span className="text-xs font-extrabold text-accent sm:text-sm">DESIGN</span>
             </div>
           </Link>
 
@@ -227,8 +227,8 @@ export function Navbar() {
                   className="h-12 w-auto rounded-[8px] object-cover"
                 />
                 <div className="flex flex-col leading-tight">
-                  <span className="text-base font-extrabold text-gray-900">WORLD</span>
-                  <span className="text-base font-extrabold text-accent">DESIGN</span>
+                  <span className="text-xs font-extrabold text-gray-900">WORLD</span>
+                  <span className="text-xs font-extrabold text-accent">DESIGN</span>
                 </div>
               </Link>
               <button
