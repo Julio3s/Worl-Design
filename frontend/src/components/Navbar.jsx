@@ -84,11 +84,11 @@ export function Navbar() {
             <img
               src="/logo-photo.png"
               alt="World Design"
-              className="h-10 w-auto sm:h-12 rounded-[6px] object-cover"
+              className="h-12 w-auto sm:h-14 rounded-[8px] object-cover"
             />
-            <div className="hidden flex-col leading-none">
-              <span className="text-lg font-black text-gray-900 sm:text-xl">World</span>
-              <span className="text-lg font-black text-gray-900 sm:text-xl">Design</span>
+            <div className="flex flex-col leading-none">
+              <span className="text-lg font-black text-gray-900 sm:text-xl">WORLD</span>
+              <span className="text-lg font-black text-accent sm:text-xl">DESIGN</span>
             </div>
           </Link>
 
@@ -224,11 +224,11 @@ export function Navbar() {
                 <img
                   src="/logo-photo.png"
                   alt="World Design"
-                  className="h-10 w-auto rounded-[6px] object-cover"
+                  className="h-12 w-auto rounded-[8px] object-cover"
                 />
-                <div className="hidden flex-col leading-tight">
-                  <span className="text-lg font-black text-gray-900">World</span>
-                  <span className="text-lg font-black text-gray-900">Design</span>
+                <div className="flex flex-col leading-tight">
+                  <span className="text-lg font-black text-gray-900">WORLD</span>
+                  <span className="text-lg font-black text-accent">DESIGN</span>
                 </div>
               </Link>
               <button
