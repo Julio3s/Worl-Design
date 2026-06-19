@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { ChevronLeft, ChevronRight, Eye } from 'lucide-react';
+import { Eye } from 'lucide-react';
 import ImageViewer from './ImageViewer';
 
 const SWIPE_THRESHOLD = 50;
@@ -65,29 +65,6 @@ export default function ProductImageCarousel({ images, productName }) {
           draggable={false}
         />
 
-        {/* Flèches de navigation */}
-        {total > 1 ? (
-          <>
-            <button
-              type="button"
-              onClick={goPrev}
-              disabled={active === 0}
-              className="absolute left-2 top-1/2 -translate-y-1/2 inline-flex h-9 w-9 items-center justify-center rounded-full bg-black/30 text-white opacity-0 transition hover:bg-black/50 group-hover/carousel:opacity-100 disabled:opacity-0"
-              aria-label="Image précédente"
-            >
-              <ChevronLeft className="h-5 w-5" />
-            </button>
-            <button
-              type="button"
-              onClick={goNext}
-              disabled={active === total - 1}
-              className="absolute right-2 top-1/2 -translate-y-1/2 inline-flex h-9 w-9 items-center justify-center rounded-full bg-black/30 text-white opacity-0 transition hover:bg-black/50 group-hover/carousel:opacity-100 disabled:opacity-0"
-              aria-label="Image suivante"
-            >
-              <ChevronRight className="h-5 w-5" />
-            </button>
-          </>
-        ) : null}
 
         {/* Bouton œil plein écran (coin haut-droit) */}
         <button
