@@ -8,6 +8,7 @@ export function AddressAutocomplete({ value, onChange, placeholder = 'Adresse de
   const [isLoaded, setIsLoaded] = useState(false);
   const [locating, setLocating] = useState(false);
   const [showMap, setShowMap] = useState(false);
+  const [mapError, setMapError] = useState(false);
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const markerRef = useRef(null);
@@ -64,6 +65,7 @@ export function AddressAutocomplete({ value, onChange, placeholder = 'Adresse de
     script.onerror = () => {
       console.error('Failed to load Google Maps API');
       setIsLoaded(false);
+      setMapError(true);
     };
     document.head.appendChild(script);
 
@@ -81,6 +83,7 @@ export function AddressAutocomplete({ value, onChange, placeholder = 'Adresse de
   const initMiniMap = () => {
     if (!mapRef.current || !window.google?.maps) {
       console.error('Map container or Google Maps API not available');
+      setMapError(true);
       return;
     }
 
@@ -142,6 +145,7 @@ export function AddressAutocomplete({ value, onChange, placeholder = 'Adresse de
       });
     } catch (error) {
       console.error('Map initialization error:', error);
+      setMapError(true);
     }
   };
 
@@ -153,6 +157,7 @@ export function AddressAutocomplete({ value, onChange, placeholder = 'Adresse de
 
     setLocating(true);
     setShowMap(true);
+    setMapError(false);
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
@@ -238,23 +243,30 @@ export function AddressAutocomplete({ value, onChange, placeholder = 'Adresse de
               zIndex: 1
             }} 
           />
-          {!isLoaded && (
+          {mapError && (
             <div className="flex items-center justify-center bg-gray-200 p-4">
-              <p className="text-xs text-text-muted">Vérifiez votre connexion internet...</p>
+              <p className="text-xs text-text-muted">Impossible de charger la carte. Vérifiez votre connexion.</p>
             </div>
           )}
-          <div className="flex items-center justify-between bg-[#F8F5F0] px-3 py-2">
-            <p className="text-xs text-text-muted">
-              {locating ? 'Récupération de votre position...' : 'Cliquez sur la carte pour sélectionner votre adresse'}
-            </p>
-            <button
-              type="button"
-              onClick={() => setShowMap(false)}
-              className="text-xs font-semibold text-accent transition hover:opacity-80"
-            >
-              Fermer
-            </button>
-          </div>
+          {!mapError && !locating && (
+            <div className="flex items-center justify-between bg-[#F8F5F0] px-3 py-2">
+              <p className="text-xs text-text-muted">
+                Cliquez sur la carte pour sélectionner votre adresse
+              </p>
+              <button
+                type="button"
+                onClick={() => setShowMap(false)}
+                className="text-xs font-semibold text-accent transition hover:opacity-80"
+              >
+                Fermer
+              </button>
+            </div>
+          )}
+          {locating && (
+            <div className="flex items-center justify-between bg-[#F8F5F0] px-3 py-2">
+              <p className="text-xs text-text-muted">Récupération de votre position...</p>
+            </div>
+          )}
         </div>
       )}
       {!isLoaded && !showMap && (
