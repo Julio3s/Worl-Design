@@ -108,10 +108,15 @@ export function ProductFormModal({
   };
 
   const handleAddExtraImage = (event) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
 
-    setExtraImages((prev) => [...prev, { file, preview: URL.createObjectURL(file) }]);
+    const newImages = Array.from(files).map((file) => ({
+      file,
+      preview: URL.createObjectURL(file),
+    }));
+
+    setExtraImages((prev) => [...prev, ...newImages]);
     event.target.value = '';
   };
 
@@ -310,7 +315,7 @@ export function ProductFormModal({
             <label className="inline-flex cursor-pointer items-center gap-1.5 rounded-full border border-[#E0DBD5] bg-white px-3 py-1.5 text-xs font-semibold text-text-dark transition hover:border-accent hover:text-accent">
               <Plus className="h-3.5 w-3.5" />
               Ajouter
-              <input type="file" accept="image/*" className="hidden" onChange={handleAddExtraImage} />
+              <input type="file" accept="image/*" multiple className="hidden" onChange={handleAddExtraImage} />
             </label>
           </div>
 
