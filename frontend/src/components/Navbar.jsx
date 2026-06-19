@@ -82,14 +82,9 @@ export function Navbar() {
             aria-label="Accueil World Design"
           >
             <img
-              src="/logo-wd.svg"
+              src="/logo-photo.png"
               alt="World Design"
-              className="h-10 w-auto sm:h-12"
-              onError={(e) => {
-                e.target.onerror = null;
-                e.target.style.display = 'none';
-                e.target.nextElementSibling.style.display = 'flex';
-              }}
+              className="h-10 w-auto sm:h-12 rounded-[6px] object-cover"
             />
             <div className="hidden flex-col leading-none">
               <span className="text-lg font-black text-gray-900 sm:text-xl">World</span>
@@ -227,14 +222,9 @@ export function Navbar() {
                 onClick={() => setMobileOpen(false)}
               >
                 <img
-                  src="/logo-wd.svg"
+                  src="/logo-photo.png"
                   alt="World Design"
-                  className="h-10 w-auto"
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.style.display = 'none';
-                    e.target.nextElementSibling.style.display = 'flex';
-                  }}
+                  className="h-10 w-auto rounded-[6px] object-cover"
                 />
                 <div className="hidden flex-col leading-tight">
                   <span className="text-lg font-black text-gray-900">World</span>
