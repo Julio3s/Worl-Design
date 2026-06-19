@@ -219,9 +219,29 @@ export default function ProductDetailPage() {
 
           <div className="flex flex-col gap-5 w-full min-w-0">
               <div className="space-y-3 min-w-0">
-                <p className="text-sm font-semibold uppercase tracking-normal text-black">
-                  {product.name}
-                </p>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => toggleWishlist(product)}
+                    className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[#E0DBD5] bg-white transition hover:border-accent hover:text-accent ${
+                      isWishlisted ? 'text-accent' : 'text-text-muted'
+                    }`}
+                    aria-label={isWishlisted ? 'Retirer des favoris' : 'Ajouter aux favoris'}
+                  >
+                    <Heart className={`h-4 w-4 ${isWishlisted ? 'fill-accent' : ''}`} />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleShare}
+                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[#E0DBD5] bg-white text-text-muted transition hover:border-accent hover:text-accent"
+                    aria-label="Partager"
+                  >
+                    <Share2 className="h-4 w-4" />
+                  </button>
+                  <p className="text-sm font-semibold uppercase tracking-normal text-black">
+                    {product.name}
+                  </p>
+                </div>
                 <div className="flex flex-wrap items-center gap-3">
                   <p className="font-roboto text-xl font-bold text-black">
                     {formatCurrency(product.price)}
@@ -231,26 +251,6 @@ export default function ProductDetailPage() {
                       Personnalisable
                     </span>
                   ) : null}
-                  <div className="ml-auto flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => toggleWishlist(product)}
-                      className={`flex h-9 w-9 items-center justify-center rounded-full border border-[#E0DBD5] bg-white transition hover:border-accent hover:text-accent ${
-                        isWishlisted ? 'text-accent' : 'text-text-muted'
-                      }`}
-                      aria-label={isWishlisted ? 'Retirer des favoris' : 'Ajouter aux favoris'}
-                    >
-                      <Heart className={`h-4 w-4 ${isWishlisted ? 'fill-accent' : ''}`} />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={handleShare}
-                      className="flex h-9 w-9 items-center justify-center rounded-full border border-[#E0DBD5] bg-white text-text-muted transition hover:border-accent hover:text-accent"
-                      aria-label="Partager"
-                    >
-                      <Share2 className="h-4 w-4" />
-                    </button>
-                  </div>
                 </div>
                 <p className="max-w-2xl text-sm leading-5 font-semibold text-text-muted sm:text-base">
                   {product.description}
