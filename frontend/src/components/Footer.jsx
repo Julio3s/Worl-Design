@@ -28,7 +28,7 @@ export function Footer() {
             </Link>
             <p className="mt-4 text-sm leading-relaxed text-white/70 max-w-xs">
               Goodies personnalisés de qualité pour vos projets de marque.
-              Paiement par carte ou mobile money et livraison partout au Togo.
+              Paiement par carte ou mobile money et livraison partout où vous êtes.
             </p>
             <div className="mt-4 flex gap-3">
               {[Heart, Share2, Send].map((Icon, i) => (
@@ -88,7 +88,7 @@ export function Footer() {
               </li>
               <li className="flex items-center gap-2 text-sm text-white/70">
                 <Phone className="h-4 w-4 shrink-0 text-gold" />
-                +228 92 45 58 00
+                +228 97 08 54 24
               </li>
               <li className="flex items-start gap-2 text-sm text-white/70">
                 <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-gold" />

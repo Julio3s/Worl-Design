@@ -100,7 +100,7 @@ export default function RegisterPage() {
             value={form.phone}
             onChange={handleChange('phone')}
             className="h-11 rounded-[8px] border border-[#E0DBD5] bg-white px-3 text-sm outline-none transition focus:border-accent"
-            placeholder="+228 90 00 00 00"
+            placeholder="+228 97 08 54 24"
           />
         </label>
 

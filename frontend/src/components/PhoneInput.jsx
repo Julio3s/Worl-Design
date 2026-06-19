@@ -165,10 +165,11 @@ export function PhoneInput({ value, onChange, required, placeholder }) {
           required={required}
           value={phoneNumber}
           onChange={handlePhoneChange}
-          placeholder={placeholder || '+228 90 00 00 00'}
+          placeholder={placeholder || '+228 97 08 54 24'}
           className="h-11 flex-1 rounded-r-[8px] border border-[#E0DBD5] bg-white px-3 text-sm outline-none transition focus:border-accent"
         />
       </div>
     </div>
   );
 }
+</write_to_file>

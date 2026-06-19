@@ -219,7 +219,7 @@ export default function CheckoutPage() {
               value={form.phone}
               onChange={(value) => setForm((current) => ({ ...current, phone: value }))}
               required
-              placeholder="+228 90 00 00 00"
+              placeholder="+228 97 08 54 24"
             />
 
             <AddressAutocomplete
