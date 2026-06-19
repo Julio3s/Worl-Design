@@ -50,14 +50,20 @@ export default function ImageViewer({ src, alt, isOpen, onClose, hasMultiple, on
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
+      document.documentElement.style.touchAction = 'none';
       window.addEventListener('keydown', handleKeyDown);
       setLoaded(false);
     } else {
       document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+      document.documentElement.style.touchAction = '';
     }
 
     return () => {
       document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+      document.documentElement.style.touchAction = '';
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [isOpen, handleKeyDown]);
@@ -69,6 +75,7 @@ export default function ImageViewer({ src, alt, isOpen, onClose, hasMultiple, on
   return (
     <div
       className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/85 backdrop-blur-sm p-4 select-none"
+      style={{ touchAction: 'none' }}
       onClick={onClose}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
