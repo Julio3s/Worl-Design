@@ -79,53 +79,70 @@ export function AddressAutocomplete({ value, onChange, placeholder = 'Adresse de
   };
 
   const initMiniMap = () => {
-    if (!mapRef.current || !window.google?.maps) return;
-
-    if (mapInstanceRef.current) {
-      mapInstanceRef.current.setCenter({ lat: 6.1725, lng: 1.2314 }); // Lomé par défaut
+    if (!mapRef.current || !window.google?.maps) {
+      console.error('Map container or Google Maps API not available');
       return;
     }
 
-    mapInstanceRef.current = new window.google.maps.Map(mapRef.current, {
-      center: { lat: 6.1725, lng: 1.2314 },
-      zoom: 13,
-      disableDefaultUI: true,
-      zoomControl: true,
-      mapTypeControl: false,
-      streetViewControl: false,
-      fullscreenControl: false,
-    });
+    if (mapInstanceRef.current) {
+      mapInstanceRef.current.setCenter({ lat: 6.1725, lng: 1.2314 });
+      return;
+    }
 
-    mapInstanceRef.current.addListener('click', async (event) => {
-      const { lat, lng } = event.latLng;
+    try {
+      const mapOptions = {
+        center: { lat: 6.1725, lng: 1.2314 },
+        zoom: 13,
+        disableDefaultUI: true,
+        zoomControl: true,
+        mapTypeControl: false,
+        streetViewControl: false,
+        fullscreenControl: false,
+        mapTypeId: window.google.maps.MapTypeId.ROADMAP,
+      };
 
-      if (markerRef.current) {
-        markerRef.current.setPosition({ lat, lng });
-      } else {
-        markerRef.current = new window.google.maps.Marker({
-          position: { lat, lng },
-          map: mapInstanceRef.current,
-          animation: window.google.maps.Animation.DROP,
-        });
-      }
+      mapInstanceRef.current = new window.google.maps.Map(mapRef.current, mapOptions);
 
-      try {
-        const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
-        const response = await fetch(
-          `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${apiKey}&language=fr`
-        );
-        const data = await response.json();
-        if (data.results && data.results[0]) {
-          const address = data.results[0].formatted_address;
-          setInputValue(address);
-          onChange(address);
-          setShowMap(false);
+      // Force map to render properly
+      const googleMap = mapInstanceRef.current;
+      setTimeout(() => {
+        window.google.maps.event.trigger(googleMap, 'resize');
+        googleMap.setCenter(mapOptions.center);
+      }, 100);
+
+      mapInstanceRef.current.addListener('click', async (event) => {
+        const { lat, lng } = event.latLng;
+
+        if (markerRef.current) {
+          markerRef.current.setPosition({ lat, lng });
+        } else {
+          markerRef.current = new window.google.maps.Marker({
+            position: { lat, lng },
+            map: mapInstanceRef.current,
+            animation: window.google.maps.Animation.DROP,
+          });
         }
-      } catch (error) {
-        console.error('Geocoding error:', error);
-        alert('Impossible de récupérer l\'adresse.');
-      }
-    });
+
+        try {
+          const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+          const response = await fetch(
+            `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${apiKey}&language=fr`
+          );
+          const data = await response.json();
+          if (data.results && data.results[0]) {
+            const address = data.results[0].formatted_address;
+            setInputValue(address);
+            onChange(address);
+            setShowMap(false);
+          }
+        } catch (error) {
+          console.error('Geocoding error:', error);
+          alert('Impossible de récupérer l\'adresse.');
+        }
+      });
+    } catch (error) {
+      console.error('Map initialization error:', error);
+    }
   };
 
   const handleUseMyLocation = () => {
@@ -170,8 +187,13 @@ export function AddressAutocomplete({ value, onChange, placeholder = 'Adresse de
 
   useEffect(() => {
     if (showMap && isLoaded) {
-      setTimeout(initMiniMap, 100);
+      // Wait for the container to be visible and rendered
+      const timer = setTimeout(() => {
+        initMiniMap();
+      }, 200);
+      return () => clearTimeout(timer);
     }
+    return undefined;
   }, [showMap, isLoaded]);
 
   return (
@@ -207,9 +229,24 @@ export function AddressAutocomplete({ value, onChange, placeholder = 'Adresse de
       </div>
       {showMap && (
         <div className="mt-2 overflow-hidden rounded-[8px] border border-[#E0DBD5]">
-          <div ref={mapRef} className="h-48 w-full" />
+          <div 
+            ref={mapRef} 
+            className="h-48 w-full bg-gray-100" 
+            style={{ 
+              minHeight: '192px',
+              position: 'relative',
+              zIndex: 1
+            }} 
+          />
+          {!isLoaded && (
+            <div className="flex items-center justify-center bg-gray-200 p-4">
+              <p className="text-xs text-text-muted">Vérifiez votre connexion internet...</p>
+            </div>
+          )}
           <div className="flex items-center justify-between bg-[#F8F5F0] px-3 py-2">
-            <p className="text-xs text-text-muted">Cliquez sur la carte pour sélectionner votre adresse</p>
+            <p className="text-xs text-text-muted">
+              {locating ? 'Récupération de votre position...' : 'Cliquez sur la carte pour sélectionner votre adresse'}
+            </p>
             <button
               type="button"
               onClick={() => setShowMap(false)}
