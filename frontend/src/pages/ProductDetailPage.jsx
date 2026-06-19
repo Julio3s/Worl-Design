@@ -252,7 +252,7 @@ export default function ProductDetailPage() {
                     </button>
                   </div>
                 </div>
-                <p className="max-w-2xl text-sm leading-6 text-text-muted sm:text-base">
+                <p className="max-w-2xl text-sm leading-5 font-semibold text-text-muted sm:text-base">
                   {product.description}
                 </p>
               </div>
