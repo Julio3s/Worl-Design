@@ -249,3 +249,12 @@ def admin_product_detail(request, pk):
         {'detail': 'Product deactivated successfully'},
         status=status.HTTP_200_OK,
     )
+
+
+@api_view(['DELETE'])
+@permission_classes([IsWorldDesignAdminUser])
+def admin_product_hard_delete(request, pk):
+    """Admin endpoint for permanently deleting a product."""
+    product = get_object_or_404(Product, pk=pk)
+    product.delete()
+    return Response({'detail': 'Product deleted successfully'}, status=status.HTTP_200_OK)
