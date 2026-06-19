@@ -66,6 +66,11 @@ export async function deactivateAdminProduct(id) {
   return data;
 }
 
+export async function deleteAdminProduct(id) {
+  const { data } = await api.delete(`/admin/products/${id}/hard-delete/`);
+  return data;
+}
+
 export function formatProductError(error) {
   const responseData = error?.response?.data;
 

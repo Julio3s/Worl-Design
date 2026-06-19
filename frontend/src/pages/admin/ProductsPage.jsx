@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useState } from 'react';
-import { EyeOff, Pencil, Plus } from 'lucide-react';
+import { EyeOff, Pencil, Plus, Trash2 } from 'lucide-react';
 
 import {
   createAdminProduct,
   deactivateAdminProduct,
+  deleteAdminProduct,
   getAdminProducts,
   updateAdminProduct,
 } from '../../api/adminProducts';
@@ -50,6 +51,8 @@ export default function ProductsPage() {
   const [editingProduct, setEditingProduct] = useState(null);
   const [deactivateTarget, setDeactivateTarget] = useState(null);
   const [deactivating, setDeactivating] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
   const loadProducts = useCallback(async () => {
     setLoading(true);
@@ -138,6 +141,27 @@ export default function ProductsPage() {
       );
     } finally {
       setDeactivating(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!deleteTarget) {
+      return;
+    }
+
+    setDeleting(true);
+    try {
+      await deleteAdminProduct(deleteTarget.id);
+      showToast('Produit supprimé définitivement.');
+      setDeleteTarget(null);
+      await loadProducts();
+    } catch (caughtError) {
+      showToast(
+        caughtError?.response?.data?.detail || 'Impossible de supprimer le produit.',
+        'error',
+      );
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -248,28 +272,36 @@ export default function ProductsPage() {
                   <td className="px-4 py-3">
                     <StatusBadge active={product.is_active} />
                   </td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={() => handleEdit(product)}
-                        className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[#E0DBD5] text-primary transition hover:border-primary hover:bg-[#F8F5F0]"
-                        aria-label={`Modifier ${product.name}`}
-                      >
-                        <Pencil className="h-4 w-4" aria-hidden="true" />
-                      </button>
-                      {product.is_active ? (
-                        <button
-                          type="button"
-                          onClick={() => setDeactivateTarget(product)}
-                          className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[#FEE2E2] text-accent transition hover:bg-[#FEE2E2]"
-                          aria-label={`Désactiver ${product.name}`}
-                        >
-                          <EyeOff className="h-4 w-4" aria-hidden="true" />
-                        </button>
-                      ) : null}
-                    </div>
-                  </td>
+                   <td className="px-4 py-3">
+                     <div className="flex items-center gap-2">
+                       <button
+                         type="button"
+                         onClick={() => handleEdit(product)}
+                         className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[#E0DBD5] text-primary transition hover:border-primary hover:bg-[#F8F5F0]"
+                         aria-label={`Modifier ${product.name}`}
+                       >
+                         <Pencil className="h-4 w-4" aria-hidden="true" />
+                       </button>
+                       {product.is_active ? (
+                         <button
+                           type="button"
+                           onClick={() => setDeactivateTarget(product)}
+                           className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[#FEE2E2] text-accent transition hover:bg-[#FEE2E2]"
+                           aria-label={`Désactiver ${product.name}`}
+                         >
+                           <EyeOff className="h-4 w-4" aria-hidden="true" />
+                         </button>
+                       ) : null}
+                       <button
+                         type="button"
+                         onClick={() => setDeleteTarget(product)}
+                         className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[#FEE2E2] text-[#991B1B] transition hover:bg-[#FEE2E2]"
+                         aria-label={`Supprimer ${product.name}`}
+                       >
+                         <Trash2 className="h-4 w-4" aria-hidden="true" />
+                       </button>
+                     </div>
+                   </td>
                 </tr>
               ))}
             </tbody>
@@ -312,6 +344,37 @@ export default function ProductsPage() {
         <p className="text-sm leading-7 text-text-muted">
           Le produit <strong className="text-text-dark">{deactivateTarget?.name}</strong> sera
           retiré du site public mais restera visible dans l'administration.
+        </p>
+      </Modal>
+
+      <Modal
+        open={Boolean(deleteTarget)}
+        onClose={() => setDeleteTarget(null)}
+        title="Supprimer le produit"
+        footer={(
+          <div className="flex flex-wrap justify-end gap-3">
+            <button
+              type="button"
+              onClick={() => setDeleteTarget(null)}
+              className="inline-flex items-center justify-center rounded-full border border-[#E0DBD5] bg-white px-5 py-2.5 text-sm font-semibold text-text-dark transition hover:border-accent hover:text-accent"
+            >
+              Annuler
+            </button>
+            <button
+              type="button"
+              onClick={handleDelete}
+              disabled={deleting}
+              className="inline-flex items-center justify-center rounded-full bg-[#991B1B] px-5 py-2.5 text-sm font-semibold text-white transition hover:opacity-95 disabled:opacity-50"
+            >
+              {deleting ? 'Suppression...' : 'Supprimer définitivement'}
+            </button>
+          </div>
+        )}
+      >
+        <p className="text-sm leading-7 text-text-muted">
+          Êtes-vous sûr de vouloir supprimer définitivement le produit
+          <strong className="text-text-dark"> {deleteTarget?.name}</strong> ?
+          Cette action est irréversible.
         </p>
       </Modal>
     </AdminPage>
