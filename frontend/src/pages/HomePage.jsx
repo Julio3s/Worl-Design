@@ -187,8 +187,8 @@ export default function HomePage() {
           />
         </div>
 
-        {/* Overlay assombrissant */}
-        <div className="absolute inset-0 bg-black/40" aria-hidden="true" />
+        {/* Overlay très léger pour garder la lisibilité du texte */}
+        <div className="absolute inset-0 bg-black/10" aria-hidden="true" />
 
         <div className="relative z-10 mx-auto grid w-full max-w-7xl items-center gap-10 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-[1fr_480px] lg:px-8">
           <div>
