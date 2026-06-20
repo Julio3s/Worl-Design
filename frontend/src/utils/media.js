@@ -9,12 +9,24 @@ const CATEGORY_FALLBACKS = {
   supports: STAND_FALLBACK,
 };
 
+// Optimise les URLs Cloudinary avec les transformations les plus agressives
+function optimizeCloudinaryUrl(url, width = 800) {
+  if (!url || !url.includes('cloudinary.com')) {
+    return url;
+  }
+  // Évite les doubles transformations
+  if (url.includes('/upload/c_')) {
+    return url;
+  }
+  return url.replace('/upload/', `/upload/c_fit,w_${width},q_auto,f_auto/`);
+}
+
 export function getCategoryImage(category) {
   if (!category) {
     return HERO_FALLBACK;
   }
 
-  return category.image_url || CATEGORY_FALLBACKS[category.slug] || HERO_FALLBACK;
+  return optimizeCloudinaryUrl(category.image_url) || CATEGORY_FALLBACKS[category.slug] || HERO_FALLBACK;
 }
 
 export function getProductImage(product) {
@@ -25,12 +37,12 @@ export function getProductImage(product) {
   // Priorité : image_url, puis première images[], puis fallback catégorie, puis fallback global
   const primary = product.image_url;
   if (primary) {
-    return primary;
+    return optimizeCloudinaryUrl(primary, 600);
   }
 
   const firstExtra = product.images?.[0]?.image_url;
   if (firstExtra) {
-    return firstExtra;
+    return optimizeCloudinaryUrl(firstExtra, 600);
   }
 
   return CATEGORY_FALLBACKS[product.category?.slug] || HERO_FALLBACK;
