@@ -15,7 +15,7 @@ export default function ProductImageCarousel({ images, productName }) {
   }
 
   const total = images.length;
-  const currentImage = images[active]?.image_url || '';
+  const currentImage = images[active]?.image_url || images[active]?.image || '';
 
   const goTo = (index) => {
     setActive(Math.max(0, Math.min(total - 1, index)));
@@ -58,12 +58,18 @@ export default function ProductImageCarousel({ images, productName }) {
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        <img
-          src={currentImage}
-          alt={`${productName} - image ${active + 1}`}
-          className="pointer-events-none h-full w-full object-cover"
-          draggable={false}
-        />
+        {currentImage ? (
+          <img
+            src={currentImage}
+            alt={`${productName} - image ${active + 1}`}
+            className="pointer-events-none h-full w-full object-cover"
+            draggable={false}
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center text-text-muted">
+            Image indisponible
+          </div>
+        )}
 
 
         {/* Bouton œil plein écran (coin haut-droit) */}
