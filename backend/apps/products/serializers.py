@@ -11,7 +11,13 @@ def _cloudinary_url(resource):
     try:
         if not getattr(cloudinary_config(), 'cloud_name', None):
             return None
-        
+
+        # Si le champ contient déjà une URL complète (http/https), la retourner directement
+        # Cela arrive quand public_id a été stocké comme URL complète dans la DB
+        raw = str(resource)
+        if raw.startswith('http://') or raw.startswith('https://'):
+            return raw
+
         # Retourne l'URL brute. Les optimisations sont faites côté client
         # dans media.js pour éviter les doubles transformations et permettre
         # des tailles adaptées selon l'usage (catalogue, détail, etc.)
