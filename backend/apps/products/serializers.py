@@ -89,9 +89,9 @@ class ProductImageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProductImage
-        fields = ['id', 'image', 'image_url', 'order']
+        fields = ['id', 'image', 'image_url', 'video_url', 'media_type', 'order']
         extra_kwargs = {
-            'image': {'write_only': True, 'required': True},
+            'image': {'write_only': True, 'required': False, 'allow_null': True},
         }
 
     def get_image_url(self, obj):
@@ -214,16 +214,29 @@ class ProductAdminSerializer(serializers.ModelSerializer):
         # Supprimer toutes les images existantes
         product.images.all().delete()
 
-        # 1. Recréer les images existantes conservées (public_id dans images_data)
+        # 1. Recréer les images/vidéos existantes conservées
         for idx, meta in enumerate(images_meta):
-            public_id = meta.get('public_id', '')
-            if public_id:
-                # public_id est une URL Cloudinary complète, CloudinaryField accepte ça comme référence
-                ProductImage.objects.create(
-                    product=product,
-                    image=public_id,
-                    order=meta.get('order', idx),
-                )
+            media_type = meta.get('media_type', 'image')
+            order = meta.get('order', idx)
+            
+            if media_type == 'video':
+                video_url = meta.get('video_url', '')
+                if video_url:
+                    ProductImage.objects.create(
+                        product=product,
+                        video_url=video_url,
+                        media_type='video',
+                        order=order,
+                    )
+            else:
+                public_id = meta.get('public_id', '')
+                if public_id:
+                    ProductImage.objects.create(
+                        product=product,
+                        image=public_id,
+                        media_type='image',
+                        order=order,
+                    )
 
         # 2. Ajouter les nouveaux fichiers uploadés (images_new_*)
         if request:
@@ -237,6 +250,7 @@ class ProductAdminSerializer(serializers.ModelSerializer):
                 ProductImage.objects.create(
                     product=product,
                     image=uploaded,
+                    media_type='image',
                     order=base_order + i,
                 )
                 i += 1

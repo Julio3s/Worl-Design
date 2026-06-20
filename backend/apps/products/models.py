@@ -54,9 +54,15 @@ class Product(models.Model):
 
 
 class ProductImage(models.Model):
-    """Additional images for a product."""
+    """Additional images/videos for a product."""
+    MEDIA_TYPES = [
+        ('image', 'Image'),
+        ('video', 'Vidéo'),
+    ]
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')
-    image = CloudinaryField('image')
+    image = CloudinaryField('image', null=True, blank=True)
+    video_url = models.URLField(max_length=500, blank=True, null=True, help_text="URL de la vidéo (YouTube, Vimeo)")
+    media_type = models.CharField(max_length=10, choices=MEDIA_TYPES, default='image')
     order = models.PositiveIntegerField(default=0)
 
     class Meta:
@@ -64,4 +70,4 @@ class ProductImage(models.Model):
         ordering = ['order', 'id']
 
     def __str__(self):
-        return f'Image {self.order} - {self.product.name}'
+        return f'{self.media_type.capitalize()} {self.order} - {self.product.name}'

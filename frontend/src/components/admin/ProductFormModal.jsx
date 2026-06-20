@@ -164,6 +164,7 @@ export function ProductFormModal({
     const imagesData = existingImages.map((img, idx) => ({
       public_id: img.image_url || '',
       order: idx,
+      media_type: 'image',
     }));
 
     // Fichiers des nouvelles images (indices séquentiels à partir de 0)
