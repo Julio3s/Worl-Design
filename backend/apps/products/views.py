@@ -39,9 +39,14 @@ def _parse_decimal_param(value, field_name):
 
 
 def _normalize_admin_payload(data):
-    payload = data.copy()
-    if payload.get('category') == '':
-        payload['category'] = None
+    # Don't copy request.data directly as it may contain file uploads (BufferedRandom)
+    # Instead, create a new dict with the values we need
+    payload = {}
+    for key, value in data.items():
+        if key == 'category' and value == '':
+            payload[key] = None
+        else:
+            payload[key] = value
     return payload
 
 
