@@ -35,7 +35,7 @@ export default function FilterDrawer({ children, label = 'Filtres' }) {
       </button>
 
       {open ? (
-        <div className="absolute right-0 z-50 mt-2 w-[320px] rounded-[8px] border border-[#E0DBD5] bg-white p-5 shadow-lg">
+        <div className="absolute left-0 z-50 mt-2 w-[320px] rounded-[8px] border border-[#E0DBD5] bg-white p-5 shadow-lg">
           <div className="mb-4 flex items-center justify-between">
             <span className="text-sm font-bold text-text-dark">{label}</span>
             <button

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { EyeOff, Pencil, Plus, Trash2 } from 'lucide-react';
+import { EyeOff, Pencil, Plus, Star, Trash2 } from 'lucide-react';
 
 import {
   createAdminProduct,
@@ -20,7 +20,7 @@ import { useToastStore } from '../../store/toastStore';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { getProductImage } from '../../utils/media';
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 1000;
 
 function StatusBadge({ active }) {
   return (
@@ -121,6 +121,34 @@ export default function ProductsPage() {
     }
 
     await loadProducts();
+  };
+
+  const handleToggleFeatured = async (product) => {
+    try {
+      await updateAdminProduct(product.id, {
+        name: product.name,
+        description: product.description,
+        price: product.price,
+        stock: product.stock,
+        category: product.category,
+        is_active: product.is_active,
+        is_featured: !product.is_featured,
+        is_customizable: product.is_customizable,
+        customization_hint: product.customization_hint || '',
+        imagesData: (product.images || []).map((img, idx) => ({
+          public_id: img.image_url || '',
+          order: idx,
+          media_type: img.media_type || 'image',
+        })),
+      });
+      showToast(product.is_featured ? 'Produit retiré des vedettes.' : 'Produit mis en vedette.');
+      await loadProducts();
+    } catch (caughtError) {
+      showToast(
+        caughtError?.response?.data?.detail || 'Impossible de modifier le statut vedette.',
+        'error',
+      );
+    }
   };
 
   const handleDeactivate = async () => {
@@ -274,6 +302,19 @@ export default function ProductsPage() {
                   </td>
                    <td className="px-4 py-3">
                      <div className="flex items-center gap-2">
+                       <button
+                         type="button"
+                         onClick={() => handleToggleFeatured(product)}
+                         className={`inline-flex h-9 w-9 items-center justify-center rounded-full border transition ${
+                           product.is_featured
+                             ? 'border-[#FEF3C7] bg-[#FEF3C7] text-[#D97706]'
+                             : 'border-[#E0DBD5] text-text-muted hover:border-[#FEF3C7] hover:text-[#D97706]'
+                         }`}
+                         aria-label={product.is_featured ? `Retirer ${product.name} des vedettes` : `Mettre ${product.name} en vedette`}
+                         title={product.is_featured ? 'Retirer des vedettes' : 'Mettre en vedette'}
+                       >
+                         <Star className={`h-4 w-4 ${product.is_featured ? 'fill-[#D97706]' : ''}`} aria-hidden="true" />
+                       </button>
                        <button
                          type="button"
                          onClick={() => handleEdit(product)}

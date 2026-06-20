@@ -25,7 +25,7 @@ from .serializers import (
 class ProductPagination(PageNumberPagination):
     page_size = 12
     page_size_query_param = 'page_size'
-    max_page_size = 100
+    max_page_size = 1000
 
 
 def _parse_decimal_param(value, field_name):
