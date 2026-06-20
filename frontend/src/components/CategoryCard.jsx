@@ -9,6 +9,7 @@ export function CategoryCard({ category }) {
     <Link
       to={`/products?category=${encodeURIComponent(category.slug)}`}
       className="product-card-hover group flex overflow-hidden rounded-[8px] border border-[#E0DBD5] bg-white hover:border-accent"
+      state={{ selectedCategory: category.slug }}
     >
       <div className="h-44 w-16 flex-none overflow-hidden sm:h-52 sm:w-20">
         <img

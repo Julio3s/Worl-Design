@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { SearchX, ChevronDown, ShoppingCart } from 'lucide-react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useLocation, useSearchParams } from 'react-router-dom';
 
 import { getCategories, getProducts } from '../api/catalog';
 import { EmptyState } from '../components/EmptyState';
@@ -22,6 +22,7 @@ export default function ProductsPage() {
   usePageTitle('Catalogue');
 
   const [searchParams, setSearchParams] = useSearchParams();
+  const location = useLocation();
   const [categories, setCategories] = useState([]);
   const [productsData, setProductsData] = useState({
     count: 0,
@@ -77,13 +78,21 @@ export default function ProductsPage() {
   }, []);
 
   useEffect(() => {
+    // Check if we came from a category click (via location.state)
+    const selectedCategory = location.state?.selectedCategory;
+    
     setFilters({
-      category: searchParams.get('category') || '',
+      category: selectedCategory || searchParams.get('category') || '',
       min_price: searchParams.get('min_price') || '',
       max_price: searchParams.get('max_price') || '',
       search: searchParams.get('search') || '',
     });
-  }, [searchParamsString]);
+    
+    // Clear the location state after reading it
+    if (selectedCategory) {
+      window.history.replaceState({}, '', location.pathname + location.search);
+    }
+  }, [searchParamsString, location.state]);
 
   useEffect(() => {
     let isMounted = true;
