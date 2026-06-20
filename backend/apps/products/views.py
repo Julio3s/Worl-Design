@@ -240,12 +240,18 @@ def admin_product_detail(request, pk):
         if serializer.is_valid():
             try:
                 product = serializer.save()
-            except IntegrityError:
+            except IntegrityError as exc:
+                import logging
+                logger = logging.getLogger(__name__)
+                logger.error(f'IntegrityError updating product {pk}: {exc}')
                 return Response(
                     {'detail': 'A product with the same name or slug already exists'},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
             return Response(ProductAdminSerializer(product, context={'request': request}).data, status=status.HTTP_200_OK)
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f'Validation errors updating product {pk}: {serializer.errors}')
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     product.is_active = False
