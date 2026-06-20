@@ -52,4 +52,14 @@ export function getHeroImage(product) {
   return getProductImage(product);
 }
 
+export function optimizeImageUrl(url, width = 800) {
+  if (!url || !url.includes('cloudinary.com')) {
+    return url;
+  }
+  if (url.includes('/upload/c_')) {
+    return url;
+  }
+  return url.replace('/upload/', `/upload/c_fit,w_${width},q_auto,f_auto/`);
+}
+
 export { HERO_FALLBACK };

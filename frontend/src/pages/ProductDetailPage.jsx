@@ -13,7 +13,7 @@ import { useCartStore } from '../store/cartStore';
 import { useWishlistStore } from '../store/wishlistStore';
 import { formatCurrency } from '../utils/formatCurrency';
 import { validateCustomFile } from '../utils/customFileValidation';
-import { getProductImage } from '../utils/media';
+import { getProductImage, optimizeImageUrl } from '../utils/media';
 
 function buildImagesArray(product) {
   if (!product) return [];
@@ -30,7 +30,7 @@ function buildImagesArray(product) {
   // Images supplémentaires
   if (product.images && Array.isArray(product.images)) {
     product.images.forEach((img, idx) => {
-      const imgUrl = img.image_url || img.image || '';
+      const imgUrl = optimizeImageUrl(img.image_url || img.image || '', 800);
       if (imgUrl && imgUrl !== mainImageUrl) {
         result.push({ image_url: imgUrl, order: idx + 1 });
       }

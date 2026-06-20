@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import { Eye } from 'lucide-react';
+import { optimizeImageUrl } from '../utils/media';
 import ImageViewer from './ImageViewer';
 
 const SWIPE_THRESHOLD = 50;
@@ -15,7 +16,7 @@ export default function ProductImageCarousel({ images, productName }) {
   }
 
   const total = images.length;
-  const currentImage = images[active]?.image_url || images[active]?.image || '';
+  const currentImage = optimizeImageUrl(images[active]?.image_url || images[active]?.image || '', 800);
 
   const goTo = (index) => {
     setActive(Math.max(0, Math.min(total - 1, index)));
