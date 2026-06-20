@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Plus, Trash2, Upload } from 'lucide-react';
 
 import { formatProductError } from '../../api/adminProducts';
+import { optimizeImage } from '../../utils/imageOptimizer';
 import { Modal } from '../Modal';
 
 const EMPTY_FORM = {
@@ -97,26 +98,46 @@ export function ProductFormModal({
     setForm((current) => ({ ...current, [field]: value }));
   };
 
-  const handleImageChange = (event) => {
+  const handleImageChange = async (event) => {
     const file = event.target.files?.[0];
     if (!file) {
       return;
     }
 
-    setImageFile(file);
-    setImagePreview(URL.createObjectURL(file));
+    try {
+      const optimizedFile = await optimizeImage(file);
+      setImageFile(optimizedFile);
+      setImagePreview(URL.createObjectURL(optimizedFile));
+    } catch (error) {
+      console.error('Image optimization failed:', error);
+      setImageFile(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
   };
 
-  const handleAddExtraImage = (event) => {
+  const handleAddExtraImage = async (event) => {
     const files = event.target.files;
     if (!files || files.length === 0) return;
 
-    const newImages = Array.from(files).map((file) => ({
-      file,
-      preview: URL.createObjectURL(file),
-    }));
+    const optimizedFiles = await Promise.all(
+      Array.from(files).map(async (file) => {
+        try {
+          const optimized = await optimizeImage(file);
+          return {
+            file: optimized,
+            preview: URL.createObjectURL(optimized),
+          };
+        } catch (error) {
+          console.error('Image optimization failed:', error);
+          return {
+            file,
+            preview: URL.createObjectURL(file),
+          };
+        }
+      })
+    );
 
-    setExtraImages((prev) => [...prev, ...newImages]);
+    setExtraImages((prev) => [...prev, ...optimizedFiles]);
     event.target.value = '';
   };
 
