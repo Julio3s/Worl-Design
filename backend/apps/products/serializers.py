@@ -184,6 +184,9 @@ class ProductAdminSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         images_data_raw = validated_data.pop('images_data', None)
+        # Don't regenerate slug on update if name hasn't changed
+        if 'name' in validated_data and validated_data['name'] == instance.name:
+            validated_data.pop('name', None)
         product = super().update(instance, validated_data)
         self._rebuild_images(product, images_data_raw)
         return product
