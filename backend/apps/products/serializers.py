@@ -11,11 +11,18 @@ def _cloudinary_url(resource):
     try:
         if not getattr(cloudinary_config(), 'cloud_name', None):
             return None
-        
-        # Retourne l'URL brute. Les optimisations sont faites côté client
-        # dans media.js pour éviter les doubles transformations et permettre
-        # des tailles adaptées selon l'usage (catalogue, détail, etc.)
-        return resource.url
+
+        url = resource.url
+
+        # Ajouter les transformations Cloudinary pour optimiser les images
+        # f_auto: WebP/AVIF si supporté, q_auto: compression intelligente
+        # c_fit,w_1200: redimensionne à 1200px max sans recadrage
+        if url and 'cloudinary.com' in url and '/upload/' in url:
+            # Évite les doubles transformations
+            if '/upload/c_' not in url and '/upload/f_' not in url and '/upload/q_' not in url:
+                url = url.replace('/upload/', '/upload/c_fit,w_1200,q_auto,f_auto/')
+
+        return url
     except Exception:
         return None
 
