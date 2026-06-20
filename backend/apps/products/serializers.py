@@ -11,7 +11,19 @@ def _cloudinary_url(resource):
     try:
         if not getattr(cloudinary_config(), 'cloud_name', None):
             return None
-        return resource.url
+        
+        # Get the base URL
+        url = resource.url
+        
+        # Add Cloudinary transformations for optimization
+        # Auto format: serves WebP/AVIF if supported, falls back to original
+        # Auto quality: automatic compression
+        # Limit size to 1200px width for product images
+        if url and 'cloudinary.com' in url:
+            # Insert transformations before the file extension
+            url = url.replace('/upload/', '/upload/c_fit,w_1200,q_auto,f_auto/')
+        
+        return url
     except Exception:
         return None
 
