@@ -349,6 +349,8 @@ export default function HomePage() {
                         src={getCategoryImage(cat)}
                         alt={cat.name}
                         className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        loading="lazy"
+                        decoding="async"
                       />
                     </div>
                     <p className="mt-2 text-sm font-semibold text-[#1A1A2E] text-center">
@@ -487,6 +489,7 @@ export default function HomePage() {
                         alt={product.name}
                         className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                         loading="lazy"
+                        decoding="async"
                       />
                     </div>
                     <p className="mt-1.5 line-clamp-1 text-xs leading-relaxed text-[#6B6B6B]">

@@ -45,6 +45,7 @@ export function ProductCard({ product, showAddButton = false, badgeLabel, classN
             alt={product.name}
             className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
             loading="lazy"
+            decoding="async"
           />
           {badgeLabel ? (
             <span className="absolute left-3 top-3 inline-flex rounded-full bg-gold px-3 py-1 text-xs font-semibold text-white">
