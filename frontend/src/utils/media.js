@@ -9,23 +9,12 @@ const CATEGORY_FALLBACKS = {
   supports: STAND_FALLBACK,
 };
 
-function appendCacheBuster(url, stamp) {
-  if (!url || !stamp) {
-    return url;
-  }
-
-  const separator = url.includes('?') ? '&' : '?';
-  return `${url}${separator}v=${encodeURIComponent(stamp)}`;
-}
-
 export function getCategoryImage(category) {
   if (!category) {
     return HERO_FALLBACK;
   }
 
-  const image = category.image_url || CATEGORY_FALLBACKS[category.slug] || HERO_FALLBACK;
-
-  return appendCacheBuster(image, category.updated_at);
+  return category.image_url || CATEGORY_FALLBACKS[category.slug] || HERO_FALLBACK;
 }
 
 export function getProductImage(product) {
@@ -36,16 +25,15 @@ export function getProductImage(product) {
   // Priorité : image_url, puis première images[], puis fallback catégorie, puis fallback global
   const primary = product.image_url;
   if (primary) {
-    return appendCacheBuster(primary, product.updated_at);
+    return primary;
   }
 
   const firstExtra = product.images?.[0]?.image_url;
   if (firstExtra) {
-    return appendCacheBuster(firstExtra, product.updated_at);
+    return firstExtra;
   }
 
-  const image = CATEGORY_FALLBACKS[product.category?.slug] || HERO_FALLBACK;
-  return appendCacheBuster(image, product.updated_at);
+  return CATEGORY_FALLBACKS[product.category?.slug] || HERO_FALLBACK;
 }
 
 export function getHeroImage(product) {
