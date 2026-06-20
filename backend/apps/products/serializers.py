@@ -12,11 +12,15 @@ def _cloudinary_url(resource):
         if not getattr(cloudinary_config(), 'cloud_name', None):
             return None
 
-        url = resource.url
+        # Si le champ contient déjà une URL complète (http/https), la retourner directement
+        # Cela arrive quand public_id a été stocké comme URL complète
+        raw = str(resource)
+        if raw.startswith('http://') or raw.startswith('https://'):
+            url = raw
+        else:
+            url = resource.url
 
         # Ajouter les transformations Cloudinary pour optimiser les images
-        # f_auto: WebP/AVIF si supporté, q_auto: compression intelligente
-        # c_fit,w_1200: redimensionne à 1200px max sans recadrage
         if url and 'cloudinary.com' in url and '/upload/' in url:
             # Évite les doubles transformations
             if '/upload/c_' not in url and '/upload/f_' not in url and '/upload/q_' not in url:
@@ -204,6 +208,32 @@ class ProductAdminSerializer(serializers.ModelSerializer):
             return []
         return data
 
+    def _extract_cloudinary_public_id(self, url):
+        """Extrait le public_id Cloudinary depuis une URL complète.
+        Ex: https://res.cloudinary.com/xxx/image/upload/c_fit,.../v123/folder/file.jpg
+        → folder/file (sans extension)
+        Si l'URL n'est pas Cloudinary, retourne l'URL telle quelle.
+        """
+        if not url:
+            return url
+        if 'cloudinary.com' not in url:
+            return url
+        # Trouver /upload/ et prendre tout ce qui suit
+        marker = '/upload/'
+        idx = url.find(marker)
+        if idx == -1:
+            return url
+        after_upload = url[idx + len(marker):]
+        # Supprimer les transformations (tout ce qui précède le versionning v\d+ ou le nom)
+        import re
+        # Supprimer les transformations Cloudinary (ex: c_fit,w_1200,q_auto,f_auto/)
+        after_upload = re.sub(r'^([a-z_]+[^/]*/)+', '', after_upload)
+        # Supprimer le versionning (ex: v1234567890/)
+        after_upload = re.sub(r'^v\d+/', '', after_upload)
+        # Supprimer l'extension de fichier
+        public_id = re.sub(r'\.[^.]+$', '', after_upload)
+        return public_id
+
     def _rebuild_images(self, product, images_data_raw):
         """Supprime toutes les ProductImage existantes et les recrée
         à partir des métadonnées conservées (images_data) + nouveaux fichiers uploadés."""
@@ -228,8 +258,10 @@ class ProductAdminSerializer(serializers.ModelSerializer):
                         order=order,
                     )
             else:
-                public_id = meta.get('public_id', '')
-                if public_id:
+                raw_public_id = meta.get('public_id', '')
+                if raw_public_id:
+                    # Extraire le vrai public_id depuis l'URL complète
+                    public_id = self._extract_cloudinary_public_id(raw_public_id)
                     ProductImage.objects.create(
                         product=product,
                         image=public_id,
