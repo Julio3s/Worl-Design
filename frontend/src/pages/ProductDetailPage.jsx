@@ -21,19 +21,23 @@ function buildImagesArray(product) {
   // Union : image principale + images supplémentaires
   const result = [];
 
-  if (product.image_url) {
-    result.push({ image_url: product.image_url, order: 0 });
+  // Image principale
+  const mainImageUrl = product.image_url || product.image || '';
+  if (mainImageUrl) {
+    result.push({ image_url: mainImageUrl, order: 0 });
   }
 
-  if (product.images && product.images.length > 0) {
-    product.images.forEach((img) => {
-      if (img.image_url && img.image_url !== product.image_url) {
-        result.push(img);
+  // Images supplémentaires
+  if (product.images && Array.isArray(product.images)) {
+    product.images.forEach((img, idx) => {
+      const imgUrl = img.image_url || img.image || '';
+      if (imgUrl && imgUrl !== mainImageUrl) {
+        result.push({ image_url: imgUrl, order: idx + 1 });
       }
     });
   }
 
-  return result.length > 0 ? result : product.image_url ? [{ image_url: product.image_url, order: 0 }] : [];
+  return result;
 }
 
 export default function ProductDetailPage() {
