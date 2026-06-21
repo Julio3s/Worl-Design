@@ -26,6 +26,10 @@ const AdminCategoriesPage = lazy(() => import('./pages/admin/CategoriesPage'));
 const AdminOrdersPage = lazy(() => import('./pages/admin/OrdersPage'));
 const AdminOrderDetailPage = lazy(() => import('./pages/admin/OrderDetailPage'));
 const AdminCustomersPage = lazy(() => import('./pages/admin/CustomersPage'));
+const InfoPage = lazy(() => import('./pages/InfoPage'));
+const PaymentPage = lazy(() => import('./pages/PaymentPage'));
+const FaqPage = lazy(() => import('./pages/FaqPage'));
+const TermsPage = lazy(() => import('./pages/TermsPage'));
 
 export default function App() {
   return (
@@ -50,6 +54,10 @@ export default function App() {
                 </ProtectedRoute>
               }
             />
+            <Route path="info" element={<InfoPage />} />
+            <Route path="paiement" element={<PaymentPage />} />
+            <Route path="faq" element={<FaqPage />} />
+            <Route path="cgv" element={<TermsPage />} />
           </Route>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />

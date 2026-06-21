@@ -9,10 +9,10 @@ const FOOTER_LINKS = [
 ];
 
 const INFO_LINKS = [
-  { to: '#', label: 'Livraison' },
-  { to: '#', label: 'Paiement' },
-  { to: '#', label: 'FAQ' },
-  { to: '#', label: 'CGV' },
+  { to: '/info', label: 'À propos' },
+  { to: '/paiement', label: 'Paiement' },
+  { to: '/faq', label: 'FAQ' },
+  { to: '/cgv', label: 'CGV' },
 ];
 
 export function Footer() {
@@ -66,13 +66,13 @@ export function Footer() {
             <h4 className="text-sm font-bold text-white">Infos</h4>
             <ul className="mt-4 space-y-2">
               {INFO_LINKS.map((link) => (
-                <li key={link.label}>
-                  <a
-                    href={link.to}
+                <li key={link.to}>
+                  <Link
+                    to={link.to}
                     className="text-sm text-white/70 transition hover:text-gold"
                   >
                     {link.label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
