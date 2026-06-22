@@ -174,64 +174,79 @@ export default function HomePage() {
   return (
     <div className="min-h-screen overflow-x-hidden" style={{ backgroundColor: '#F8F5F0' }}>
       {/* ================================================================ */}
-      {/* SECTION 1 — HERO                                                  */}
+      {/* SECTION 1 — HERO — Nouveau design accrocheur                     */}
       {/* ================================================================ */}
-      <header className="relative flex min-h-[95svh] items-center overflow-hidden">
-        {/* Image de fond */}
-        <div className="absolute inset-0">
-          <img
-            src={HERO_IMAGE}
-            alt=""
-            aria-hidden="true"
-            className="h-full w-full object-cover"
-          />
-        </div>
+      <section className="relative min-h-[90svh] flex items-center overflow-hidden"
+        style={{ background: 'linear-gradient(135deg, #0F0F1A 0%, #1A1A2E 30%, #2D1B3A 60%, #1A1A2E 100%)' }}>
+        {/* Effet de particules / motifs */}
+        <div className="absolute inset-0 opacity-[0.07]" aria-hidden="true"
+          style={{
+            backgroundImage: `radial-gradient(circle at 20% 50%, #F5A623 0.5px, transparent 0.5px), 
+              radial-gradient(circle at 80% 20%, #E94560 0.5px, transparent 0.5px),
+              radial-gradient(circle at 50% 80%, #F5A623 0.5px, transparent 0.5px),
+              radial-gradient(circle at 90% 70%, #E94560 0.5px, transparent 0.5px)`,
+            backgroundSize: '60px 60px, 80px 80px, 50px 50px, 70px 70px',
+          }}
+        />
+        
+        {/* Cercle lumineux décoratif */}
+        <div className="absolute -top-40 -right-40 h-[500px] w-[500px] rounded-full opacity-10 blur-3xl" 
+          style={{ background: '#E94560' }} aria-hidden="true" />
+        <div className="absolute -bottom-40 -left-40 h-[400px] w-[400px] rounded-full opacity-10 blur-3xl" 
+          style={{ background: '#F5A623' }} aria-hidden="true" />
 
-        {/* Overlay très léger pour garder la lisibilité du texte */}
-        <div className="absolute inset-0 bg-black/10" aria-hidden="true" />
+        <div className="relative z-10 mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="max-w-3xl">
+            {/* Badge */}
+            <div className="inline-flex items-center gap-2 rounded-full border border-[#F5A623]/30 bg-[#F5A623]/10 px-4 py-1.5 text-xs font-semibold text-[#F5A623]">
+              <span className="flex h-2 w-2 rounded-full bg-[#F5A623] animate-pulse" />
+              Goodies personnalisés au Togo
+            </div>
 
-        <div className="relative z-10 mx-auto grid w-full max-w-7xl items-center gap-10 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-[1fr_480px] lg:px-8">
-          <div>
-            <h1 className="mt-6 max-w-2xl text-4xl font-extrabold leading-[1.08] text-white sm:text-5xl md:text-6xl lg:text-7xl">
-              Transformez vos idées en{' '}
-              <span className="text-[#F5A623]">objets uniques</span>
+            <h1 className="mt-8 text-4xl font-extrabold leading-[1.05] text-white sm:text-5xl md:text-6xl lg:text-7xl">
+              Votre marque mérite 
+              <span className="block mt-2" style={{ background: 'linear-gradient(135deg, #F5A623, #E94560)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                d'être remarquée
+              </span>
             </h1>
 
-            <p className="mt-7 max-w-xl text-base leading-relaxed text-white sm:text-lg">
-              Goodies personnalisés, cadeaux d'entreprise et objets promotionnels conçus sur mesure pour particuliers et professionnels.
+            <p className="mt-6 max-w-xl text-base leading-relaxed text-gray-300 sm:text-lg">
+              Des goodies personnalisés de qualité professionnelle pour vos projets, 
+              vos événements et votre marque. Conception sur mesure, fabrication rapide 
+              et livraison partout au Togo.
             </p>
 
-            <div className="mt-9 flex flex-wrap gap-4">
+            {/* Points forts */}
+            <div className="mt-8 flex flex-wrap gap-x-8 gap-y-3">
+              {['Qualité pro', 'Livraison rapide', 'Paiement mobile money', 'Satisfait ou refait'].map((item) => (
+                <div key={item} className="flex items-center gap-2">
+                  <svg className="h-4 w-4 text-[#F5A623]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span className="text-sm text-gray-300">{item}</span>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-10 flex flex-wrap gap-4">
               <Link
                 to="/products"
-                className="group inline-flex items-center gap-2 rounded-full px-7 py-4 text-sm font-bold text-white transition-all hover:opacity-90 active:scale-[0.98]"
-                style={{ backgroundColor: '#E94560' }}
+                className="group inline-flex items-center gap-2 rounded-full px-8 py-4 text-sm font-bold text-white transition-all hover:scale-105 active:scale-[0.97] shadow-lg shadow-[#E94560]/30"
+                style={{ background: 'linear-gradient(135deg, #E94560, #D63A54)' }}
               >
                 Commander maintenant
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Link>
               <Link
-                to="/products"
-                className="inline-flex items-center gap-2 rounded-full border border-white/30 px-7 py-4 text-sm font-bold text-white transition hover:border-[#F5A623] hover:text-[#F5A623]"
+                to="/info"
+                className="inline-flex items-center gap-2 rounded-full border border-white/20 px-8 py-4 text-sm font-bold text-white transition hover:border-[#F5A623] hover:text-[#F5A623]"
               >
-                Découvrir nos produits
+                En savoir plus
               </Link>
             </div>
           </div>
-
-          <div className="hidden lg:block">
-            <div className="relative mx-auto max-w-[440px] overflow-hidden rounded-3xl shadow-2xl shadow-black/30">
-              <img
-                src={HERO_IMAGE}
-                alt="Produits personnalisés WORLD DESIGN"
-                className="h-[320px] w-full object-cover sm:h-[360px] lg:h-[420px]"
-              />
-              <div className="absolute inset-0 rounded-3xl ring-1 ring-inset ring-white/10" />
-            </div>
-          </div>
         </div>
-
-      </header>
+      </section>
 
       {/* ================================================================ */}
       {/* ================================================================ */}
