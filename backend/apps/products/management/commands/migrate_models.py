@@ -3,10 +3,10 @@ from django.db import connection
 
 
 class Command(BaseCommand):
-    help = 'Create product_models table for product variants'
+    help = 'Create product_models table and add has_models field to products'
 
     def handle(self, *args, **options):
-        self.stdout.write('Creating product_models table...')
+        self.stdout.write('Setting up product models system...')
         
         with connection.cursor() as cursor:
             # Create product_models table
@@ -22,12 +22,31 @@ class Command(BaseCommand):
             """)
             self.stdout.write(self.style.SUCCESS('✓ product_models table created'))
             
-            # Create index for better performance
+            # Create index
             cursor.execute("""
                 CREATE INDEX IF NOT EXISTS idx_product_models_product_id 
                 ON product_models(product_id);
             """)
             self.stdout.write(self.style.SUCCESS('✓ Index created'))
             
+            # Add has_models column to products table
+            cursor.execute("""
+                DO $$
+                BEGIN
+                    IF NOT EXISTS (
+                        SELECT 1 FROM information_schema.columns 
+                        WHERE table_name = 'products' AND column_name = 'has_models'
+                    ) THEN
+                        ALTER TABLE products ADD COLUMN has_models BOOLEAN DEFAULT FALSE;
+                    END IF;
+                END $$;
+            """)
+            self.stdout.write(self.style.SUCCESS('✓ has_models column added to products'))
+            
         self.stdout.write(self.style.SUCCESS('✓ Migration completed successfully!'))
-        self.stdout.write('You can now add models to products via the admin interface.')
+        self.stdout.write('')
+        self.stdout.write('Usage:')
+        self.stdout.write('  1. In admin, edit a product')
+        self.stdout.write('  2. Check "Afficher les modèles" to enable models')
+        self.stdout.write('  3. Add models (numeric or alphabetic)')
+        self.stdout.write('  4. Save - models will appear on product page')

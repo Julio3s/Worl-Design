@@ -261,8 +261,8 @@ export default function ProductDetailPage() {
                   {product.description}
                 </p>
 
-                {/* Affichage des modèles dans la description */}
-                {product.models && product.models.length > 0 ? (
+                {/* Affichage des modèles dans la description - seulement si has_models est true */}
+                {product.has_models && product.models && product.models.length > 0 ? (
                   <div className="mt-4 rounded-[8px] border border-[#E0DBD5] bg-white px-4 py-3">
                     <p className="text-sm font-semibold text-text-dark mb-2">
                       Modèles disponibles :
@@ -282,8 +282,8 @@ export default function ProductDetailPage() {
                 ) : null}
               </div>
 
-            {/* Sélecteur de modèle */}
-            {product.models && product.models.length > 0 ? (
+            {/* Sélecteur de modèle - seulement si has_models est true */}
+            {product.has_models && product.models && product.models.length > 0 ? (
               <div className="rounded-[8px] border border-[#E0DBD5] bg-white px-4 py-4">
                 <label className="flex flex-col gap-2 text-sm font-medium text-text-dark">
                   <span>

@@ -125,7 +125,7 @@ class ProductDetailSerializer(serializers.ModelSerializer):
             'id', 'name', 'slug', 'description', 'price', 'stock', 'image', 'image_url',
             'images',
             'category', 'is_active', 'is_featured', 'is_customizable',
-            'customization_hint', 'models',
+            'customization_hint', 'has_models', 'models',
             'created_at', 'updated_at'
         ]
         extra_kwargs = {
@@ -166,6 +166,7 @@ class ProductAdminSerializer(serializers.ModelSerializer):
             'image', 'image_url', 'images', 'images_data',
             'category', 'category_name', 'category_slug',
             'is_active', 'is_featured', 'is_customizable', 'customization_hint',
+            'has_models',
             'models', 'models_data',
             'created_at', 'updated_at'
         ]

@@ -37,6 +37,7 @@ class Product(models.Model):
     is_featured = models.BooleanField(default=False, help_text="Show in featured section")
     is_customizable = models.BooleanField(default=False, help_text="Allow text customization")
     customization_hint = models.CharField(max_length=255, blank=True, null=True, help_text="Placeholder for customization field")
+    has_models = models.BooleanField(default=False, help_text="Afficher les modèles pour ce produit")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

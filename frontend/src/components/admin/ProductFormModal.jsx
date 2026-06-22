@@ -15,6 +15,7 @@ const EMPTY_FORM = {
   is_featured: false,
   is_customizable: false,
   customization_hint: '',
+  has_models: false,
 };
 
 function ExtraImageRow({ preview, order, onRemove }) {
@@ -75,9 +76,7 @@ export function ProductFormModal({
         is_featured: Boolean(product.is_featured),
         is_customizable: Boolean(product.is_customizable),
         customization_hint: product.customization_hint || '',
-        model_type: product.model_type || 'none',
-        model_start: product.model_start || '',
-        model_end: product.model_end || '',
+        has_models: Boolean(product.has_models),
       });
       setImagePreview(product.image_url || '');
       const imgs = (product.images || []).map((img) => ({
@@ -335,8 +334,21 @@ export function ProductFormModal({
           ) : null}
         </div>
 
-        {/* Gestion des modèles */}
         <div className="space-y-3 rounded-[8px] border border-[#E0DBD5] p-4">
+          <label className="flex items-center justify-between gap-3 text-sm font-medium text-text-dark">
+            <span>Afficher les modèles</span>
+            <input
+              type="checkbox"
+              checked={form.has_models}
+              onChange={handleChange('has_models')}
+              className="h-4 w-4 accent-accent"
+            />
+          </label>
+        </div>
+
+        {/* Gestion des modèles - seulement si has_models est coché */}
+        {form.has_models ? (
+          <div className="space-y-3 rounded-[8px] border border-[#E0DBD5] p-4">
           <span className="text-sm font-medium text-text-dark">Modèles du produit</span>
           
           {productModels.length > 0 ? (
@@ -387,7 +399,8 @@ export function ProductFormModal({
               <Plus className="h-4 w-4" />
             </button>
           </div>
-        </div>
+          </div>
+        ) : null}
 
         <div className="space-y-3">
           <span className="text-sm font-medium text-text-dark">Image principale</span>
