@@ -20,12 +20,10 @@ class Command(BaseCommand):
                         ALTER TABLE products 
                         ADD COLUMN model_type VARCHAR(10) DEFAULT 'none' 
                         CHECK (model_type IN ('none', 'numeric', 'alpha'));
-                        self.stdout.write(self.style.SUCCESS('✓ Added model_type column'))
-                    ELSE
-                        self.stdout.write(self.style.WARNING('⊘ model_type column already exists'))
                     END IF;
                 END $$;
             """)
+            self.stdout.write(self.style.SUCCESS('✓ model_type column ready'))
             
             # Add model_start column
             cursor.execute("""
@@ -36,12 +34,10 @@ class Command(BaseCommand):
                         WHERE table_name = 'products' AND column_name = 'model_start'
                     ) THEN
                         ALTER TABLE products ADD COLUMN model_start VARCHAR(3) DEFAULT NULL;
-                        self.stdout.write(self.style.SUCCESS('✓ Added model_start column'))
-                    ELSE
-                        self.stdout.write(self.style.WARNING('⊘ model_start column already exists'))
                     END IF;
                 END $$;
             """)
+            self.stdout.write(self.style.SUCCESS('✓ model_start column ready'))
             
             # Add model_end column
             cursor.execute("""
@@ -52,16 +48,12 @@ class Command(BaseCommand):
                         WHERE table_name = 'products' AND column_name = 'model_end'
                     ) THEN
                         ALTER TABLE products ADD COLUMN model_end VARCHAR(3) DEFAULT NULL;
-                        self.stdout.write(self.style.SUCCESS('✓ Added model_end column'))
-                    ELSE
-                        self.stdout.write(self.style.WARNING('⊘ model_end column already exists'))
                     END IF;
                 END $$;
             """)
+            self.stdout.write(self.style.SUCCESS('✓ model_end column ready'))
             
             # Update existing products
-            cursor.execute("""
-                UPDATE products SET model_type = 'none' WHERE model_type IS NULL;
-            """)
+            cursor.execute("UPDATE products SET model_type = 'none' WHERE model_type IS NULL;")
             
         self.stdout.write(self.style.SUCCESS('✓ Migration completed successfully!'))
