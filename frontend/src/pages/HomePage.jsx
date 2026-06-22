@@ -23,7 +23,7 @@ import { getFeaturedProducts, getCategories } from '../api/catalog';
 import { getCategoryImage, getProductImage } from '../utils/media';
 
 // ─── Images ───────────────────────────────────────────────────────
-const HERO_IMAGE = '/images/hero-products-personalized.jpg';
+const HERO_IMAGE = '/images/hero-bg.jpg';
 
 const STEPS = [
   {
@@ -176,7 +176,7 @@ export default function HomePage() {
       {/* ================================================================ */}
       {/* SECTION 1 — HERO — Image de fond défilante                       */}
       {/* ================================================================ */}
-      <section className="relative min-h-[90svh] flex items-center overflow-hidden">
+      <section className="relative min-h-[70svh] flex items-center overflow-hidden">
         {/* Image de fond avec effet défilant */}
         <div className="absolute inset-0">
           <img
