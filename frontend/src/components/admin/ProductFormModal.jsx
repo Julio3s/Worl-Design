@@ -15,6 +15,9 @@ const EMPTY_FORM = {
   is_featured: false,
   is_customizable: false,
   customization_hint: '',
+  model_type: 'none',
+  model_start: '',
+  model_end: '',
 };
 
 function ExtraImageRow({ preview, order, onRemove }) {
@@ -72,6 +75,9 @@ export function ProductFormModal({
         is_featured: Boolean(product.is_featured),
         is_customizable: Boolean(product.is_customizable),
         customization_hint: product.customization_hint || '',
+        model_type: product.model_type || 'none',
+        model_start: product.model_start || '',
+        model_end: product.model_end || '',
       });
       setImagePreview(product.image_url || '');
       const imgs = (product.images || []).map((img) => ({
@@ -308,6 +314,46 @@ export function ProductFormModal({
                 className="h-11 rounded-[8px] border border-[#E0DBD5] px-3 outline-none transition focus:border-accent"
               />
             </label>
+          ) : null}
+        </div>
+
+        {/* Configuration des modèles */}
+        <div className="space-y-3 rounded-[8px] border border-[#E0DBD5] p-4">
+          <label className="flex flex-col gap-2 text-sm font-medium text-text-dark">
+            <span>Type de modèle</span>
+            <select
+              value={form.model_type}
+              onChange={handleChange('model_type')}
+              className="h-11 rounded-[8px] border border-[#E0DBD5] bg-white px-3 outline-none transition focus:border-accent"
+            >
+              <option value="none">Aucun modèle</option>
+              <option value="numeric">Numérique (1-100)</option>
+              <option value="alpha">Alphabétique (A-Z)</option>
+            </select>
+          </label>
+          {form.model_type !== 'none' ? (
+            <div className="grid gap-3 sm:grid-cols-2">
+              <label className="flex flex-col gap-2 text-sm font-medium text-text-dark">
+                <span>Début</span>
+                <input
+                  value={form.model_start}
+                  onChange={handleChange('model_start')}
+                  placeholder={form.model_type === 'numeric' ? 'Ex: 1' : 'Ex: A'}
+                  maxLength={3}
+                  className="h-11 rounded-[8px] border border-[#E0DBD5] px-3 outline-none transition focus:border-accent"
+                />
+              </label>
+              <label className="flex flex-col gap-2 text-sm font-medium text-text-dark">
+                <span>Fin</span>
+                <input
+                  value={form.model_end}
+                  onChange={handleChange('model_end')}
+                  placeholder={form.model_type === 'numeric' ? 'Ex: 100' : 'Ex: Z'}
+                  maxLength={3}
+                  className="h-11 rounded-[8px] border border-[#E0DBD5] px-3 outline-none transition focus:border-accent"
+                />
+              </label>
+            </div>
           ) : null}
         </div>
 

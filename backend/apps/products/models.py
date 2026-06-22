@@ -26,6 +26,12 @@ class Category(models.Model):
 
 class Product(models.Model):
     """Product model with all required fields."""
+    MODEL_TYPES = [
+        ('none', 'Aucun modèle'),
+        ('numeric', 'Numérique (1-100)'),
+        ('alpha', 'Alphabétique (A-Z)'),
+    ]
+
     name = models.CharField(max_length=255)
     slug = models.SlugField(unique=True, blank=True)
     description = models.TextField()
@@ -37,6 +43,9 @@ class Product(models.Model):
     is_featured = models.BooleanField(default=False, help_text="Show in featured section")
     is_customizable = models.BooleanField(default=False, help_text="Allow text customization")
     customization_hint = models.CharField(max_length=255, blank=True, null=True, help_text="Placeholder for customization field")
+    model_type = models.CharField(max_length=10, choices=MODEL_TYPES, default='none', help_text="Type de modèle pour les produits personnalisables")
+    model_start = models.CharField(max_length=3, blank=True, null=True, help_text="Début de la plage (ex: 1 ou A)")
+    model_end = models.CharField(max_length=3, blank=True, null=True, help_text="Fin de la plage (ex: 100 ou Z)")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -48,6 +57,22 @@ class Product(models.Model):
         if not self.slug:
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)
+
+    def get_model_list(self):
+        """Generate list of available models based on configuration."""
+        if self.model_type == 'none' or not self.model_start or not self.model_end:
+            return []
+        
+        try:
+            if self.model_type == 'numeric':
+                start, end = int(self.model_start), int(self.model_end)
+                return [str(i) for i in range(start, end + 1)]
+            elif self.model_type == 'alpha':
+                start, end = self.model_start.upper(), self.model_end.upper()
+                return [chr(i) for i in range(ord(start), ord(end) + 1)]
+        except (ValueError, TypeError):
+            return []
+        return []
 
     def __str__(self):
         return self.name

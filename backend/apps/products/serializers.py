@@ -12,15 +12,10 @@ def _cloudinary_url(resource):
         if not getattr(cloudinary_config(), 'cloud_name', None):
             return None
 
-        # Si le champ contient déjà une URL complète (http/https), la retourner directement
-        # Cela arrive quand public_id a été stocké comme URL complète dans la DB
         raw = str(resource)
         if raw.startswith('http://') or raw.startswith('https://'):
             return raw
 
-        # Retourne l'URL brute. Les optimisations sont faites côté client
-        # dans media.js pour éviter les doubles transformations et permettre
-        # des tailles adaptées selon l'usage (catalogue, détail, etc.)
         return resource.url
     except Exception:
         return None
@@ -116,6 +111,7 @@ class ProductDetailSerializer(serializers.ModelSerializer):
     category = CategorySerializer(read_only=True)
     image_url = serializers.SerializerMethodField()
     images = ProductImageSerializer(many=True, read_only=True)
+    model_list = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
@@ -123,7 +119,8 @@ class ProductDetailSerializer(serializers.ModelSerializer):
             'id', 'name', 'slug', 'description', 'price', 'stock', 'image', 'image_url',
             'images',
             'category', 'is_active', 'is_featured', 'is_customizable',
-            'customization_hint', 'created_at', 'updated_at'
+            'customization_hint', 'model_type', 'model_start', 'model_end', 'model_list',
+            'created_at', 'updated_at'
         ]
         extra_kwargs = {
             'image': {'write_only': True, 'required': False, 'allow_null': True},
@@ -131,6 +128,9 @@ class ProductDetailSerializer(serializers.ModelSerializer):
 
     def get_image_url(self, obj):
         return _cloudinary_url(obj.image)
+
+    def get_model_list(self, obj):
+        return obj.get_model_list()
 
 
 class ProductAdminSerializer(serializers.ModelSerializer):
@@ -146,6 +146,7 @@ class ProductAdminSerializer(serializers.ModelSerializer):
         required=False,
         allow_blank=True,
     )
+    model_list = serializers.SerializerMethodField()
 
     category_name = serializers.SerializerMethodField()
     category_slug = serializers.SerializerMethodField()
@@ -157,12 +158,16 @@ class ProductAdminSerializer(serializers.ModelSerializer):
             'image', 'image_url', 'images', 'images_data',
             'category', 'category_name', 'category_slug',
             'is_active', 'is_featured', 'is_customizable', 'customization_hint',
+            'model_type', 'model_start', 'model_end', 'model_list',
             'created_at', 'updated_at'
         ]
         extra_kwargs = {
             'slug': {'required': False, 'allow_blank': True},
             'image': {'write_only': True, 'required': False, 'allow_null': True},
             'customization_hint': {'required': False, 'allow_blank': True, 'allow_null': True},
+            'model_type': {'required': False},
+            'model_start': {'required': False, 'allow_blank': True, 'allow_null': True},
+            'model_end': {'required': False, 'allow_blank': True, 'allow_null': True},
         }
 
     def get_image_url(self, obj):
@@ -174,6 +179,9 @@ class ProductAdminSerializer(serializers.ModelSerializer):
     def get_category_slug(self, obj):
         return obj.category.slug if obj.category else None
 
+    def get_model_list(self, obj):
+        return obj.get_model_list()
+
     def create(self, validated_data):
         images_data_raw = validated_data.pop('images_data', None)
         product = super().create(validated_data)
@@ -183,7 +191,6 @@ class ProductAdminSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         images_data_raw = validated_data.pop('images_data', None)
         # Don't regenerate slug on update to avoid unique constraint conflicts
-        # The slug is already set on creation and should not change
         validated_data.pop('name', None)
         validated_data.pop('slug', None)
         product = super().update(instance, validated_data)
@@ -204,8 +211,7 @@ class ProductAdminSerializer(serializers.ModelSerializer):
         return data
 
     def _rebuild_images(self, product, images_data_raw):
-        """Supprime toutes les ProductImage existantes et les recrée
-        à partir des métadonnées conservées (images_data) + nouveaux fichiers uploadés."""
+        """Supprime toutes les ProductImage existantes et les recrée."""
         request = self.context.get('request')
         images_meta = self._parse_images_data(images_data_raw)
 

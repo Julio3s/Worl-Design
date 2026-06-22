@@ -52,6 +52,7 @@ export default function ProductDetailPage() {
   const [customFile, setCustomFile] = useState(null);
   const [customFileError, setCustomFileError] = useState('');
   const [addedFeedback, setAddedFeedback] = useState('');
+  const [selectedModel, setSelectedModel] = useState('');
 
   usePageTitle(product?.name || 'Produit');
 
@@ -260,6 +261,34 @@ export default function ProductDetailPage() {
                   {product.description}
                 </p>
               </div>
+
+            {/* Sélecteur de modèle */}
+            {product.model_list && product.model_list.length > 0 ? (
+              <div className="rounded-[8px] border border-[#E0DBD5] bg-white px-4 py-4">
+                <label className="flex flex-col gap-2 text-sm font-medium text-text-dark">
+                  <span>
+                    Choisissez votre modèle{' '}
+                    <span className="text-accent font-semibold">(obligatoire)</span>
+                  </span>
+                  <div className="mt-1 flex flex-wrap gap-2">
+                    {product.model_list.map((model) => (
+                      <button
+                        key={model}
+                        type="button"
+                        onClick={() => setSelectedModel(model)}
+                        className={`flex h-10 w-10 items-center justify-center rounded-lg border text-sm font-bold transition ${
+                          selectedModel === model
+                            ? 'border-accent bg-accent text-white'
+                            : 'border-[#E0DBD5] text-text-dark hover:border-accent hover:text-accent'
+                        }`}
+                      >
+                        {model}
+                      </button>
+                    ))}
+                  </div>
+                </label>
+              </div>
+            ) : null}
 
             {isCustomizable ? (
               <div className="space-y-4 rounded-[8px] border border-[#E0DBD5] bg-white px-4 py-4 w-full min-w-0 overflow-hidden">
