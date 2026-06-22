@@ -4,14 +4,14 @@ export default function TermsPage() {
   usePageTitle('Conditions générales de vente — WORLD DESIGN');
 
   return (
-    <div className="min-h-screen bg-cream">
+    <div className="min-h-screen bg-primary">
       {/* Hero */}
-      <section className="bg-primary py-16 text-white sm:py-20">
+      <section className="bg-primary-light py-16 text-white sm:py-20">
         <div className="mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
           <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl">
             Conditions générales de vente
           </h1>
-          <p className="mx-auto mt-3 max-w-xl text-lg text-white/80">
+          <p className="mx-auto mt-3 max-w-xl text-lg text-white/60">
             Dernière mise à jour : juin 2026
           </p>
         </div>
@@ -21,19 +21,19 @@ export default function TermsPage() {
         <div className="mx-auto max-w-3xl space-y-10">
           {/* 1 */}
           <div>
-            <h2 className="text-xl font-bold text-primary">1. Société</h2>
+            <h2 className="text-xl font-bold text-text-dark">1. Société</h2>
             <p className="mt-2 text-base leading-7 text-text-muted">
               Les présentes Conditions Générales de Vente (CGV) régissent les relations contractuelles entre 
-              <strong> WORLD DESIGN WD SARL U</strong>, société immatriculée au Registre du Commerce et du 
+              <strong className="text-text-dark"> WORLD DESIGN WD SARL U</strong>, société immatriculée au Registre du Commerce et du 
               Crédit Mobilier du Togo sous le numéro RC-TOGO-LOME-2023-B-1234, dont le siège social est 
               situé à Lomé, Togo, et toute personne physique ou morale effectuant une commande sur le 
-              site <strong>www.world-design.tg</strong> (ci-après « le Client »).
+              site <strong className="text-text-dark">www.world-design.tg</strong> (ci-après « le Client »).
             </p>
           </div>
 
           {/* 2 */}
           <div>
-            <h2 className="text-xl font-bold text-primary">2. Champ d'application</h2>
+            <h2 className="text-xl font-bold text-text-dark">2. Champ d'application</h2>
             <p className="mt-2 text-base leading-7 text-text-muted">
               Les présentes CGV s'appliquent à toutes les ventes de produits personnalisés et non 
               personnalisés réalisées via le site internet, par correspondance ou en point de vente. 
@@ -44,7 +44,7 @@ export default function TermsPage() {
 
           {/* 3 */}
           <div>
-            <h2 className="text-xl font-bold text-primary">3. Produits et personnalisation</h2>
+            <h2 className="text-xl font-bold text-text-dark">3. Produits et personnalisation</h2>
             <p className="mt-2 text-base leading-7 text-text-muted">
               Les produits proposés sont décrits sur le site avec les caractéristiques essentielles 
               (matière, dimensions, couleurs disponibles). Les visuels de personnalisation (textes, 
@@ -62,7 +62,7 @@ export default function TermsPage() {
 
           {/* 4 */}
           <div>
-            <h2 className="text-xl font-bold text-primary">4. Prix</h2>
+            <h2 className="text-xl font-bold text-text-dark">4. Prix</h2>
             <p className="mt-2 text-base leading-7 text-text-muted">
               Les prix sont indiqués en Francs CFA (XOF) toutes taxes comprises, sauf indication 
               contraire. Les frais de livraison sont calculés en fonction du poids, du volume et 
@@ -74,7 +74,7 @@ export default function TermsPage() {
 
           {/* 5 */}
           <div>
-            <h2 className="text-xl font-bold text-primary">5. Commande</h2>
+            <h2 className="text-xl font-bold text-text-dark">5. Commande</h2>
             <p className="mt-2 text-base leading-7 text-text-muted">
               La commande est réputée acceptée après confirmation de disponibilité des produits et 
               validation du paiement. WORLD DESIGN confirme la commande par email. En cas 
@@ -85,7 +85,7 @@ export default function TermsPage() {
 
           {/* 6 */}
           <div>
-            <h2 className="text-xl font-bold text-primary">6. Paiement</h2>
+            <h2 className="text-xl font-bold text-text-dark">6. Paiement</h2>
             <p className="mt-2 text-base leading-7 text-text-muted">
               Le paiement est exigible immédiatement à la commande, sauf accord spécifique 
               (paiement à la livraison). Les moyens acceptés sont :
@@ -99,7 +99,7 @@ export default function TermsPage() {
 
           {/* 7 */}
           <div>
-            <h2 className="text-xl font-bold text-primary">7. Livraison</h2>
+            <h2 className="text-xl font-bold text-text-dark">7. Livraison</h2>
             <p className="mt-2 text-base leading-7 text-text-muted">
               Les délais de livraison sont donnés à titre indicatif : 5 à 10 jours ouvrés au Togo 
               après validation de la commande. En cas de retard indépendant de notre volonté 
@@ -111,12 +111,12 @@ export default function TermsPage() {
 
           {/* 8 */}
           <div>
-            <h2 className="text-xl font-bold text-primary">8. Rétractation et retour</h2>
+            <h2 className="text-xl font-bold text-text-dark">8. Rétractation et retour</h2>
             <p className="mt-2 text-base leading-7 text-text-muted">
               Conformément à l'article 250 du code des obligations du Togo pour les biens confectionnés 
               selon les spécifications du consommateur (produits personnalisés), le droit de rétractation 
               ne s'applique pas. En cas de défaut de fabrication ou de non-conformité avérée, le Client 
-              dispose d'un délai de <strong>7 jours ouvrés</strong> à compter de la réception pour 
+              dispose d'un délai de <strong className="text-text-dark">7 jours ouvrés</strong> à compter de la réception pour 
               formuler une réclamation, accompagnée d'une photo justificative. WORLD DESIGN s'engage 
               à proposer une solution adaptée (reprise, avoir ou remboursement) sous 48 heures ouvrées.
             </p>
@@ -124,7 +124,7 @@ export default function TermsPage() {
 
           {/* 9 */}
           <div>
-            <h2 className="text-xl font-bold text-primary">9. Données personnelles</h2>
+            <h2 className="text-xl font-bold text-text-dark">9. Données personnelles</h2>
             <p className="mt-2 text-base leading-7 text-text-muted">
               Les informations collectées lors de la commande sont nécessaires au traitement de 
               celle-ci et à la facturation. Elles sont strictement confidentielles et ne sont 
@@ -137,7 +137,7 @@ export default function TermsPage() {
 
           {/* 10 */}
           <div>
-            <h2 className="text-xl font-bold text-primary">10. Propriété intellectuelle</h2>
+            <h2 className="text-xl font-bold text-text-dark">10. Propriété intellectuelle</h2>
             <p className="mt-2 text-base leading-7 text-text-muted">
               Les contenus du site (textes, images, logos, marques) sont la propriété exclusive de 
               WORLD DESIGN ou de ses partenaires. Toute reproduction, distribution ou utilisation 
@@ -148,7 +148,7 @@ export default function TermsPage() {
 
           {/* 11 */}
           <div>
-            <h2 className="text-xl font-bold text-primary">11. Responsabilité</h2>
+            <h2 className="text-xl font-bold text-text-dark">11. Responsabilité</h2>
             <p className="mt-2 text-base leading-7 text-text-muted">
               WORLD DESIGN s'engage à apporter tout le soin nécessaire à la réalisation des commandes. 
               En aucun cas la responsabilité de WORLD DESIGN ne pourra être engagée pour des dommages 
@@ -160,7 +160,7 @@ export default function TermsPage() {
 
           {/* 12 */}
           <div>
-            <h2 className="text-xl font-bold text-primary">12. Litiges</h2>
+            <h2 className="text-xl font-bold text-text-dark">12. Litiges</h2>
             <p className="mt-2 text-base leading-7 text-text-muted">
               Les présentes CGV sont soumises au droit togolais. En cas de litige, les parties 
               s'engagent à rechercher une solution amiable avant toute action contentieuse. 
@@ -170,14 +170,14 @@ export default function TermsPage() {
           </div>
 
           {/* Contact */}
-          <div className="rounded-2xl border border-primary/10 bg-white p-6 text-center">
+          <div className="rounded-2xl border border-border bg-surface p-6 text-center">
             <p className="text-sm text-text-muted">
               Pour toute question relative à ces conditions, vous pouvez nous contacter :
             </p>
-            <p className="mt-2 text-sm font-semibold text-primary">
+            <p className="mt-2 text-sm font-semibold text-text-dark">
               Email : Worlddesign45@gmail.com
             </p>
-            <p className="text-sm font-semibold text-primary">
+            <p className="text-sm font-semibold text-text-dark">
               WhatsApp : +228 97 08 54 24
             </p>
           </div>

@@ -104,10 +104,10 @@ const FAQ = [
 
 function FaqGroup({ group, isOpen, onToggle }) {
   return (
-    <div className="overflow-hidden rounded-2xl border border-primary/10 bg-white">
+    <div className="overflow-hidden rounded-2xl border border-border bg-surface">
       <button
         onClick={onToggle}
-        className="flex w-full items-center justify-between bg-primary/5 px-5 py-4 text-left font-bold text-primary transition hover:bg-primary/10 sm:px-6"
+        className="flex w-full items-center justify-between bg-primary-light px-5 py-4 text-left font-bold text-text-dark transition hover:bg-surface-hover sm:px-6"
         aria-expanded={isOpen}
       >
         {group.q}
@@ -120,13 +120,13 @@ function FaqGroup({ group, isOpen, onToggle }) {
         </span>
       </button>
       <div
-        className={`space-y-0 divide-y divide-primary/5 transition-all duration-300 ${
+        className={`space-y-0 divide-y divide-border transition-all duration-300 ${
           isOpen ? 'block' : 'hidden'
         }`}
       >
         {group.items.map((item, i) => (
           <details key={i} className="group">
-            <summary className="flex cursor-pointer items-center justify-between px-5 py-4 text-sm font-semibold text-primary transition hover:text-accent sm:px-6">
+            <summary className="flex cursor-pointer items-center justify-between px-5 py-4 text-sm font-semibold text-text-dark transition hover:text-accent sm:px-6">
               {item.q}
               <span className="ml-4 shrink-0 text-accent transition group-open:rotate-90">›</span>
             </summary>
@@ -145,25 +145,25 @@ export default function FaqPage() {
   const [active, setActive] = useState(null);
 
   return (
-    <div className="min-h-screen bg-cream">
+    <div className="min-h-screen bg-primary">
       {/* Hero */}
-      <section className="bg-primary py-16 text-white sm:py-20">
+      <section className="bg-primary-light py-16 text-white sm:py-20">
         <div className="mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
           <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl">
             Questions fréquentes
           </h1>
-          <p className="mx-auto mt-3 max-w-xl text-lg text-white/80">
+          <p className="mx-auto mt-3 max-w-xl text-lg text-white/60">
             Tout ce que vous devez savoir avant, pendant et après votre commande.
           </p>
         </div>
       </section>
 
       <section className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
-        <div className="mb-8 flex items-center gap-2 rounded-xl border border-primary/10 bg-white px-4 py-3 text-text-muted">
+        <div className="mb-8 flex items-center gap-2 rounded-xl border border-border bg-surface px-4 py-3 text-text-muted">
           <Search className="h-5 w-5 text-accent" />
           <span className="text-sm">
-            Utilisez <kbd className="rounded border bg-cream px-1.5 py-0.5 text-xs">Ctrl+F</kbd> ou{' '}
-            <kbd className="rounded border bg-cream px-1.5 py-0.5 text-xs">⌘F</kbd> pour rechercher
+            Utilisez <kbd className="rounded border border-border bg-primary-light px-1.5 py-0.5 text-xs">Ctrl+F</kbd> ou{' '}
+            <kbd className="rounded border border-border bg-primary-light px-1.5 py-0.5 text-xs">⌘F</kbd> pour rechercher
             dans la page
           </span>
         </div>
@@ -179,9 +179,9 @@ export default function FaqPage() {
           ))}
         </div>
 
-        <div className="mt-10 rounded-2xl bg-primary p-6 text-center text-white sm:p-8">
+        <div className="mt-10 rounded-2xl bg-primary-light p-6 text-center text-white sm:p-8">
           <h3 className="text-lg font-bold">Vous ne trouvez pas votre réponse ?</h3>
-          <p className="mt-2 text-sm text-white/80">
+          <p className="mt-2 text-sm text-white/60">
             Notre équipe répond à toutes vos questions, du lundi au samedi, sous 24h maximum.
           </p>
           <div className="mt-5 flex flex-wrap justify-center gap-4">
