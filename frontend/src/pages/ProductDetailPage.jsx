@@ -260,6 +260,26 @@ export default function ProductDetailPage() {
                 <p className="max-w-2xl text-sm leading-5 font-semibold text-text-muted sm:text-base">
                   {product.description}
                 </p>
+
+                {/* Affichage des modèles dans la description */}
+                {product.models && product.models.length > 0 ? (
+                  <div className="mt-4 rounded-[8px] border border-[#E0DBD5] bg-white px-4 py-3">
+                    <p className="text-sm font-semibold text-text-dark mb-2">
+                      Modèles disponibles :
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {product.models.map((model) => (
+                        <span
+                          key={model.id}
+                          className="inline-flex items-center gap-1 rounded-full bg-[#F8F5F0] px-3 py-1.5 text-xs font-semibold text-text-dark border border-[#E0DBD5]"
+                        >
+                          <span className="text-accent">#</span>
+                          {model.model_value}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                ) : null}
               </div>
 
             {/* Sélecteur de modèle */}
