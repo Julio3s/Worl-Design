@@ -3,57 +3,31 @@ from django.db import connection
 
 
 class Command(BaseCommand):
-    help = 'Add model_type, model_start, model_end fields to products table'
+    help = 'Create product_models table for product variants'
 
     def handle(self, *args, **options):
-        self.stdout.write('Adding model fields to products table...')
+        self.stdout.write('Creating product_models table...')
         
         with connection.cursor() as cursor:
-            # Add model_type column
+            # Create product_models table
             cursor.execute("""
-                DO $$
-                BEGIN
-                    IF NOT EXISTS (
-                        SELECT 1 FROM information_schema.columns 
-                        WHERE table_name = 'products' AND column_name = 'model_type'
-                    ) THEN
-                        ALTER TABLE products 
-                        ADD COLUMN model_type VARCHAR(10) DEFAULT 'none' 
-                        CHECK (model_type IN ('none', 'numeric', 'alpha'));
-                    END IF;
-                END $$;
+                CREATE TABLE IF NOT EXISTS product_models (
+                    id SERIAL PRIMARY KEY,
+                    product_id INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+                    model_type VARCHAR(10) NOT NULL CHECK (model_type IN ('numeric', 'alpha')),
+                    model_value VARCHAR(50) NOT NULL,
+                    display_order INTEGER NOT NULL DEFAULT 0,
+                    UNIQUE(product_id, model_value)
+                );
             """)
-            self.stdout.write(self.style.SUCCESS('✓ model_type column ready'))
+            self.stdout.write(self.style.SUCCESS('✓ product_models table created'))
             
-            # Add model_start column
+            # Create index for better performance
             cursor.execute("""
-                DO $$
-                BEGIN
-                    IF NOT EXISTS (
-                        SELECT 1 FROM information_schema.columns 
-                        WHERE table_name = 'products' AND column_name = 'model_start'
-                    ) THEN
-                        ALTER TABLE products ADD COLUMN model_start VARCHAR(3) DEFAULT NULL;
-                    END IF;
-                END $$;
+                CREATE INDEX IF NOT EXISTS idx_product_models_product_id 
+                ON product_models(product_id);
             """)
-            self.stdout.write(self.style.SUCCESS('✓ model_start column ready'))
-            
-            # Add model_end column
-            cursor.execute("""
-                DO $$
-                BEGIN
-                    IF NOT EXISTS (
-                        SELECT 1 FROM information_schema.columns 
-                        WHERE table_name = 'products' AND column_name = 'model_end'
-                    ) THEN
-                        ALTER TABLE products ADD COLUMN model_end VARCHAR(3) DEFAULT NULL;
-                    END IF;
-                END $$;
-            """)
-            self.stdout.write(self.style.SUCCESS('✓ model_end column ready'))
-            
-            # Update existing products
-            cursor.execute("UPDATE products SET model_type = 'none' WHERE model_type IS NULL;")
+            self.stdout.write(self.style.SUCCESS('✓ Index created'))
             
         self.stdout.write(self.style.SUCCESS('✓ Migration completed successfully!'))
+        self.stdout.write('You can now add models to products via the admin interface.')

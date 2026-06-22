@@ -135,9 +135,11 @@ export default function ProductsPage() {
         is_featured: !product.is_featured,
         is_customizable: product.is_customizable,
         customization_hint: product.customization_hint || '',
-        model_type: product.model_type || 'none',
-        model_start: product.model_start || '',
-        model_end: product.model_end || '',
+        modelsData: product.models ? JSON.stringify(product.models.map(m => ({
+          model_type: m.model_type,
+          model_value: m.model_value,
+          display_order: m.display_order,
+        }))) : '',
         imagesData: (product.images || []).map((img, idx) => ({
           public_id: img.image_url || '',
           order: idx,

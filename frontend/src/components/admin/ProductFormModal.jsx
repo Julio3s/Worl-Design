@@ -15,9 +15,6 @@ const EMPTY_FORM = {
   is_featured: false,
   is_customizable: false,
   customization_hint: '',
-  model_type: 'none',
-  model_start: '',
-  model_end: '',
 };
 
 function ExtraImageRow({ preview, order, onRemove }) {
@@ -56,6 +53,9 @@ export function ProductFormModal({
   const [removedImageIds, setRemovedImageIds] = useState([]);
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [productModels, setProductModels] = useState([]);
+  const [newModelType, setNewModelType] = useState('numeric');
+  const [newModelValue, setNewModelValue] = useState('');
 
   const isEditing = Boolean(product?.id);
 
@@ -161,6 +161,23 @@ export function ProductFormModal({
     setExistingImages((prev) => prev.filter((img) => img.id !== imageId));
   }, []);
 
+  const handleAddModel = () => {
+    if (!newModelValue.trim()) return;
+    setProductModels((prev) => [
+      ...prev,
+      {
+        model_type: newModelType,
+        model_value: newModelValue.trim(),
+        display_order: prev.length,
+      },
+    ]);
+    setNewModelValue('');
+  };
+
+  const handleRemoveModel = (index) => {
+    setProductModels((prev) => prev.filter((_, i) => i !== index));
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError('');
@@ -188,6 +205,7 @@ export function ProductFormModal({
         imageFile,
         imagesData,
         newImageFiles: newFiles,
+        modelsData: JSON.stringify(productModels),
       });
       onClose();
     } catch (caughtError) {
@@ -317,44 +335,58 @@ export function ProductFormModal({
           ) : null}
         </div>
 
-        {/* Configuration des modèles */}
+        {/* Gestion des modèles */}
         <div className="space-y-3 rounded-[8px] border border-[#E0DBD5] p-4">
-          <label className="flex flex-col gap-2 text-sm font-medium text-text-dark">
-            <span>Type de modèle</span>
-            <select
-              value={form.model_type}
-              onChange={handleChange('model_type')}
-              className="h-11 rounded-[8px] border border-[#E0DBD5] bg-white px-3 outline-none transition focus:border-accent"
-            >
-              <option value="none">Aucun modèle</option>
-              <option value="numeric">Numérique (1-100)</option>
-              <option value="alpha">Alphabétique (A-Z)</option>
-            </select>
-          </label>
-          {form.model_type !== 'none' ? (
-            <div className="grid gap-3 sm:grid-cols-2">
-              <label className="flex flex-col gap-2 text-sm font-medium text-text-dark">
-                <span>Début</span>
-                <input
-                  value={form.model_start}
-                  onChange={handleChange('model_start')}
-                  placeholder={form.model_type === 'numeric' ? 'Ex: 1' : 'Ex: A'}
-                  maxLength={3}
-                  className="h-11 rounded-[8px] border border-[#E0DBD5] px-3 outline-none transition focus:border-accent"
-                />
-              </label>
-              <label className="flex flex-col gap-2 text-sm font-medium text-text-dark">
-                <span>Fin</span>
-                <input
-                  value={form.model_end}
-                  onChange={handleChange('model_end')}
-                  placeholder={form.model_type === 'numeric' ? 'Ex: 100' : 'Ex: Z'}
-                  maxLength={3}
-                  className="h-11 rounded-[8px] border border-[#E0DBD5] px-3 outline-none transition focus:border-accent"
-                />
-              </label>
+          <span className="text-sm font-medium text-text-dark">Modèles du produit</span>
+          
+          {productModels.length > 0 ? (
+            <div className="grid gap-2 sm:grid-cols-2">
+              {productModels.map((model, index) => (
+                <div key={index} className="flex items-center gap-2 rounded-[8px] border border-[#E0DBD5] bg-white px-3 py-2">
+                  <span className="flex-1 text-sm text-text-dark">
+                    {model.model_type === 'numeric' ? '#' : ''}{model.model_value}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveModel(index)}
+                    className="inline-flex h-7 w-7 items-center justify-center rounded-full text-accent transition hover:bg-[#FEE2E2]"
+                    aria-label="Supprimer ce modèle"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              ))}
             </div>
-          ) : null}
+          ) : (
+            <p className="text-xs text-text-muted">Aucun modèle. Ajoutez-en pour permettre au client de choisir.</p>
+          )}
+
+          <div className="flex flex-wrap gap-2">
+            <select
+              value={newModelType}
+              onChange={(e) => setNewModelType(e.target.value)}
+              className="h-10 rounded-[8px] border border-[#E0DBD5] bg-white px-3 text-sm outline-none transition focus:border-accent"
+            >
+              <option value="numeric">Numérique</option>
+              <option value="alpha">Alphabétique</option>
+            </select>
+            <input
+              type="text"
+              value={newModelValue}
+              onChange={(e) => setNewModelValue(e.target.value)}
+              placeholder="Valeur (ex: 1, 2, A, B...)"
+              maxLength={50}
+              className="h-10 flex-1 rounded-[8px] border border-[#E0DBD5] px-3 text-sm outline-none transition focus:border-accent"
+              onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddModel())}
+            />
+            <button
+              type="button"
+              onClick={handleAddModel}
+              className="inline-flex h-10 items-center justify-center rounded-full bg-accent px-4 text-sm font-semibold text-white transition hover:opacity-95"
+            >
+              <Plus className="h-4 w-4" />
+            </button>
+          </div>
         </div>
 
         <div className="space-y-3">

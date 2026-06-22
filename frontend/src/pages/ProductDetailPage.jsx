@@ -263,7 +263,7 @@ export default function ProductDetailPage() {
               </div>
 
             {/* Sélecteur de modèle */}
-            {product.model_list && product.model_list.length > 0 ? (
+            {product.models && product.models.length > 0 ? (
               <div className="rounded-[8px] border border-[#E0DBD5] bg-white px-4 py-4">
                 <label className="flex flex-col gap-2 text-sm font-medium text-text-dark">
                   <span>
@@ -271,18 +271,18 @@ export default function ProductDetailPage() {
                     <span className="text-accent font-semibold">(obligatoire)</span>
                   </span>
                   <div className="mt-1 flex flex-wrap gap-2">
-                    {product.model_list.map((model) => (
+                    {product.models.map((model) => (
                       <button
-                        key={model}
+                        key={model.id}
                         type="button"
-                        onClick={() => setSelectedModel(model)}
+                        onClick={() => setSelectedModel(model.model_value)}
                         className={`flex h-10 w-10 items-center justify-center rounded-lg border text-sm font-bold transition ${
-                          selectedModel === model
+                          selectedModel === model.model_value
                             ? 'border-accent bg-accent text-white'
                             : 'border-[#E0DBD5] text-text-dark hover:border-accent hover:text-accent'
                         }`}
                       >
-                        {model}
+                        {model.model_type === 'numeric' ? '#' : ''}{model.model_value}
                       </button>
                     ))}
                   </div>
