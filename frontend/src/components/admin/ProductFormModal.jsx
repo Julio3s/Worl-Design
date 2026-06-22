@@ -160,6 +160,38 @@ export function ProductFormModal({
     setExistingImages((prev) => prev.filter((img) => img.id !== imageId));
   }, []);
 
+  const generateModelsFromRange = (type, start, end) => {
+    if (!start || !end) return;
+    
+    const models = [];
+    if (type === 'numeric') {
+      const startNum = parseInt(start, 10);
+      const endNum = parseInt(end, 10);
+      if (!isNaN(startNum) && !isNaN(endNum) && startNum <= endNum) {
+        for (let i = startNum; i <= endNum; i++) {
+          models.push({
+            model_type: 'numeric',
+            model_value: String(i),
+            display_order: i - startNum,
+          });
+        }
+      }
+    } else if (type === 'alpha') {
+      const startChar = start.toUpperCase().charCodeAt(0);
+      const endChar = end.toUpperCase().charCodeAt(0);
+      if (startChar >= 65 && startChar <= 90 && endChar >= 65 && endChar <= 90 && startChar <= endChar) {
+        for (let i = startChar; i <= endChar; i++) {
+          models.push({
+            model_type: 'alpha',
+            model_value: String.fromCharCode(i),
+            display_order: i - startChar,
+          });
+        }
+      }
+    }
+    setProductModels(models);
+  };
+
   const handleAddModel = () => {
     if (!newModelValue.trim()) return;
     setProductModels((prev) => [
@@ -175,6 +207,10 @@ export function ProductFormModal({
 
   const handleRemoveModel = (index) => {
     setProductModels((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleClearModels = () => {
+    setProductModels([]);
   };
 
   const handleSubmit = async (event) => {
@@ -349,9 +385,50 @@ export function ProductFormModal({
         {/* Gestion des modèles - seulement si has_models est coché */}
         {form.has_models ? (
           <div className="space-y-3 rounded-[8px] border border-[#E0DBD5] p-4">
-          <span className="text-sm font-medium text-text-dark">Modèles du produit</span>
-          
-          {productModels.length > 0 ? (
+            <span className="text-sm font-medium text-text-dark">Modèles du produit</span>
+            
+            {/* Génération automatique par plage */}
+            <div className="rounded-[8px] border border-[#E0DBD5] bg-white p-3">
+              <p className="text-xs font-semibold text-text-dark mb-2">Génération automatique</p>
+              <div className="flex flex-wrap gap-2">
+                <select
+                  value={newModelType}
+                  onChange={(e) => setNewModelType(e.target.value)}
+                  className="h-9 rounded-[8px] border border-[#E0DBD5] bg-white px-2 text-xs outline-none transition focus:border-accent"
+                >
+                  <option value="numeric">Numérique</option>
+                  <option value="alpha">Alphabétique</option>
+                </select>
+                <input
+                  type="text"
+                  placeholder="Début (ex: 1 ou A)"
+                  maxLength={3}
+                  className="h-9 w-20 rounded-[8px] border border-[#E0DBD5] px-2 text-xs outline-none transition focus:border-accent"
+                  id="model-range-start"
+                />
+                <span className="flex items-center text-xs text-text-muted">à</span>
+                <input
+                  type="text"
+                  placeholder="Fin (ex: 100 ou Z)"
+                  maxLength={3}
+                  className="h-9 w-20 rounded-[8px] border border-[#E0DBD5] px-2 text-xs outline-none transition focus:border-accent"
+                  id="model-range-end"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    const start = document.getElementById('model-range-start').value;
+                    const end = document.getElementById('model-range-end').value;
+                    generateModelsFromRange(newModelType, start, end);
+                  }}
+                  className="inline-flex h-9 items-center justify-center rounded-full bg-accent px-3 text-xs font-semibold text-white transition hover:opacity-95"
+                >
+                  Générer
+                </button>
+              </div>
+            </div>
+
+            {productModels.length > 0 ? (
             <div className="grid gap-2 sm:grid-cols-2">
               {productModels.map((model, index) => (
                 <div key={index} className="flex items-center gap-2 rounded-[8px] border border-[#E0DBD5] bg-white px-3 py-2">
