@@ -1,4 +1,5 @@
-import { usePageTitle, useState } from 'react';
+import { useState } from 'react';
+import { usePageTitle } from '../hooks/usePageTitle';
 import { Search } from 'lucide-react';
 
 const FAQ = [
