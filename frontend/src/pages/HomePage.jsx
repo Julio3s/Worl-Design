@@ -23,7 +23,7 @@ import { getFeaturedProducts, getCategories } from '../api/catalog';
 import { getCategoryImage, getProductImage } from '../utils/media';
 
 // ─── Images ───────────────────────────────────────────────────────
-const HERO_IMAGE = '/images/hero-bg.jpg';
+const HERO_IMAGE = '/images/steps-background.png';
 
 const STEPS = [
   {
