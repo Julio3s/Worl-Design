@@ -174,36 +174,24 @@ export default function HomePage() {
   return (
     <div className="min-h-screen overflow-x-hidden" style={{ backgroundColor: '#F8F5F0' }}>
       {/* ================================================================ */}
-      {/* SECTION 1 — HERO — Nouveau design accrocheur                     */}
+      {/* SECTION 1 — HERO — Image de fond défilante                       */}
       {/* ================================================================ */}
-      <section className="relative min-h-[90svh] flex items-center overflow-hidden"
-        style={{ background: 'linear-gradient(135deg, #0F0F1A 0%, #1A1A2E 30%, #2D1B3A 60%, #1A1A2E 100%)' }}>
-        {/* Effet de particules / motifs */}
-        <div className="absolute inset-0 opacity-[0.07]" aria-hidden="true"
-          style={{
-            backgroundImage: `radial-gradient(circle at 20% 50%, #F5A623 0.5px, transparent 0.5px), 
-              radial-gradient(circle at 80% 20%, #E94560 0.5px, transparent 0.5px),
-              radial-gradient(circle at 50% 80%, #F5A623 0.5px, transparent 0.5px),
-              radial-gradient(circle at 90% 70%, #E94560 0.5px, transparent 0.5px)`,
-            backgroundSize: '60px 60px, 80px 80px, 50px 50px, 70px 70px',
-          }}
-        />
-        
-        {/* Cercle lumineux décoratif */}
-        <div className="absolute -top-40 -right-40 h-[500px] w-[500px] rounded-full opacity-10 blur-3xl" 
-          style={{ background: '#E94560' }} aria-hidden="true" />
-        <div className="absolute -bottom-40 -left-40 h-[400px] w-[400px] rounded-full opacity-10 blur-3xl" 
-          style={{ background: '#F5A623' }} aria-hidden="true" />
+      <section className="relative min-h-[90svh] flex items-center overflow-hidden">
+        {/* Image de fond avec effet défilant */}
+        <div className="absolute inset-0">
+          <img
+            src={HERO_IMAGE}
+            alt=""
+            aria-hidden="true"
+            className="h-full w-full object-cover animate-[heroZoom_20s_ease-in-out_infinite_alternate]"
+          />
+        </div>
+        {/* Overlay sombre pour lisibilité */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-black/40" aria-hidden="true" />
 
         <div className="relative z-10 mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl">
-            {/* Badge */}
-            <div className="inline-flex items-center gap-2 rounded-full border border-[#F5A623]/30 bg-[#F5A623]/10 px-4 py-1.5 text-xs font-semibold text-[#F5A623]">
-              <span className="flex h-2 w-2 rounded-full bg-[#F5A623] animate-pulse" />
-              Goodies personnalisés au Togo
-            </div>
-
-            <h1 className="mt-8 text-4xl font-extrabold leading-[1.05] text-white sm:text-5xl md:text-6xl lg:text-7xl">
+            <h1 className="mt-6 text-4xl font-extrabold leading-[1.05] text-white sm:text-5xl md:text-6xl lg:text-7xl">
               Votre marque mérite 
               <span className="block mt-2" style={{ background: 'linear-gradient(135deg, #F5A623, #E94560)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                 d'être remarquée
@@ -660,6 +648,10 @@ export default function HomePage() {
         @keyframes fadeInUp {
           from { opacity: 0; transform: translateY(16px); }
           to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes heroZoom {
+          from { transform: scale(1); }
+          to   { transform: scale(1.1); }
         }
         .animate-fadeInUp {
           animation: fadeInUp 0.5s ease-out both;
