@@ -256,6 +256,13 @@ export function ProductFormModal({
     };
   }, [extraImages]);
 
+  // Cocher automatiquement has_models quand on ajoute des modèles
+  useEffect(() => {
+    if (productModels.length > 0 && !form.has_models) {
+      setForm((current) => ({ ...current, has_models: true }));
+    }
+  }, [productModels.length, form.has_models]);
+
   return (
     <Modal
       open={open}

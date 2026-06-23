@@ -135,6 +135,7 @@ export default function ProductsPage() {
         is_featured: !product.is_featured,
         is_customizable: product.is_customizable,
         customization_hint: product.customization_hint || '',
+        has_models: product.has_models,
         modelsData: product.models ? JSON.stringify(product.models.map(m => ({
           model_type: m.model_type,
           model_value: m.model_value,
