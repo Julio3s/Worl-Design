@@ -244,9 +244,10 @@ export default function ProductsPage() {
 
         {/* Filtres visibles directement */}
         <div className="mt-6 rounded-[12px] border border-[#E0DBD5] bg-white p-4 sm:p-5">
+          {/* Ligne 1: Recherche + Catégorie (même taille) */}
           <div className="flex flex-wrap items-end gap-3">
             {/* Recherche */}
-            <div className="flex-1 min-w-[200px]">
+            <div className="w-48">
               <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-text-muted">
                 Recherche
               </label>
@@ -254,7 +255,7 @@ export default function ProductsPage() {
                 type="text"
                 value={searchInput}
                 onChange={handleSearchChange}
-                placeholder="Rechercher un produit..."
+                placeholder="Rechercher..."
                 className="h-11 w-full rounded-[8px] border border-[#E0DBD5] bg-cream px-3 text-sm text-text-dark outline-none transition focus:border-accent"
               />
             </div>
@@ -293,9 +294,12 @@ export default function ProductsPage() {
                 <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
               </div>
             </div>
+          </div>
 
+          {/* Ligne 2: Min + Max (côte à côte, même taille) */}
+          <div className="mt-3 flex flex-wrap items-end gap-3">
             {/* Prix Min */}
-            <div className="w-28">
+            <div className="w-32">
               <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-text-muted">
                 Min
               </label>
@@ -311,7 +315,7 @@ export default function ProductsPage() {
             </div>
 
             {/* Prix Max */}
-            <div className="w-28">
+            <div className="w-32">
               <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-text-muted">
                 Max
               </label>
@@ -325,8 +329,10 @@ export default function ProductsPage() {
                 className="h-11 w-full rounded-[8px] border border-[#E0DBD5] bg-cream px-3 text-[16px] text-text-dark outline-none transition focus:border-accent"
               />
             </div>
+          </div>
 
-            {/* Bouton Filtrer */}
+          {/* Ligne 3: Boutons Filtrer et Effacer */}
+          <div className="mt-3 flex flex-wrap items-center gap-3">
             <button
               type="button"
               onClick={applyFilters}
@@ -335,7 +341,6 @@ export default function ProductsPage() {
               Filtrer
             </button>
 
-            {/* Bouton reset */}
             <button
               type="button"
               onClick={resetFilters}
