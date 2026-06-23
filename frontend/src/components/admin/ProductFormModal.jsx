@@ -86,11 +86,20 @@ export function ProductFormModal({
       }));
       setExistingImages(imgs);
       setRemovedImageIds([]);
+      
+      // Charger les modèles existants
+      const existingModels = (product.models || []).map((m) => ({
+        model_type: m.model_type,
+        model_value: m.model_value,
+        display_order: m.display_order,
+      }));
+      setProductModels(existingModels);
     } else {
       setForm(EMPTY_FORM);
       setImagePreview('');
       setExistingImages([]);
       setRemovedImageIds([]);
+      setProductModels([]);
     }
 
     setImageFile(null);

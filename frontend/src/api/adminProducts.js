@@ -25,6 +25,11 @@ function buildProductFormData(payload) {
   appendField(formData, 'is_featured', payload.is_featured);
   appendField(formData, 'is_customizable', payload.is_customizable);
   appendField(formData, 'customization_hint', payload.customization_hint || '');
+  appendField(formData, 'has_models', payload.has_models);
+
+  if (payload.modelsData) {
+    formData.append('models_data', payload.modelsData);
+  }
 
   if (payload.imageFile) {
     formData.append('image', payload.imageFile);
