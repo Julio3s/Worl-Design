@@ -389,29 +389,18 @@ export default function ProductDetailPage() {
             ) : null}
 
             <div className="flex flex-col gap-4 rounded-[8px] border border-[#E0DBD5] bg-white px-4 py-4">
-              <div className="flex flex-wrap items-center gap-4">
-                <div>
-                  <p className="text-sm font-medium text-text-muted">Quantité</p>
-                  <div className="mt-2">
-                    <QuantitySelector
-                      value={quantity}
-                      onChange={(nextQuantity) => setQuantity(Math.max(1, Number(nextQuantity || 1)))}
-                      min={1}
-                      max={Math.max(1, Number(product.stock || 1))}
-                    />
-                  </div>
-                </div>
+              {addedFeedback ? (
+                <p
+                  role="status"
+                  className="rounded-[8px] bg-[#D1FAE5] px-4 py-3 text-sm font-medium text-[#065F46]"
+                >
+                  {addedFeedback}
+                </p>
+              ) : null}
 
-                {addedFeedback ? (
-                  <p
-                    role="status"
-                    className="w-full rounded-[8px] bg-[#D1FAE5] px-4 py-3 text-sm font-medium text-[#065F46]"
-                  >
-                    {addedFeedback}
-                  </p>
-                ) : null}
-
-                <div className="flex flex-1 flex-wrap gap-3">
+              <div className="flex flex-wrap items-center gap-3">
+                {/* Boutons côte à côte */}
+                <div className="flex w-full flex-wrap gap-3">
                   <button
                     type="button"
                     onClick={handleAddToCart}
@@ -423,7 +412,7 @@ export default function ProductDetailPage() {
                   </button>
                   <Link
                     to="/cart"
-                    className="inline-flex items-center justify-center rounded-full border border-[#E0DBD5] bg-white px-5 py-3 text-sm font-semibold text-text-dark transition hover:border-accent hover:text-accent"
+                    className="inline-flex flex-1 items-center justify-center rounded-full border border-[#E0DBD5] bg-white px-5 py-3 text-sm font-semibold text-text-dark transition hover:border-accent hover:text-accent"
                   >
                     Voir le panier
                   </Link>
