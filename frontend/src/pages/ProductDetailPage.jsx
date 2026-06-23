@@ -261,25 +261,6 @@ export default function ProductDetailPage() {
                   {product.description}
                 </p>
 
-                {/* Affichage des modèles dans la description - seulement si has_models est true */}
-                {product.has_models && product.models && product.models.length > 0 ? (
-                  <div className="mt-4 rounded-[8px] border border-[#E0DBD5] bg-white px-4 py-3">
-                    <p className="text-sm font-semibold text-text-dark mb-2">
-                      Modèles disponibles :
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {product.models.map((model) => (
-                        <span
-                          key={model.id}
-                          className="inline-flex items-center gap-1 rounded-full bg-[#F8F5F0] px-3 py-1.5 text-xs font-semibold text-text-dark border border-[#E0DBD5]"
-                        >
-                          <span className="text-accent">#</span>
-                          {model.model_value}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                ) : null}
               </div>
 
             {/* Sélecteur de modèle - seulement si has_models est true */}
@@ -290,22 +271,18 @@ export default function ProductDetailPage() {
                     Choisissez votre modèle{' '}
                     <span className="text-accent font-semibold">(obligatoire)</span>
                   </span>
-                  <div className="mt-1 flex flex-wrap gap-2">
+                  <select
+                    value={selectedModel}
+                    onChange={(e) => setSelectedModel(e.target.value)}
+                    className="h-11 rounded-[8px] border border-[#E0DBD5] bg-white px-3 text-sm outline-none transition focus:border-accent"
+                  >
+                    <option value="">Sélectionnez un modèle</option>
                     {product.models.map((model) => (
-                      <button
-                        key={model.id}
-                        type="button"
-                        onClick={() => setSelectedModel(model.model_value)}
-                        className={`flex h-10 w-10 items-center justify-center rounded-lg border text-sm font-bold transition ${
-                          selectedModel === model.model_value
-                            ? 'border-accent bg-accent text-white'
-                            : 'border-[#E0DBD5] text-text-dark hover:border-accent hover:text-accent'
-                        }`}
-                      >
-                        {model.model_type === 'numeric' ? '#' : ''}{model.model_value}
-                      </button>
+                      <option key={model.id} value={model.model_value}>
+                        {model.model_value}
+                      </option>
                     ))}
-                  </div>
+                  </select>
                 </label>
               </div>
             ) : null}
