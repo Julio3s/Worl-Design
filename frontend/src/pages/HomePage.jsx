@@ -199,9 +199,8 @@ export default function HomePage() {
             </h1>
 
             <p className="mt-6 max-w-xl text-base leading-relaxed text-gray-300 sm:text-lg">
-              Des goodies personnalisés de qualité professionnelle pour vos projets, 
-              vos événements et votre marque. Conception sur mesure, fabrication rapide 
-              et livraison partout au Togo.
+              DES goodies en bois personnalisable de qualité professionnelle pour vos projets vos evenements et votre marque.
+              Conception sur mesure, fabrication rapide et livraison partout.
             </p>
 
             {/* Points forts */}

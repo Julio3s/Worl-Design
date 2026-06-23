@@ -281,7 +281,7 @@ export default function ProductsPage() {
             </div>
 
             {/* Prix Min */}
-            <div className="w-[185px]">
+            <div className="w-[180px]">
               <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-text-muted">
                 Min
               </label>
@@ -297,7 +297,7 @@ export default function ProductsPage() {
             </div>
 
             {/* Prix Max */}
-            <div className="w-[185px]">
+            <div className="w-[180px]">
               <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-text-muted">
                 Max
               </label>
