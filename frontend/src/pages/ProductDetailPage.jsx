@@ -405,14 +405,14 @@ export default function ProductDetailPage() {
                     type="button"
                     onClick={handleAddToCart}
                     disabled={outOfStock || customTextEmpty}
-                    className="inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-accent px-5 py-3 text-sm font-semibold text-white transition hover:opacity-95 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+                    className="inline-flex flex-1 items-center justify-center gap-2 rounded-[8px] bg-accent px-5 py-2.5 text-sm font-semibold text-white transition hover:opacity-95 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <ShoppingCart className="h-4 w-4" aria-hidden="true" />
                     {outOfStock ? 'Indisponible' : 'Ajouter au panier'}
                   </button>
                   <Link
                     to="/cart"
-                    className="inline-flex flex-1 items-center justify-center rounded-full border border-[#E0DBD5] bg-white px-5 py-3 text-sm font-semibold text-text-dark transition hover:border-accent hover:text-accent"
+                    className="inline-flex flex-1 items-center justify-center rounded-[8px] border border-[#E0DBD5] bg-white px-5 py-2.5 text-sm font-semibold text-text-dark transition hover:border-accent hover:text-accent"
                   >
                     Voir le panier
                   </Link>
