@@ -244,8 +244,8 @@ export default function ProductsPage() {
 
         {/* Filtres visibles directement */}
         <div className="mt-6 rounded-[12px] border border-[#E0DBD5] bg-white p-4 sm:p-5">
+          {/* Catégorie + Bouton Filtrer sur la même ligne */}
           <div className="flex flex-wrap items-end gap-3">
-            {/* Catégorie */}
             <div className="w-full sm:w-48 sm:flex-1">
               <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-text-muted">
                 Catégorie
@@ -280,57 +280,57 @@ export default function ProductsPage() {
               </div>
             </div>
 
-            {/* Prix Min & Max + Boutons sur la même ligne */}
-            <div className="flex flex-1 flex-wrap items-end gap-3 sm:flex-nowrap">
-              <div className="flex flex-1 gap-2">
-                <div className="flex-1">
-                  <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-text-muted">
-                    Prix min
-                  </label>
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    pattern="[0-9]*"
-                    placeholder="Min"
-                    value={filters.min_price}
-                    onChange={(event) => handleFilterChange('min_price', event.target.value.replace(/[^0-9]/g, ''))}
-                    className="h-11 w-full rounded-[8px] border border-[#E0DBD5] bg-cream px-3 text-[16px] text-text-dark outline-none transition focus:border-accent"
-                  />
-                </div>
-                <div className="flex-1">
-                  <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-text-muted">
-                    Prix max
-                  </label>
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    pattern="[0-9]*"
-                    placeholder="Max"
-                    value={filters.max_price}
-                    onChange={(event) => handleFilterChange('max_price', event.target.value.replace(/[^0-9]/g, ''))}
-                    className="h-11 w-full rounded-[8px] border border-[#E0DBD5] bg-cream px-3 text-[16px] text-text-dark outline-none transition focus:border-accent"
-                  />
-                </div>
+            {/* Bouton Filtrer */}
+            <button
+              type="button"
+              onClick={applyFilters}
+              className="flex h-11 items-center justify-center rounded-[8px] bg-accent px-5 text-sm font-semibold text-white transition hover:opacity-95"
+            >
+              Filtrer
+            </button>
+
+            {/* Bouton reset */}
+            <button
+              type="button"
+              onClick={resetFilters}
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[8px] border border-[#E0DBD5] bg-cream text-text-muted transition hover:border-accent hover:text-accent"
+              title="Réinitialiser les filtres"
+            >
+              <SearchX className="h-4 w-4" />
+            </button>
+          </div>
+
+          {/* Prix Min & Max en dessous */}
+          <div className="mt-3 flex flex-wrap items-end gap-3">
+            <div className="flex flex-1 gap-2">
+              <div className="flex-1">
+                <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-text-muted">
+                  Prix min
+                </label>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  placeholder="Min"
+                  value={filters.min_price}
+                  onChange={(event) => handleFilterChange('min_price', event.target.value.replace(/[^0-9]/g, ''))}
+                  className="h-11 w-full rounded-[8px] border border-[#E0DBD5] bg-cream px-3 text-[16px] text-text-dark outline-none transition focus:border-accent"
+                />
               </div>
-
-              {/* Bouton Filtrer */}
-              <button
-                type="button"
-                onClick={applyFilters}
-                className="flex h-11 items-center justify-center rounded-[8px] bg-accent px-5 text-sm font-semibold text-white transition hover:opacity-95"
-              >
-                Filtrer
-              </button>
-
-              {/* Bouton reset */}
-              <button
-                type="button"
-                onClick={resetFilters}
-                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[8px] border border-[#E0DBD5] bg-cream text-text-muted transition hover:border-accent hover:text-accent"
-                title="Réinitialiser les filtres"
-              >
-                <SearchX className="h-4 w-4" />
-              </button>
+              <div className="flex-1">
+                <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-text-muted">
+                  Prix max
+                </label>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  placeholder="Max"
+                  value={filters.max_price}
+                  onChange={(event) => handleFilterChange('max_price', event.target.value.replace(/[^0-9]/g, ''))}
+                  className="h-11 w-full rounded-[8px] border border-[#E0DBD5] bg-cream px-3 text-[16px] text-text-dark outline-none transition focus:border-accent"
+                />
+              </div>
             </div>
           </div>
         </div>
