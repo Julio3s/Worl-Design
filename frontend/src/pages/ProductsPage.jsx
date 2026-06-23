@@ -246,8 +246,8 @@ export default function ProductsPage() {
         <div className="mt-6 rounded-[12px] border border-[#E0DBD5] bg-white p-4 sm:p-5">
           {/* Ligne 1: Catégorie + Min + Max */}
           <div className="flex flex-wrap items-end gap-3">
-            {/* Catégorie */}
-            <div className="w-40 shrink-0">
+            {/* Catégorie - prend toute la place disponible */}
+            <div className="flex-1 min-w-[140px]">
               <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-text-muted">
                 Catégorie
               </label>
@@ -282,7 +282,7 @@ export default function ProductsPage() {
             </div>
 
             {/* Prix Min */}
-            <div className="flex-1 min-w-[100px]">
+            <div className="w-28">
               <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-text-muted">
                 Min
               </label>
@@ -298,7 +298,7 @@ export default function ProductsPage() {
             </div>
 
             {/* Prix Max */}
-            <div className="flex-1 min-w-[100px]">
+            <div className="w-28">
               <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-text-muted">
                 Max
               </label>
