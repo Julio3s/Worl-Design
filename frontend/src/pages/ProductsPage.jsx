@@ -244,9 +244,9 @@ export default function ProductsPage() {
 
         {/* Filtres visibles directement */}
         <div className="mt-6 rounded-[12px] border border-[#E0DBD5] bg-white p-4 sm:p-5">
-          {/* Catégorie + Bouton Filtrer sur la même ligne */}
           <div className="flex flex-wrap items-end gap-3">
-            <div className="w-full sm:w-48 sm:flex-1">
+            {/* Catégorie - largeur réduite */}
+            <div className="w-40 shrink-0">
               <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-text-muted">
                 Catégorie
               </label>
@@ -265,7 +265,7 @@ export default function ProductsPage() {
                   }}
                   className="h-11 w-full appearance-none rounded-[8px] border border-[#E0DBD5] bg-cream px-3 pr-8 text-sm text-text-dark outline-none transition focus:border-accent"
                 >
-                  <option value="">Toutes les catégories</option>
+                  <option value="">Toutes</option>
                   {loadingCategories ? (
                     <option value="">Chargement...</option>
                   ) : (
@@ -278,6 +278,38 @@ export default function ProductsPage() {
                 </select>
                 <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
               </div>
+            </div>
+
+            {/* Prix Min */}
+            <div className="w-28">
+              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-text-muted">
+                Min
+              </label>
+              <input
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                placeholder="Min"
+                value={filters.min_price}
+                onChange={(event) => handleFilterChange('min_price', event.target.value.replace(/[^0-9]/g, ''))}
+                className="h-11 w-full rounded-[8px] border border-[#E0DBD5] bg-cream px-3 text-[16px] text-text-dark outline-none transition focus:border-accent"
+              />
+            </div>
+
+            {/* Prix Max */}
+            <div className="w-28">
+              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-text-muted">
+                Max
+              </label>
+              <input
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                placeholder="Max"
+                value={filters.max_price}
+                onChange={(event) => handleFilterChange('max_price', event.target.value.replace(/[^0-9]/g, ''))}
+                className="h-11 w-full rounded-[8px] border border-[#E0DBD5] bg-cream px-3 text-[16px] text-text-dark outline-none transition focus:border-accent"
+              />
             </div>
 
             {/* Bouton Filtrer */}
@@ -298,40 +330,6 @@ export default function ProductsPage() {
             >
               <SearchX className="h-4 w-4" />
             </button>
-          </div>
-
-          {/* Prix Min & Max en dessous */}
-          <div className="mt-3 flex flex-wrap items-end gap-3">
-            <div className="flex flex-1 gap-2">
-              <div className="flex-1">
-                <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-text-muted">
-                  Prix min
-                </label>
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  pattern="[0-9]*"
-                  placeholder="Min"
-                  value={filters.min_price}
-                  onChange={(event) => handleFilterChange('min_price', event.target.value.replace(/[^0-9]/g, ''))}
-                  className="h-11 w-full rounded-[8px] border border-[#E0DBD5] bg-cream px-3 text-[16px] text-text-dark outline-none transition focus:border-accent"
-                />
-              </div>
-              <div className="flex-1">
-                <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-text-muted">
-                  Prix max
-                </label>
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  pattern="[0-9]*"
-                  placeholder="Max"
-                  value={filters.max_price}
-                  onChange={(event) => handleFilterChange('max_price', event.target.value.replace(/[^0-9]/g, ''))}
-                  className="h-11 w-full rounded-[8px] border border-[#E0DBD5] bg-cream px-3 text-[16px] text-text-dark outline-none transition focus:border-accent"
-                />
-              </div>
-            </div>
           </div>
         </div>
 
