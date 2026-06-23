@@ -244,10 +244,23 @@ export default function ProductsPage() {
 
         {/* Filtres visibles directement */}
         <div className="mt-6 rounded-[12px] border border-[#E0DBD5] bg-white p-4 sm:p-5">
-          {/* Ligne 1: Catégorie + Min + Max */}
           <div className="flex flex-wrap items-end gap-3">
-            {/* Catégorie - prend toute la place disponible */}
-            <div className="flex-1 min-w-[140px]">
+            {/* Recherche */}
+            <div className="flex-1 min-w-[200px]">
+              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-text-muted">
+                Recherche
+              </label>
+              <input
+                type="text"
+                value={searchInput}
+                onChange={handleSearchChange}
+                placeholder="Rechercher un produit..."
+                className="h-11 w-full rounded-[8px] border border-[#E0DBD5] bg-cream px-3 text-sm text-text-dark outline-none transition focus:border-accent"
+              />
+            </div>
+
+            {/* Catégorie */}
+            <div className="w-48">
               <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-text-muted">
                 Catégorie
               </label>
@@ -312,18 +325,17 @@ export default function ProductsPage() {
                 className="h-11 w-full rounded-[8px] border border-[#E0DBD5] bg-cream px-3 text-[16px] text-text-dark outline-none transition focus:border-accent"
               />
             </div>
-          </div>
 
-          {/* Ligne 2: Boutons */}
-          <div className="mt-3 flex flex-wrap items-center gap-3">
+            {/* Bouton Filtrer */}
             <button
               type="button"
               onClick={applyFilters}
-              className="flex h-11 items-center justify-center rounded-[8px] bg-accent px-5 text-sm font-semibold text-white transition hover:opacity-95"
+              className="flex h-11 items-center justify-center rounded-[8px] bg-accent px-6 text-sm font-semibold text-white transition hover:opacity-95"
             >
               Filtrer
             </button>
 
+            {/* Bouton reset */}
             <button
               type="button"
               onClick={resetFilters}
