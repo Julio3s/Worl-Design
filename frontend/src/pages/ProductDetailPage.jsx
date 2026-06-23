@@ -53,6 +53,7 @@ export default function ProductDetailPage() {
   const [customFileError, setCustomFileError] = useState('');
   const [addedFeedback, setAddedFeedback] = useState('');
   const [selectedModel, setSelectedModel] = useState('');
+  const [modelError, setModelError] = useState('');
 
   usePageTitle(product?.name || 'Produit');
 
@@ -132,6 +133,25 @@ export default function ProductDetailPage() {
 
   const handleAddToCart = () => {
     if (!product || outOfStock || customTextEmpty) {
+      return;
+    }
+
+    // Vérifier si un modèle est requis mais non sélectionné
+    if (product.has_models && product.models && product.models.length > 0 && !selectedModel) {
+      setModelError('Veuillez sélectionner un modèle');
+      
+      // Faire défiler vers le sélecteur de modèle
+      const modelSelect = document.getElementById('model-select');
+      if (modelSelect) {
+        modelSelect.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        modelSelect.focus();
+        
+        // Ajouter une bordure rouge temporairement
+        modelSelect.classList.add('border-red-500');
+        setTimeout(() => {
+          modelSelect.classList.remove('border-red-500');
+        }, 2000);
+      }
       return;
     }
 
@@ -272,9 +292,15 @@ export default function ProductDetailPage() {
                     <span className="text-accent font-semibold">(obligatoire)</span>
                   </span>
                   <select
+                    id="model-select"
                     value={selectedModel}
-                    onChange={(e) => setSelectedModel(e.target.value)}
-                    className="h-11 rounded-[8px] border border-[#E0DBD5] bg-white px-3 text-sm outline-none transition focus:border-accent"
+                    onChange={(e) => {
+                      setSelectedModel(e.target.value);
+                      if (modelError) setModelError('');
+                    }}
+                    className={`h-11 rounded-[8px] border bg-white px-3 text-sm outline-none transition focus:border-accent ${
+                      modelError ? 'border-red-500' : 'border-[#E0DBD5]'
+                    }`}
                   >
                     <option value="">Sélectionnez un modèle</option>
                     {product.models.map((model) => (
@@ -283,6 +309,9 @@ export default function ProductDetailPage() {
                       </option>
                     ))}
                   </select>
+                  {modelError ? (
+                    <p className="text-sm font-medium text-red-600">{modelError}</p>
+                  ) : null}
                 </label>
               </div>
             ) : null}
