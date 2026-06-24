@@ -13,7 +13,7 @@ import { getProductImage } from '../utils/media';
 const REASSURANCE = [
   { icon: ShieldCheck, text: 'Paiement 100% sécurisé' },
   { icon: Truck, text: 'Livraison partout au Togo' },
-  { icon: Clock, text: 'Expédition sous 48h' },
+  { icon: Clock, text: 'Expédition sous 72h' },
 ];
 
 // ─── Sous-composants ──────────────────────────────────────────────
