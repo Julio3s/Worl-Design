@@ -122,7 +122,7 @@ export default function InfoPage() {
           Que vous ayez une idée précise ou que vous souhaitiez être conseillé, notre équipe est là pour vous.
         </p>
         <a
-          href="https://wa.me/22892455800"
+          href="https://wa.me/22897085424"
           target="_blank"
           rel="noopener noreferrer"
           className="mt-6 inline-block rounded-full bg-accent px-8 py-3 font-semibold text-white transition hover:bg-accent/90"

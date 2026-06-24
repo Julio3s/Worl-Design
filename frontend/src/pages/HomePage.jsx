@@ -615,7 +615,7 @@ export default function HomePage() {
           <p className="mt-8 text-center text-sm text-[#1A1A2E]/45">
             Autre question ?{' '}
             <a
-              href="https://wa.me/22892455800"
+              href="https://wa.me/22897085424"
               target="_blank"
               rel="noopener noreferrer"
               className="font-semibold text-[#E94560] hover:underline"

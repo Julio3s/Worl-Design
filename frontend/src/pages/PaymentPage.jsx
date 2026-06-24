@@ -106,7 +106,7 @@ export default function PaymentPage() {
           </p>
           <div className="mt-6 flex flex-wrap justify-center gap-4">
             <a
-              href="https://wa.me/22892455800"
+              href="https://wa.me/22897085424"
               target="_blank"
               rel="noopener noreferrer"
               className="rounded-full bg-accent px-6 py-2.5 font-semibold text-white transition hover:bg-accent/90"
