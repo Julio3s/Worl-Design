@@ -1,4 +1,4 @@
-import { ChevronRight, ShoppingBag, Trash2, Heart, ArrowLeft, ShieldCheck, Truck, Clock, Sparkles, Minus, Plus, AlertCircle } from 'lucide-react';
+import { ChevronRight, ShoppingBag, Trash2, Heart, ArrowLeft, ShieldCheck, Truck, Clock, Sparkles, Minus, Plus, AlertCircle, Gift } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import React from 'react';
 
