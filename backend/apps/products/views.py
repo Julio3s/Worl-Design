@@ -1,3 +1,4 @@
+import logging
 from decimal import Decimal, InvalidOperation
 
 from django.db import IntegrityError
@@ -20,6 +21,8 @@ from .serializers import (
     ProductDetailSerializer,
     ProductListSerializer,
 )
+
+logger = logging.getLogger('products')
 
 
 class ProductPagination(PageNumberPagination):
@@ -210,16 +213,20 @@ def admin_products(request):
         return paginator.get_paginated_response(serializer.data)
 
     payload = _normalize_admin_payload(request.data)
+    logger.info(f'Admin product creation request: name={payload.get("name")} price={payload.get("price")} category={payload.get("category")}')
     serializer = ProductAdminSerializer(data=payload, context={'request': request})
     if serializer.is_valid():
         try:
             product = serializer.save()
-        except IntegrityError:
+            logger.info(f'Admin product created successfully: id={product.id} slug={product.slug}')
+            return Response(ProductAdminSerializer(product, context={'request': request}).data, status=status.HTTP_201_CREATED)
+        except IntegrityError as e:
+            logger.error(f'IntegrityError during admin product creation: {e}')
             return Response(
                 {'detail': 'A product with the same name or slug already exists'},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        return Response(ProductAdminSerializer(product, context={'request': request}).data, status=status.HTTP_201_CREATED)
+    logger.warning(f'Admin product creation validation failed: {serializer.errors}')
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 

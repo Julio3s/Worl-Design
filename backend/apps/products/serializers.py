@@ -1,7 +1,10 @@
+import logging
 from cloudinary import config as cloudinary_config
 from rest_framework import serializers
 
 from .models import Category, Product, ProductImage, ProductModel
+
+logger = logging.getLogger('products')
 
 
 def _cloudinary_url(resource):
@@ -190,6 +193,7 @@ class ProductAdminSerializer(serializers.ModelSerializer):
         if not self.instance and 'name' in attrs:
             existing = Product.objects.filter(name__iexact=attrs['name']).first()
             if existing:
+                logger.warning(f'Product creation blocked: duplicate name "{attrs["name"]}" (existing id={existing.id})')
                 raise serializers.ValidationError({'name': 'A product with this name already exists.'})
         return attrs
 
@@ -197,12 +201,15 @@ class ProductAdminSerializer(serializers.ModelSerializer):
         from django.utils.text import slugify
         from django.db import IntegrityError
         
+        logger.info(f'Product creation attempt: name="{validated_data.get("name")}" price={validated_data.get("price")} category={validated_data.get("category")}')
+        
         # Générer le slug avant création pour éviter les conflits
         base_slug = None
         if 'slug' not in validated_data or not validated_data['slug']:
             base_slug = slugify(validated_data.get('name', ''))
             if base_slug:
                 validated_data['slug'] = base_slug
+                logger.debug(f'Generated base slug: {base_slug}')
         
         images_data_raw = validated_data.pop('images_data', None)
         models_data_raw = validated_data.pop('models_data', None)
@@ -212,17 +219,21 @@ class ProductAdminSerializer(serializers.ModelSerializer):
         for attempt in range(max_attempts):
             try:
                 product = super().create(validated_data)
+                logger.info(f'Product created successfully: id={product.id} slug={product.slug} name={product.name}')
                 break
-            except IntegrityError:
+            except IntegrityError as e:
                 # Si c'est un conflit de slug, générer un nouveau slug et réessayer
                 if 'slug' in validated_data and base_slug:
                     counter = attempt + 2  # Commence à 2 car base_slug est déjà essayé
                     validated_data['slug'] = f'{base_slug}-{counter}'
+                    logger.warning(f'Slug conflict detected, retrying with: {validated_data["slug"]} (attempt {attempt + 1}/{max_attempts})')
                 else:
+                    logger.error(f'IntegrityError during product creation: {e}')
                     raise
         
         self._rebuild_images(product, images_data_raw)
         self._rebuild_models(product, models_data_raw)
+        logger.info(f'Product creation complete: id={product.id} images={product.images.count()} models={product.models.count()}')
         return product
 
     def update(self, instance, validated_data):
