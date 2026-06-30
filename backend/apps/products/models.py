@@ -17,7 +17,12 @@ class Category(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.name)
+            base_slug = slugify(self.name)
+            self.slug = base_slug
+            counter = 1
+            while Category.objects.filter(slug=self.slug).exclude(pk=self.pk).exists():
+                self.slug = f'{base_slug}-{counter}'
+                counter += 1
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -46,8 +51,7 @@ class Product(models.Model):
         ordering = ['-created_at']
 
     def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify(self.name)
+        # Le slug est généré par le serializer avant création
         super().save(*args, **kwargs)
 
     def __str__(self):
