@@ -186,9 +186,9 @@ class ProductAdminSerializer(serializers.ModelSerializer):
         return obj.category.slug if obj.category else None
 
     def validate(self, attrs):
-        # Vérifier si un produit actif avec le même nom existe déjà (création)
+        # Vérifier si un produit avec le même nom existe déjà (création)
         if not self.instance and 'name' in attrs:
-            existing = Product.objects.filter(name__iexact=attrs['name'], is_active=True).first()
+            existing = Product.objects.filter(name__iexact=attrs['name']).first()
             if existing:
                 raise serializers.ValidationError({'name': 'A product with this name already exists.'})
         return attrs
