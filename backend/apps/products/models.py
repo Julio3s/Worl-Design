@@ -51,7 +51,15 @@ class Product(models.Model):
         ordering = ['-created_at']
 
     def save(self, *args, **kwargs):
-        # Le slug est généré par le serializer avant création
+        # Générer le slug avec gestion des conflits
+        if not self.slug:
+            base_slug = slugify(self.name)
+            if base_slug:
+                self.slug = base_slug
+                counter = 1
+                while Product.objects.filter(slug=self.slug).exclude(pk=self.pk).exists():
+                    self.slug = f'{base_slug}-{counter}'
+                    counter += 1
         super().save(*args, **kwargs)
 
     def __str__(self):

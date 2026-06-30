@@ -198,22 +198,7 @@ class ProductAdminSerializer(serializers.ModelSerializer):
         return attrs
 
     def create(self, validated_data):
-        from django.utils.text import slugify
-        
         logger.info(f'Product creation attempt: name="{validated_data.get("name")}" price={validated_data.get("price")} category={validated_data.get("category")}')
-        
-        # Générer le slug avant création pour éviter les conflits
-        if 'slug' not in validated_data or not validated_data['slug']:
-            base_slug = slugify(validated_data.get('name', ''))
-            if base_slug:
-                # Vérifier les conflits et ajouter un suffixe si nécessaire
-                slug = base_slug
-                counter = 1
-                while Product.objects.filter(slug=slug).exists():
-                    slug = f'{base_slug}-{counter}'
-                    counter += 1
-                validated_data['slug'] = slug
-                logger.debug(f'Generated slug: {validated_data["slug"]}')
         
         images_data_raw = validated_data.pop('images_data', None)
         models_data_raw = validated_data.pop('models_data', None)
