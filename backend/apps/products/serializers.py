@@ -195,22 +195,31 @@ class ProductAdminSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         from django.utils.text import slugify
+        from django.db import IntegrityError
         
         # Générer le slug avant création pour éviter les conflits
         if 'slug' not in validated_data or not validated_data['slug']:
             base_slug = slugify(validated_data.get('name', ''))
             if base_slug:
-                slug = base_slug
-                counter = 1
-                # Vérifier les conflits de slug (y compris les produits inactifs)
-                while Product.objects.filter(slug=slug).exists():
-                    slug = f'{base_slug}-{counter}'
-                    counter += 1
-                validated_data['slug'] = slug
+                validated_data['slug'] = base_slug
         
         images_data_raw = validated_data.pop('images_data', None)
         models_data_raw = validated_data.pop('models_data', None)
-        product = super().create(validated_data)
+        
+        # Gérer les conflits de slug avec retry automatique
+        max_attempts = 10
+        for attempt in range(max_attempts):
+            try:
+                product = super().create(validated_data)
+                break
+            except IntegrityError:
+                # Si c'est un conflit de slug, générer un nouveau slug et réessayer
+                if 'slug' in validated_data and base_slug:
+                    counter = attempt + 2  # Commence à 2 car base_slug est déjà essayé
+                    validated_data['slug'] = f'{base_slug}-{counter}'
+                else:
+                    raise
+        
         self._rebuild_images(product, images_data_raw)
         self._rebuild_models(product, models_data_raw)
         return product
