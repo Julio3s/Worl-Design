@@ -10,6 +10,7 @@ import { ProductCard } from '../components/ProductCard';
 import { ProductGridSkeleton } from '../components/skeletons/ProductGridSkeleton';
 import { SectionHeading } from '../components/SectionHeading';
 import { usePageTitle } from '../hooks/usePageTitle';
+import { usePreloadProductImages } from '../hooks/usePreloadSecondaryImages';
 import { useCartStore } from '../store/cartStore';
 
 const PAGE_SIZE = 12;
@@ -232,6 +233,13 @@ export default function ProductsPage() {
     () => items.reduce((sum, item) => sum + Number(item.quantity || 0), 0),
     [items],
   );
+
+  // Précharger les images secondaires des produits visibles
+  usePreloadProductImages(productsData.results, {
+    maxPreload: 20,
+    delay: 1500,
+    enabled: !loading && productsData.results.length > 0,
+  });
 
   return (
     <div className="bg-cream">

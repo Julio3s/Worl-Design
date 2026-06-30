@@ -4,12 +4,20 @@ import { Link } from 'react-router-dom';
 import { formatCurrency } from '../utils/formatCurrency';
 import { getProductImage } from '../utils/media';
 import { useWishlistStore } from '../store/wishlistStore';
+import { usePreloadSecondaryImages } from '../hooks/usePreloadSecondaryImages';
 
 export function ProductCard({ product, showAddButton = false, badgeLabel, className = '' }) {
   const image = getProductImage(product);
   const description = product.description || '';
   const toggleWishlist = useWishlistStore((state) => state.toggleItem);
   const isWishlisted = useWishlistStore((state) => state.isWishlisted(product.id));
+  
+  // Précharger les images secondaires en arrière-plan
+  usePreloadSecondaryImages(product, {
+    threshold: 0.1,
+    rootMargin: '200px',
+    enabled: true,
+  });
 
   const handleShare = async () => {
     const url = window.location.origin + `/products/${product.slug}`;
@@ -31,6 +39,7 @@ export function ProductCard({ product, showAddButton = false, badgeLabel, classN
 
   return (
     <article
+      data-product-id={product.id}
       className={[
         'group relative flex h-full flex-col overflow-hidden rounded-[18px] bg-white transition-shadow duration-200',
         'shadow-[0_4px_20px_rgba(0,0,0,0.06)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.1)]',
