@@ -281,10 +281,10 @@ export default function ProductsPage() {
             </div>
 
             {/* Prix Min + Max côte à côte */}
-            <div className="flex gap-3">
-              <div className="w-[150px]">
+            <div className="flex flex-1 gap-3 min-w-[200px]">
+              <div className="flex-1">
                 <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-text-muted">
-                  Min
+                  Prix min
                 </label>
                 <input
                   type="text"
@@ -297,9 +297,9 @@ export default function ProductsPage() {
                 />
               </div>
 
-              <div className="w-[150px]">
+              <div className="flex-1">
                 <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-text-muted">
-                  Max
+                  Prix max
                 </label>
                 <input
                   type="text"
