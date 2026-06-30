@@ -239,7 +239,6 @@ export default function ProductsPage() {
         <SectionHeading
           eyebrow="Catalogue"
           title="Tous les produits"
-          description="Recherchez un produit ou une catégorie, filtrez par prix et catégorie."
         />
 
         {/* Filtres visibles directement */}
