@@ -203,12 +203,8 @@ class ProductAdminSerializer(serializers.ModelSerializer):
         images_data_raw = validated_data.pop('images_data', None)
         models_data_raw = validated_data.pop('models_data', None)
         
-        try:
-            product = super().create(validated_data)
-            logger.info(f'Product created successfully: id={product.id} slug={product.slug} name={product.name}')
-        except IntegrityError as e:
-            logger.error(f'IntegrityError during product creation: {e}')
-            raise
+        product = super().create(validated_data)
+        logger.info(f'Product created successfully: id={product.id} slug={product.slug} name={product.name}')
         
         self._rebuild_images(product, images_data_raw)
         self._rebuild_models(product, models_data_raw)
