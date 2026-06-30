@@ -366,7 +366,7 @@ export default function ProductsPage() {
           <>
             <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
               {productsData.results.map((product) => (
-                <ProductCard key={product.id} product={product} />
+                <ProductCard key={product.id} product={product} linkState={{ fromProducts: true, page: currentPage }} />
               ))}
             </div>
 

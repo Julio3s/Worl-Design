@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { ArrowLeft, Heart, Share2, ShoppingCart } from 'lucide-react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
 
 import { getProductBySlug } from '../api/catalog';
 import { ErrorState } from '../components/ErrorState';
@@ -42,6 +42,7 @@ function buildImagesArray(product) {
 
 export default function ProductDetailPage() {
   const { slug } = useParams();
+  const location = useLocation();
   const addItem = useCartStore((state) => state.addItem);
   const toggleWishlist = useWishlistStore((state) => state.toggleItem);
   const [product, setProduct] = useState(null);
@@ -229,7 +230,7 @@ export default function ProductDetailPage() {
       <section className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-4xl">
         <Link
-          to="/products"
+          to={location.state?.fromProducts ? `/products?page=${location.state.page || 1}` : '/products'}
           className="inline-flex items-center gap-2 text-sm font-medium text-text-muted transition hover:text-accent"
         >
           <ArrowLeft className="h-4 w-4" aria-hidden="true" />

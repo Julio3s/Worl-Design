@@ -6,7 +6,7 @@ import { getProductImage } from '../utils/media';
 import { useWishlistStore } from '../store/wishlistStore';
 import { usePreloadSecondaryImages } from '../hooks/usePreloadSecondaryImages';
 
-export function ProductCard({ product, showAddButton = false, badgeLabel, className = '' }) {
+export function ProductCard({ product, showAddButton = false, badgeLabel, className = '', linkState }) {
   const image = getProductImage(product);
   const description = product.description || '';
   const toggleWishlist = useWishlistStore((state) => state.toggleItem);
@@ -47,7 +47,7 @@ export function ProductCard({ product, showAddButton = false, badgeLabel, classN
       ].join(' ')}
     >
       {/* IMAGE */}
-      <Link to={`/products/${product.slug}`} className="block">
+      <Link to={`/products/${product.slug}`} state={linkState} className="block">
         <div className="relative h-[200px] w-full overflow-hidden bg-[#F1ECE6] sm:h-[220px] lg:h-[240px]">
           <img
             src={image}
