@@ -198,6 +198,7 @@ class ProductAdminSerializer(serializers.ModelSerializer):
         from django.db import IntegrityError
         
         # Générer le slug avant création pour éviter les conflits
+        base_slug = None
         if 'slug' not in validated_data or not validated_data['slug']:
             base_slug = slugify(validated_data.get('name', ''))
             if base_slug:
