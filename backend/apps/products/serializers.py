@@ -185,6 +185,14 @@ class ProductAdminSerializer(serializers.ModelSerializer):
     def get_category_slug(self, obj):
         return obj.category.slug if obj.category else None
 
+    def validate(self, attrs):
+        # Vérifier si un produit actif avec le même nom existe déjà (création)
+        if not self.instance and 'name' in attrs:
+            existing = Product.objects.filter(name__iexact=attrs['name'], is_active=True).first()
+            if existing:
+                raise serializers.ValidationError({'name': 'A product with this name already exists.'})
+        return attrs
+
     def create(self, validated_data):
         images_data_raw = validated_data.pop('images_data', None)
         models_data_raw = validated_data.pop('models_data', None)
