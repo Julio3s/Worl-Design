@@ -31,6 +31,12 @@ class Category(models.Model):
 
 class Product(models.Model):
     """Product model with all required fields."""
+    MODEL_TYPE_CHOICES = [
+        ('none', 'Aucun modèle'),
+        ('numeric', 'Numérique (1-100)'),
+        ('alpha', 'Alphabétique (A-Z)'),
+    ]
+    
     name = models.CharField(max_length=255)
     slug = models.SlugField(unique=True, blank=True)
     description = models.TextField()
@@ -43,6 +49,24 @@ class Product(models.Model):
     is_customizable = models.BooleanField(default=False, help_text="Allow text customization")
     customization_hint = models.CharField(max_length=255, blank=True, null=True, help_text="Placeholder for customization field")
     has_models = models.BooleanField(default=False, help_text="Afficher les modèles pour ce produit")
+    model_type = models.CharField(
+        max_length=10,
+        choices=MODEL_TYPE_CHOICES,
+        default='none',
+        help_text='Type de modèle pour les produits personnalisables'
+    )
+    model_start = models.CharField(
+        max_length=3,
+        blank=True,
+        null=True,
+        help_text='Début de la plage (ex: 1 ou A)'
+    )
+    model_end = models.CharField(
+        max_length=3,
+        blank=True,
+        null=True,
+        help_text='Fin de la plage (ex: 100 ou Z)'
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

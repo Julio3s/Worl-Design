@@ -169,7 +169,7 @@ class ProductAdminSerializer(serializers.ModelSerializer):
             'image', 'image_url', 'images', 'images_data',
             'category', 'category_name', 'category_slug',
             'is_active', 'is_featured', 'is_customizable', 'customization_hint',
-            'has_models',
+            'has_models', 'model_type', 'model_start', 'model_end',
             'models', 'models_data',
             'created_at', 'updated_at'
         ]
