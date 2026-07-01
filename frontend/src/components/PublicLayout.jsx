@@ -1,4 +1,4 @@
-kboimport { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 
 import { Footer } from './Footer';
