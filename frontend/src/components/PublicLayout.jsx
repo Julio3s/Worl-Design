@@ -21,8 +21,8 @@ export function PublicLayout() {
 
   useEffect(() => {
     if (!showFooter) {
-      const id = requestAnimationFrame(() => setShowFooter(true));
-      return () => cancelAnimationFrame(id);
+      const id = setTimeout(() => setShowFooter(true), 300);
+      return () => clearTimeout(id);
     }
   });
 
