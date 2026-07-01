@@ -19,13 +19,6 @@ export function PublicLayout() {
     }
   }, [location.pathname]);
 
-  useEffect(() => {
-    if (!showFooter) {
-      const id = setTimeout(() => setShowFooter(true), 300);
-      return () => clearTimeout(id);
-    }
-  });
-
   return (
     <div
       className="flex min-h-screen flex-col bg-cream text-text-dark"
