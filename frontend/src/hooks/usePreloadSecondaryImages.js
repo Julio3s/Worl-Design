@@ -16,31 +16,48 @@ export function usePreloadSecondaryImages(product, options = {}) {
   const hasPreloaded = useRef(false);
 
   const preloadImages = useCallback((product) => {
-    if (!product?.images || hasPreloaded.current) return;
+    if (!product?.images && !product?.videos || hasPreloaded.current) return;
 
     hasPreloaded.current = true;
 
     // Précharger toutes les images secondaires (sauf la première qui est déjà chargée)
-    product.images.forEach((img, index) => {
-      if (index > 0 && img.image_url) {
-        const link = document.createElement('link');
-        link.rel = 'prefetch';
-        link.as = 'image';
-        link.href = img.image_url;
-        document.head.appendChild(link);
+    if (product.images) {
+      product.images.forEach((img, index) => {
+        if (index > 0 && img.image_url) {
+          const link = document.createElement('link');
+          link.rel = 'prefetch';
+          link.as = 'image';
+          link.href = img.image_url;
+          document.head.appendChild(link);
 
-        // Également précharger l'image en mémoire
-        const image = new Image();
-        image.src = img.image_url;
-      }
-    });
+          // Également précharger l'image en mémoire
+          const image = new Image();
+          image.src = img.image_url;
+        }
+      });
+    }
+
+    // Précharger les vidéos secondaires (sauf la première qui est déjà chargée)
+    if (product.videos) {
+      product.videos.forEach((video, index) => {
+        if (index > 0 && video.video_url) {
+          const link = document.createElement('link');
+          link.rel = 'prefetch';
+          link.as = 'video';
+          link.href = video.video_url;
+          document.head.appendChild(link);
+        }
+      });
+    }
   }, []);
 
   useEffect(() => {
     if (!enabled || !product) return;
 
     // Si le produit n'a pas d'images secondaires, pas besoin de précharger
-    if (!product.images || product.images.length <= 1) return;
+    const hasSecondaryMedia = (product.images && product.images.length > 1) || 
+                              (product.videos && product.videos.length > 1);
+    if (!hasSecondaryMedia) return;
 
     const element = document.querySelector(`[data-product-id="${product.id}"]`);
     if (!element) return;
@@ -105,18 +122,33 @@ export function usePreloadProductImages(products, options = {}) {
         preloadedIds.current.add(product.id);
 
         // Précharger les images secondaires
-        product.images.forEach((img, index) => {
-          if (index > 0 && img.image_url) {
-            const link = document.createElement('link');
-            link.rel = 'prefetch';
-            link.as = 'image';
-            link.href = img.image_url;
-            document.head.appendChild(link);
+        if (product.images) {
+          product.images.forEach((img, index) => {
+            if (index > 0 && img.image_url) {
+              const link = document.createElement('link');
+              link.rel = 'prefetch';
+              link.as = 'image';
+              link.href = img.image_url;
+              document.head.appendChild(link);
 
-            const image = new Image();
-            image.src = img.image_url;
-          }
-        });
+              const image = new Image();
+              image.src = img.image_url;
+            }
+          });
+        }
+
+        // Précharger les vidéos secondaires
+        if (product.videos) {
+          product.videos.forEach((video, index) => {
+            if (index > 0 && video.video_url) {
+              const link = document.createElement('link');
+              link.rel = 'prefetch';
+              link.as = 'video';
+              link.href = video.video_url;
+              document.head.appendChild(link);
+            }
+          });
+        }
       });
     }, delay);
 
