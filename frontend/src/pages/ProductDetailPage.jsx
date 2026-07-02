@@ -18,21 +18,35 @@ import { getProductImage, optimizeImageUrl } from '../utils/media';
 function buildImagesArray(product) {
   if (!product) return [];
 
-  // Union : image principale + images supplémentaires
+  // Union : images + vidéos
   const result = [];
 
   // Image principale
   const mainImageUrl = product.image_url || product.image || '';
   if (mainImageUrl) {
-    result.push({ image_url: mainImageUrl, order: 0 });
+    result.push({ image_url: mainImageUrl, media_type: 'image', order: 0 });
   }
 
-  // Images supplémentaires
+  // Images et vidéos supplémentaires
   if (product.images && Array.isArray(product.images)) {
     product.images.forEach((img, idx) => {
-      const imgUrl = optimizeImageUrl(img.image_url || img.image || '', 800);
-      if (imgUrl && imgUrl !== mainImageUrl) {
-        result.push({ image_url: imgUrl, order: idx + 1 });
+      if (img.media_type === 'video') {
+        // C'est une vidéo
+        if (img.video_url) {
+          const thumbnail = optimizeImageUrl(img.image_url || img.image || '', 800);
+          result.push({
+            video_url: img.video_url,
+            media_type: 'video',
+            thumbnail_url: thumbnail,
+            order: idx + 1,
+          });
+        }
+      } else {
+        // C'est une image
+        const imgUrl = optimizeImageUrl(img.image_url || img.image || '', 800);
+        if (imgUrl && imgUrl !== mainImageUrl) {
+          result.push({ image_url: imgUrl, media_type: 'image', order: idx + 1 });
+        }
       }
     });
   }

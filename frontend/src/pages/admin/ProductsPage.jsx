@@ -142,7 +142,8 @@ export default function ProductsPage() {
           display_order: m.display_order,
         }))) : '',
         imagesData: (product.images || []).map((img, idx) => ({
-          public_id: img.image_url || '',
+          public_id: img.media_type === 'video' ? '' : (img.image_url || ''),
+          video_url: img.video_url || '',
           order: idx,
           media_type: img.media_type || 'image',
         })),

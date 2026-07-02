@@ -40,11 +40,15 @@ function buildProductFormData(payload) {
     formData.append('images_data', JSON.stringify(payload.imagesData));
   }
 
-  // Ajouter les fichiers des nouvelles images séparément
-  // Chaque entrée : { index: position dans imagesData, file: File }
+  // Ajouter les fichiers des nouvelles images et vidéos séparément
+  // Chaque entrée : { index, file?, videoUrl?, mediaType }
   if (payload.newImageFiles && payload.newImageFiles.length > 0) {
-    payload.newImageFiles.forEach(({ index, file }) => {
-      formData.append(`images_new_${index}`, file);
+    payload.newImageFiles.forEach(({ index, file, videoUrl, mediaType }) => {
+      if (mediaType === 'video' && videoUrl) {
+        formData.append(`images_new_${index}`, videoUrl);
+      } else if (file) {
+        formData.append(`images_new_${index}`, file);
+      }
     });
   }
 

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Plus, Trash2, Upload } from 'lucide-react';
+import { Film, Plus, Trash2, Upload } from 'lucide-react';
 
 import { formatProductError } from '../../api/adminProducts';
 import { optimizeImage } from '../../utils/imageOptimizer';
@@ -18,20 +18,29 @@ const EMPTY_FORM = {
   has_models: false,
 };
 
-function ExtraImageRow({ preview, order, onRemove }) {
+function ExtraImageRow({ preview, order, onRemove, mediaType = 'image', videoUrl = '' }) {
   return (
     <div className="flex items-center gap-3 rounded-[8px] border border-[#E0DBD5] bg-[#F8F5F0] px-3 py-2">
-      <img
-        src={preview}
-        alt={`Image ${order + 1}`}
-        className="h-14 w-14 rounded-[6px] object-cover"
-      />
-      <span className="flex-1 text-sm text-text-muted">Image {order + 1}</span>
+      {mediaType === 'video' ? (
+        <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[6px] bg-black text-white">
+          <Film className="h-6 w-6" />
+        </div>
+      ) : (
+        <img
+          src={preview}
+          alt={`Image ${order + 1}`}
+          className="h-14 w-14 rounded-[6px] object-cover"
+        />
+      )}
+      <span className="flex-1 truncate text-sm text-text-muted">
+        {mediaType === 'video' ? `Vidéo ${order + 1}` : `Image ${order + 1}`}
+        {videoUrl ? <span className="ml-1 block text-xs opacity-60">{videoUrl}</span> : null}
+      </span>
       <button
         type="button"
         onClick={onRemove}
-        className="inline-flex h-8 w-8 items-center justify-center rounded-full text-accent transition hover:bg-[#FEE2E2]"
-        aria-label="Supprimer cette image"
+        className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-accent transition hover:bg-[#FEE2E2]"
+        aria-label="Supprimer ce média"
       >
         <Trash2 className="h-4 w-4" />
       </button>
@@ -52,6 +61,8 @@ export function ProductFormModal({
   const [extraImages, setExtraImages] = useState([]);
   const [existingImages, setExistingImages] = useState([]);
   const [removedImageIds, setRemovedImageIds] = useState([]);
+  const [videoUrlInput, setVideoUrlInput] = useState('');
+  const [videoUrlError, setVideoUrlError] = useState('');
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [productModels, setProductModels] = useState([]);
@@ -82,6 +93,8 @@ export function ProductFormModal({
       const imgs = (product.images || []).map((img) => ({
         id: img.id,
         image_url: img.image_url,
+        video_url: img.video_url || '',
+        media_type: img.media_type || 'image',
         order: img.order,
       }));
       setExistingImages(imgs);
@@ -104,6 +117,8 @@ export function ProductFormModal({
 
     setImageFile(null);
     setExtraImages([]);
+    setVideoUrlInput('');
+    setVideoUrlError('');
     setError('');
   }, [open, product]);
 
@@ -169,6 +184,37 @@ export function ProductFormModal({
     setExistingImages((prev) => prev.filter((img) => img.id !== imageId));
   }, []);
 
+  const isValidVideoUrl = (url) => {
+    if (!url.trim()) return false;
+    // Accepte YouTube, Vimeo, ou URLs de vidéos directes (mp4, webm, ogg)
+    return /(?:youtube\.com|youtu\.be|vimeo\.com)/.test(url) ||
+           /\.(mp4|webm|ogg)(\?.*)?$/i.test(url);
+  };
+
+  const handleAddVideoUrl = () => {
+    const url = videoUrlInput.trim();
+    if (!url) {
+      setVideoUrlError('Veuillez entrer une URL');
+      return;
+    }
+    if (!isValidVideoUrl(url)) {
+      setVideoUrlError('URL invalide. Utilisez YouTube, Vimeo, ou un lien MP4/WebM direct.');
+      return;
+    }
+    setExistingImages((prev) => [
+      ...prev,
+      {
+        id: `video-${Date.now()}`,
+        image_url: '',
+        video_url: url,
+        media_type: 'video',
+        order: prev.length,
+      },
+    ]);
+    setVideoUrlInput('');
+    setVideoUrlError('');
+  };
+
   const generateModelsFromRange = (type, start, end) => {
     if (!start || !end) return;
     
@@ -229,16 +275,29 @@ export function ProductFormModal({
 
     // Métadonnées des images existantes conservées (JSON-safe)
     const imagesData = existingImages.map((img, idx) => ({
-      public_id: img.image_url || '',
+      public_id: img.media_type === 'video' ? '' : (img.image_url || ''),
+      video_url: img.video_url || '',
       order: idx,
-      media_type: 'image',
+      media_type: img.media_type || 'image',
     }));
 
-    // Fichiers des nouvelles images (indices séquentiels à partir de 0)
-    const newFiles = extraImages.map((item, idx) => ({
-      index: idx,
-      file: item.file,
-    }));
+    // Fichiers des nouvelles images et vidéos
+    const newFiles = [];
+    extraImages.forEach((item, idx) => {
+      if (item.mediaType === 'video') {
+        newFiles.push({
+          index: idx,
+          videoUrl: item.videoUrl || '',
+          mediaType: 'video',
+        });
+      } else if (item.file) {
+        newFiles.push({
+          index: idx,
+          file: item.file,
+          mediaType: 'image',
+        });
+      }
+    });
 
     try {
       await onSubmit({
@@ -518,11 +577,42 @@ export function ProductFormModal({
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium text-text-dark">Images supplémentaires</span>
-            <label className="inline-flex cursor-pointer items-center gap-1.5 rounded-full border border-[#E0DBD5] bg-white px-3 py-1.5 text-xs font-semibold text-text-dark transition hover:border-accent hover:text-accent">
-              <Plus className="h-3.5 w-3.5" />
-              Ajouter
-              <input type="file" accept="image/*" multiple className="hidden" onChange={handleAddExtraImage} />
-            </label>
+            <div className="flex gap-2">
+              <label className="inline-flex cursor-pointer items-center gap-1.5 rounded-full border border-[#E0DBD5] bg-white px-3 py-1.5 text-xs font-semibold text-text-dark transition hover:border-accent hover:text-accent">
+                <Plus className="h-3.5 w-3.5" />
+                Image
+                <input type="file" accept="image/*" multiple className="hidden" onChange={handleAddExtraImage} />
+              </label>
+            </div>
+          </div>
+
+          {/* Ajout d'une vidéo par URL */}
+          <div className="rounded-[8px] border border-[#E0DBD5] bg-[#F8F5F0] p-3">
+            <p className="mb-2 text-xs font-semibold text-text-dark">Ajouter une vidéo (YouTube, Vimeo, ou lien MP4/WebM direct)</p>
+            <div className="flex flex-wrap gap-2">
+              <input
+                type="url"
+                value={videoUrlInput}
+                onChange={(e) => {
+                  setVideoUrlInput(e.target.value);
+                  if (videoUrlError) setVideoUrlError('');
+                }}
+                placeholder="https://www.youtube.com/watch?v=... ou https://exemple.com/video.mp4"
+                className="h-10 flex-1 rounded-[8px] border border-[#E0DBD5] bg-white px-3 text-sm outline-none transition focus:border-accent min-w-[200px]"
+                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddVideoUrl())}
+              />
+              <button
+                type="button"
+                onClick={handleAddVideoUrl}
+                className="inline-flex h-10 items-center justify-center rounded-full bg-accent px-4 text-sm font-semibold text-white transition hover:opacity-95"
+              >
+                <Film className="mr-1.5 h-4 w-4" />
+                Ajouter
+              </button>
+            </div>
+            {videoUrlError ? (
+              <p className="mt-1 text-xs font-medium text-red-600">{videoUrlError}</p>
+            ) : null}
           </div>
 
           {existingImages.length > 0 || extraImages.length > 0 ? (
@@ -533,6 +623,8 @@ export function ProductFormModal({
                   preview={img.image_url}
                   order={img.order}
                   onRemove={() => handleRemoveExistingImage(img.id)}
+                  mediaType={img.media_type || 'image'}
+                  videoUrl={img.video_url || ''}
                 />
               ))}
               {extraImages.map((item, idx) => (
@@ -545,7 +637,7 @@ export function ProductFormModal({
               ))}
             </div>
           ) : (
-            <p className="text-xs text-text-muted">Aucune image supplémentaire. Ajoutez-en pour enrichir la page détail.</p>
+            <p className="text-xs text-text-muted">Aucun média supplémentaire. Ajoutez des images ou des vidéos pour enrichir la page détail.</p>
           )}
         </div>
 

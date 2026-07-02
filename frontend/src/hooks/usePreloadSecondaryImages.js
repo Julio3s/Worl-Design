@@ -16,36 +16,33 @@ export function usePreloadSecondaryImages(product, options = {}) {
   const hasPreloaded = useRef(false);
 
   const preloadImages = useCallback((product) => {
-    if (!product?.images && !product?.videos || hasPreloaded.current) return;
+    if (!product?.images || hasPreloaded.current) return;
 
     hasPreloaded.current = true;
 
-    // Précharger toutes les images secondaires (sauf la première qui est déjà chargée)
+    // Précharger tous les médias secondaires (sauf le premier qui est déjà chargé)
     if (product.images) {
-      product.images.forEach((img, index) => {
-        if (index > 0 && img.image_url) {
+      product.images.forEach((item, index) => {
+        if (index === 0) return; // skip le premier média (déjà affiché)
+
+        if (item.media_type === 'video' && item.video_url) {
+          // Précharger une vidéo
+          const link = document.createElement('link');
+          link.rel = 'prefetch';
+          link.as = 'video';
+          link.href = item.video_url;
+          document.head.appendChild(link);
+        } else if (item.image_url) {
+          // Précharger une image
           const link = document.createElement('link');
           link.rel = 'prefetch';
           link.as = 'image';
-          link.href = img.image_url;
+          link.href = item.image_url;
           document.head.appendChild(link);
 
           // Également précharger l'image en mémoire
           const image = new Image();
-          image.src = img.image_url;
-        }
-      });
-    }
-
-    // Précharger les vidéos secondaires (sauf la première qui est déjà chargée)
-    if (product.videos) {
-      product.videos.forEach((video, index) => {
-        if (index > 0 && video.video_url) {
-          const link = document.createElement('link');
-          link.rel = 'prefetch';
-          link.as = 'video';
-          link.href = video.video_url;
-          document.head.appendChild(link);
+          image.src = item.image_url;
         }
       });
     }
@@ -54,9 +51,8 @@ export function usePreloadSecondaryImages(product, options = {}) {
   useEffect(() => {
     if (!enabled || !product) return;
 
-    // Si le produit n'a pas d'images secondaires, pas besoin de précharger
-    const hasSecondaryMedia = (product.images && product.images.length > 1) || 
-                              (product.videos && product.videos.length > 1);
+    // Si le produit n'a pas de médias secondaires, pas besoin de précharger
+    const hasSecondaryMedia = product.images && product.images.length > 1;
     if (!hasSecondaryMedia) return;
 
     const element = document.querySelector(`[data-product-id="${product.id}"]`);
@@ -121,31 +117,26 @@ export function usePreloadProductImages(products, options = {}) {
 
         preloadedIds.current.add(product.id);
 
-        // Précharger les images secondaires
+        // Précharger les médias secondaires (images et vidéos)
         if (product.images) {
-          product.images.forEach((img, index) => {
-            if (index > 0 && img.image_url) {
-              const link = document.createElement('link');
-              link.rel = 'prefetch';
-              link.as = 'image';
-              link.href = img.image_url;
-              document.head.appendChild(link);
+          product.images.forEach((item, index) => {
+            if (index === 0) return;
 
-              const image = new Image();
-              image.src = img.image_url;
-            }
-          });
-        }
-
-        // Précharger les vidéos secondaires
-        if (product.videos) {
-          product.videos.forEach((video, index) => {
-            if (index > 0 && video.video_url) {
+            if (item.media_type === 'video' && item.video_url) {
               const link = document.createElement('link');
               link.rel = 'prefetch';
               link.as = 'video';
-              link.href = video.video_url;
+              link.href = item.video_url;
               document.head.appendChild(link);
+            } else if (item.image_url) {
+              const link = document.createElement('link');
+              link.rel = 'prefetch';
+              link.as = 'image';
+              link.href = item.image_url;
+              document.head.appendChild(link);
+
+              const image = new Image();
+              image.src = item.image_url;
             }
           });
         }

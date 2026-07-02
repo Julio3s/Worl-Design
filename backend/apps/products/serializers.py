@@ -267,21 +267,35 @@ class ProductAdminSerializer(serializers.ModelSerializer):
                         order=order,
                     )
 
-        # 2. Ajouter les nouveaux fichiers uploadés (images_new_*)
+        # 2. Ajouter les nouveaux médias uploadés (images_new_*)
         if request:
             base_order = product.images.count()
             i = 0
             while True:
                 key = f'images_new_{i}'
+                # Peut être un fichier image (FILES) ou une URL vidéo (POST)
                 uploaded = request.FILES.get(key)
-                if uploaded is None:
+                video_url = request.POST.get(key)
+                
+                if uploaded is None and not video_url:
                     break
-                ProductImage.objects.create(
-                    product=product,
-                    image=uploaded,
-                    media_type='image',
-                    order=base_order + i,
-                )
+                
+                if uploaded:
+                    # Nouvelle image
+                    ProductImage.objects.create(
+                        product=product,
+                        image=uploaded,
+                        media_type='image',
+                        order=base_order + i,
+                    )
+                elif video_url:
+                    # Nouvelle vidéo (URL)
+                    ProductImage.objects.create(
+                        product=product,
+                        video_url=video_url,
+                        media_type='video',
+                        order=base_order + i,
+                    )
                 i += 1
 
     def _parse_models_data(self, raw_value):
