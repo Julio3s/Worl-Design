@@ -119,36 +119,49 @@ export default function ProductImageCarousel({ images, productName }) {
   };
 
   /**
-   * Rend une vignette vidéo avec bouton play superposé (cliquable pour ouvrir le lecteur)
+   * Rend une vidéo directement dans le carousel avec contrôles
    */
-  const renderVideoThumbnail = () => (
-    <button
-      type="button"
-      onClick={() => setViewerOpen(true)}
-      className="relative h-full w-full bg-black cursor-pointer"
-    >
-      {currentImage ? (
-        <img
-          src={currentImage}
-          alt={`${productName} - vidéo ${active + 1}`}
-          className="pointer-events-none h-full w-full object-cover opacity-80"
-          draggable={false}
-          loading="lazy"
-          decoding="async"
-        />
-      ) : (
-        <div className="flex h-full w-full items-center justify-center bg-black/60">
-          <Play className="h-16 w-16 text-white/60" />
+  const renderVideoInCarousel = () => {
+    if (!videoEmbed) {
+      return (
+        <div className="flex h-full w-full items-center justify-center bg-black text-white/60 text-sm">
+          Vidéo indisponible
         </div>
-      )}
-      {/* Overlay play button */}
-      <div className="absolute inset-0 flex items-center justify-center bg-black/20 transition hover:bg-black/30">
-        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/90 shadow-lg transition hover:bg-white hover:scale-105">
-          <Play className="ml-1 h-8 w-8 text-black" />
-        </div>
-      </div>
-    </button>
-  );
+      );
+    }
+
+    // Fichier vidéo direct (mp4, webm, ogg)
+    if (videoEmbed.type === 'direct') {
+      return (
+        <video
+          src={videoEmbed.embedUrl}
+          title={`${productName} - vidéo ${active + 1}`}
+          className="h-full w-full"
+          controls
+          autoPlay
+          playsInline
+          preload="metadata"
+        >
+          <source src={videoEmbed.embedUrl} type="video/mp4" />
+          <source src={videoEmbed.embedUrl} type="video/webm" />
+          <source src={videoEmbed.embedUrl} type="video/ogg" />
+          Votre navigateur ne supporte pas la lecture vidéo.
+        </video>
+      );
+    }
+
+    // YouTube ou Vimeo : iframe embed
+    return (
+      <iframe
+        src={videoEmbed.embedUrl}
+        title={`${productName} - vidéo ${active + 1}`}
+        className="h-full w-full"
+        allow="autoplay; fullscreen; encrypted-media"
+        allowFullScreen
+        loading="lazy"
+      />
+    );
+  };
 
 /**
  * Rend un lecteur vidéo (iframe pour YouTube/Vimeo, <video> pour fichiers directs)
@@ -204,7 +217,7 @@ export default function ProductImageCarousel({ images, productName }) {
         onTouchEnd={handleTouchEnd}
       >
         {isVideo ? (
-          renderVideoThumbnail()
+          renderVideoInCarousel()
         ) : currentImage ? (
           <img
             src={currentImage}
