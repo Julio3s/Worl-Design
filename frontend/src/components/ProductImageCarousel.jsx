@@ -54,7 +54,7 @@ function getVideoEmbedUrl(url) {
   }
 
   // URL vidéo directe (mp4, webm, etc.)
-  if (url.match(/\.(mp4|webm|ogg)(\?.*)?$/i)) {
+  if (url.match(/\.(mp4|webm|ogg)(\?.*)?$/i) || url.includes('/video/upload/')) {
     return {
       type: 'direct',
       embedUrl: url,

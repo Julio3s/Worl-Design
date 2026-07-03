@@ -18,7 +18,7 @@ const EMPTY_FORM = {
   has_models: false,
 };
 
-function ExtraImageRow({ preview, order, onRemove, mediaType = 'image', videoUrl = '' }) {
+function ExtraImageRow({ preview, order, onRemove, mediaType = 'image', videoUrl = '', fileName = '' }) {
   return (
     <div className="flex items-center gap-3 rounded-[8px] border border-[#E0DBD5] bg-[#F8F5F0] px-3 py-2">
       {mediaType === 'video' ? (
@@ -34,7 +34,7 @@ function ExtraImageRow({ preview, order, onRemove, mediaType = 'image', videoUrl
       )}
       <span className="flex-1 truncate text-sm text-text-muted">
         {mediaType === 'video' ? `Vidéo ${order + 1}` : `Image ${order + 1}`}
-        {videoUrl ? <span className="ml-1 block text-xs opacity-60">{videoUrl}</span> : null}
+        {fileName || videoUrl ? <span className="ml-1 block text-xs opacity-60">{fileName || videoUrl}</span> : null}
       </span>
       <button
         type="button"
@@ -144,29 +144,56 @@ export function ProductFormModal({
     }
   };
 
+  const buildExtraMediaItem = async (file, mediaType = 'image') => {
+    if (mediaType === 'video') {
+      return {
+        file,
+        preview: URL.createObjectURL(file),
+        mediaType: 'video',
+        fileName: file.name,
+      };
+    }
+
+    try {
+      const optimized = await optimizeImage(file);
+      return {
+        file: optimized,
+        preview: URL.createObjectURL(optimized),
+        mediaType: 'image',
+        fileName: file.name,
+      };
+    } catch (error) {
+      console.error('Image optimization failed:', error);
+      return {
+        file,
+        preview: URL.createObjectURL(file),
+        mediaType: 'image',
+        fileName: file.name,
+      };
+    }
+  };
+
   const handleAddExtraImage = async (event) => {
     const files = event.target.files;
     if (!files || files.length === 0) return;
 
     const optimizedFiles = await Promise.all(
-      Array.from(files).map(async (file) => {
-        try {
-          const optimized = await optimizeImage(file);
-          return {
-            file: optimized,
-            preview: URL.createObjectURL(optimized),
-          };
-        } catch (error) {
-          console.error('Image optimization failed:', error);
-          return {
-            file,
-            preview: URL.createObjectURL(file),
-          };
-        }
-      })
+      Array.from(files).map((file) => buildExtraMediaItem(file, 'image'))
     );
 
     setExtraImages((prev) => [...prev, ...optimizedFiles]);
+    event.target.value = '';
+  };
+
+  const handleAddExtraVideo = async (event) => {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+
+    const videoFiles = await Promise.all(
+      Array.from(files).map((file) => buildExtraMediaItem(file, 'video'))
+    );
+
+    setExtraImages((prev) => [...prev, ...videoFiles]);
     event.target.value = '';
   };
 
@@ -284,17 +311,11 @@ export function ProductFormModal({
     // Fichiers des nouvelles images et vidéos
     const newFiles = [];
     extraImages.forEach((item, idx) => {
-      if (item.mediaType === 'video') {
-        newFiles.push({
-          index: idx,
-          videoUrl: item.videoUrl || '',
-          mediaType: 'video',
-        });
-      } else if (item.file) {
+      if (item.file) {
         newFiles.push({
           index: idx,
           file: item.file,
-          mediaType: 'image',
+          mediaType: item.mediaType || 'image',
         });
       }
     });
@@ -583,6 +604,11 @@ export function ProductFormModal({
                 Image
                 <input type="file" accept="image/*" multiple className="hidden" onChange={handleAddExtraImage} />
               </label>
+              <label className="inline-flex cursor-pointer items-center gap-1.5 rounded-full border border-[#E0DBD5] bg-white px-3 py-1.5 text-xs font-semibold text-text-dark transition hover:border-accent hover:text-accent">
+                <Film className="h-3.5 w-3.5" />
+                Vidéo
+                <input type="file" accept="video/*" multiple className="hidden" onChange={handleAddExtraVideo} />
+              </label>
             </div>
           </div>
 
@@ -625,6 +651,7 @@ export function ProductFormModal({
                   onRemove={() => handleRemoveExistingImage(img.id)}
                   mediaType={img.media_type || 'image'}
                   videoUrl={img.video_url || ''}
+                  fileName={img.media_type === 'video' ? (img.video_url || '') : ''}
                 />
               ))}
               {extraImages.map((item, idx) => (
@@ -633,6 +660,8 @@ export function ProductFormModal({
                   preview={item.preview}
                   order={existingImages.length + idx}
                   onRemove={() => handleRemoveExtraImage(idx)}
+                  mediaType={item.mediaType || 'image'}
+                  fileName={item.fileName || ''}
                 />
               ))}
             </div>

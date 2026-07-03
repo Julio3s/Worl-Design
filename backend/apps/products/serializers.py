@@ -1,5 +1,6 @@
 import logging
 from cloudinary import config as cloudinary_config
+from cloudinary import uploader as cloudinary_uploader
 from rest_framework import serializers
 
 from .models import Category, Product, ProductImage, ProductModel
@@ -12,6 +13,9 @@ def _cloudinary_url(resource):
         return None
 
     try:
+        if isinstance(resource, dict):
+            return resource.get('secure_url') or resource.get('url')
+
         if not getattr(cloudinary_config(), 'cloud_name', None):
             return None
 
@@ -22,6 +26,33 @@ def _cloudinary_url(resource):
         return resource.url
     except Exception:
         return None
+
+
+def _is_video_upload(uploaded_file):
+    content_type = getattr(uploaded_file, 'content_type', '') or ''
+    filename = (getattr(uploaded_file, 'name', '') or '').lower()
+
+    return (
+        content_type.startswith('video/')
+        or filename.endswith('.mp4')
+        or filename.endswith('.webm')
+        or filename.endswith('.ogg')
+        or filename.endswith('.mov')
+        or filename.endswith('.m4v')
+    )
+
+
+def _upload_video_to_cloudinary(uploaded_file):
+    upload_fn = getattr(cloudinary_uploader, 'upload_resource', None) or getattr(cloudinary_uploader, 'upload', None)
+    if not upload_fn:
+        return None
+
+    try:
+        result = upload_fn(uploaded_file, resource_type='video')
+    except TypeError:
+        result = upload_fn(uploaded_file)
+
+    return _cloudinary_url(result)
 
 
 class ProductModelSerializer(serializers.ModelSerializer):
@@ -329,3 +360,80 @@ class ProductAdminSerializer(serializers.ModelSerializer):
                     model_value=model_value,
                     display_order=idx,
                 )
+
+    def _rebuild_images(self, product, images_data_raw):
+        """Supprime toutes les ProductImage existantes et les recrée."""
+        request = self.context.get('request')
+        images_meta = self._parse_images_data(images_data_raw)
+
+        product.images.all().delete()
+
+        for idx, meta in enumerate(images_meta):
+            media_type = meta.get('media_type', 'image')
+            order = meta.get('order', idx)
+
+            if media_type == 'video':
+                video_url = meta.get('video_url', '')
+                if video_url:
+                    ProductImage.objects.create(
+                        product=product,
+                        video_url=video_url,
+                        media_type='video',
+                        order=order,
+                    )
+            else:
+                public_id = meta.get('public_id', '')
+                if public_id:
+                    ProductImage.objects.create(
+                        product=product,
+                        image=public_id,
+                        media_type='image',
+                        order=order,
+                    )
+
+        if not request:
+            return
+
+        base_order = product.images.count()
+        i = 0
+        while True:
+            key = f'images_new_{i}'
+            uploaded = request.FILES.get(key)
+            video_url = request.POST.get(key)
+            media_type = (request.POST.get(f'images_new_type_{i}') or '').strip().lower()
+
+            if uploaded is None and not video_url:
+                break
+
+            if uploaded:
+                detected_media_type = media_type
+                if detected_media_type not in {'image', 'video'}:
+                    detected_media_type = 'video' if _is_video_upload(uploaded) else 'image'
+
+                if detected_media_type == 'video':
+                    stored_video_url = _upload_video_to_cloudinary(uploaded)
+                    if stored_video_url:
+                        ProductImage.objects.create(
+                            product=product,
+                            video_url=stored_video_url,
+                            media_type='video',
+                            order=base_order + i,
+                        )
+                    else:
+                        logger.warning('Unable to upload video media for product %s', product.id)
+                else:
+                    ProductImage.objects.create(
+                        product=product,
+                        image=uploaded,
+                        media_type='image',
+                        order=base_order + i,
+                    )
+            elif video_url:
+                ProductImage.objects.create(
+                    product=product,
+                    video_url=video_url,
+                    media_type='video',
+                    order=base_order + i,
+                )
+
+            i += 1

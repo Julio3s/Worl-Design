@@ -44,7 +44,9 @@ function buildProductFormData(payload) {
   // Chaque entrée : { index, file?, videoUrl?, mediaType }
   if (payload.newImageFiles && payload.newImageFiles.length > 0) {
     payload.newImageFiles.forEach(({ index, file, videoUrl, mediaType }) => {
-      if (mediaType === 'video' && videoUrl) {
+      formData.append(`images_new_type_${index}`, mediaType || (videoUrl ? 'video' : 'image'));
+
+      if (mediaType === 'video' && videoUrl && !file) {
         formData.append(`images_new_${index}`, videoUrl);
       } else if (file) {
         formData.append(`images_new_${index}`, file);
