@@ -242,7 +242,7 @@ export default function ProductsPage() {
   });
 
   return (
-    <div className="bg-cream">
+    <div className={loading ? 'min-h-screen bg-cream' : 'bg-cream'}>
       <section className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <SectionHeading
           eyebrow="Catalogue"
